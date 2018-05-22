@@ -1,0 +1,156 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.BooleanParameterDefinition>
+          <name>sar</name>
+          <description></description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>iostat</name>
+          <description></description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>mpstat</name>
+          <description></description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>pidstat</name>
+          <description></description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>proc-vmstat</name>
+          <description></description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>proc-interrupts</name>
+          <description></description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>turbostat</name>
+          <description></description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+
+
+function add_to_sshconfig {
+
+new_config=&quot;
+Host $1
+  User root
+  StrictHostKeyChecking no
+&quot;
+
+echo &quot;$new_config&quot; &gt;&gt; $HOME/.ssh/config
+
+}
+
+function register_tools {
+
+	declare -a tools_ary
+
+	if [ &quot;$sar&quot; = &quot;true&quot; ]; then tools_ary+=&apos; sar&apos;; fi
+    if [ &quot;$iostat&quot; = &quot;true&quot; ]; then tools_ary+=&apos; iostat&apos;; fi
+    if [ &quot;$mpstat&quot; = &quot;true&quot; ]; then tools_ary+=&apos; mpstat&apos;; fi
+    if [ &quot;$pidstat&quot; = &quot;true&quot; ]; then tools_ary+=&apos; pidstat&apos;; fi
+    if [ &quot;$proc-vmstat&quot; = &quot;true&quot; ]; then tools_ary+=&apos; proc-vmstat&apos;; fi
+    if [ &quot;$proc-interrupts&quot; = &quot;true&quot; ]; then tools_ary+=&apos; proc-interrupts&apos;; fi
+    if [ &quot;$turbostat&quot; = &quot;true&quot; ]; then tools_ary+=&apos; turbostat&apos;; fi
+    
+    for tool_name in $tools_ary; do
+    	/opt/pbench-agent/util-scripts/pbench-register-tool --name=$tool_name --remote=$1 default -- --interval=3
+    done
+}
+
+source /etc/profile.d/pbench-agent.sh
+&gt; $HOME/.ssh/config
+
+service_inventory=&quot; 
+[servers:children]
+osds
+mons
+mgrs
+clients
+&quot;
+
+inventory_file=/automated_ceph_test/ceph-linode/ansible_inventory_tmp
+
+cp /automated_ceph_test/ceph-linode/ansible_inventory $inventory_file
+echo &quot;$service_inventory&quot; &gt;&gt; $inventory_file
+
+#Setup and install pbench on all linode host
+cat $inventory_file
+
+if [ -d &quot;/automated_ceph_test/perf-dept&quot; ]; then
+	cd /automated_ceph_test/perf-dept
+    git checkout master
+	git remote update
+	git rebase 
+    cd sysadmin/Ansible
+else
+	cd /automated_ceph_test/
+	git clone http://git.app.eng.bos.redhat.com/git/perf-dept.git
+    cd perf-dept/sysadmin/Ansible
+fi
+
+ansible-playbook pbench-repo-install.yml -i $inventory_file
+ansible -m shell -a &quot;yum install yum-utils -y; yum-config-manager --disable pbench; yum install pbench-agent -y&quot; -i $inventory_file servers
+
+#install pbench-fio and pdsh for CBT
+ansible -m shell -a &quot;yum install pbench-fio -y; yum install pdsh -y;&quot; all -i $inventory_file
+
+if [ ! -d /var/lib/pbench-agent/tools-default-old ]; then
+  sudo mkdir -p /var/lib/pbench-agent/tools-default-old;
+fi
+
+sudo mv /var/lib/pbench-agent/tools-default/* /var/lib/pbench-agent/tools-default-old/
+sudo chmod 777 /var/lib/pbench-agent/tools-default/
+sudo chmod 777 /var/lib/pbench-agent/pbench.log 
+
+for i in `ansible --list-host -i $inventory_file all |grep -v hosts | grep -v &quot;:&quot;`
+        do
+                ping $i -c 1 &gt; /dev/null 2&gt;&amp;1
+                exit_status=`echo $?`
+                if [ &quot;$exit_status&quot; -gt &quot;0&quot; ]; then
+                		add_to_sshconfig `cat $inventory_file | grep $i | awk {&apos;print $2&apos;} | sed &apos;s/.*=//&apos;`
+                		register_tools `cat $inventory_file | grep $i | awk {&apos;print $2&apos;} | sed &apos;s/.*=//&apos;`
+                elif [ &quot;$exit_status&quot; -eq &quot;0&quot; ]; then
+                		add_to_sshconfig $1
+                		register_tools $1
+                else
+                        echo &quot;Unable to register tools on $i&quot;
+                fi
+done
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

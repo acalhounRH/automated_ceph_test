@@ -1,0 +1,84 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>cbt_archive_dir</name>
+          <description>cbt archive directory, defaults to pbench agent output directory with jenkins build ID (build time stamp).</description>
+          <defaultValue>/var/lib/pbench-agent/Jenkins-Test-${BUILD_ID}-${BUILD_TIMESTAMP}</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>cbt_settings</name>
+          <description>CBT settings file</description>
+          <defaultValue>cluster:
+    use_existing: true
+    head: &quot;&lt;test_host&gt;&quot;
+    clients: [&lt;CLI_LIST&gt;]
+    osds: [&lt;OSD_LIST&gt;]
+    mons: [&lt;MON_LIST&gt;]
+    conf_file: &apos;/etc/ceph/ceph.conf&apos;
+    osds_per_node: 1 
+    clusterid: ceph
+    iterations: 1
+    pool_profiles:
+      rbd3rep:
+        pg_size: 128
+        pgp_size: 128
+        replication: 3
+benchmarks:
+    librbdfio:
+        time_based: true
+        time: 120
+        ramp: 60
+        vol_size: 4096
+        volumes_per_client: 1
+        log_avg_msec: [1000]
+        mode:  [read] #[read, write, randwrite, randread, randrw] 
+        op_size: [4096] #[4096, 8192, 16384, 32768, 65536] 
+        concurrent_procs: [1]
+        numjobs: [1]
+        iodepth: [32]  #[16]
+        cmd_path: &apos;/usr/local/bin/fio&apos;
+        pool_profile: &apos;rbd3rep&apos;
+        use_existing_volumes: true</defaultValue>
+          <trim>false</trim>
+        </hudson.model.TextParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+
+source /etc/profile.d/pbench-agent.sh
+echo &quot;$cbt_settings&quot; &gt; /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
+/automated_ceph_test/scripts/addhost_to_jobfile.sh /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
+
+echo &quot;################Jenkins Job File################&quot;
+cat /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
+
+sudo mkdir -m 777 $cbt_archive_dir
+export START_TIME=`date +%s%N | cut -b1-13`
+/automated_ceph_test/cbt/cbt.py /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml -a $cbt_archive_dir
+export STOP_TIME=`date +%s%N | cut -b1-13`</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
