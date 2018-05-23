@@ -36,11 +36,13 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
+script_dir=/automated_ceph_test
+
 cd $archive_dir/results
-/automated_ceph_test/scripts/evaluatefiologs_pushes.py $Test_ID
-/automated_ceph_test/scripts/evaluatefiojson_pushes.py $Test_ID
+$script_dir/scripts/evaluatefiologs_pushes.py $Test_ID
+$script_dir/scripts/evaluatefiojson_pushes.py $Test_ID
 cd $archive_dir
-/automated_ceph_test/scripts/evaluatepbench_pushes.py $Test_ID</command>
+$script_dir/scripts/evaluatepbench_pushes.py $Test_ID</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

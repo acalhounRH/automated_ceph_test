@@ -66,16 +66,17 @@ benchmarks:
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
+script_dir=/automated_ceph_test
 source /etc/profile.d/pbench-agent.sh
-echo &quot;$cbt_settings&quot; &gt; /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
-/automated_ceph_test/scripts/addhost_to_jobfile.sh /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
+echo &quot;$cbt_settings&quot; &gt; $script_dir/cbt/job_files/jenkins_jobfiles/automated_test.yml
+$script_dir/scripts/addhost_to_jobfile.sh /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
 
 echo &quot;################Jenkins Job File################&quot;
-cat /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
+cat $script_dir/cbt/job_files/jenkins_jobfiles/automated_test.yml
 
 sudo mkdir -m 777 $cbt_archive_dir
 export START_TIME=`date +%s%N | cut -b1-13`
-/automated_ceph_test/cbt/cbt.py /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml -a $cbt_archive_dir
+$script_dir/cbt/cbt.py $script_dir/cbt/job_files/jenkins_jobfiles/automated_test.yml -a $cbt_archive_dir
 export STOP_TIME=`date +%s%N | cut -b1-13`</command>
     </hudson.tasks.Shell>
   </builders>

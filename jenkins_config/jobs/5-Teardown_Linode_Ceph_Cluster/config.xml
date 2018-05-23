@@ -29,9 +29,9 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
-
+script_dir=/automated_ceph_test
 virtualenv-2 linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
-cd /automated_ceph_test/ceph-linode/
+cd $script_dir/ceph-linode/
 export LINODE_API_KEY=$Linode_API_Key
 python ./linode-destroy.py
 </command>

@@ -59,7 +59,7 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
-
+script_dir=/automated_ceph_test
 function add_to_sshconfig {
 
 new_config=&quot;
@@ -100,22 +100,22 @@ mgrs
 clients
 &quot;
 
-inventory_file=/automated_ceph_test/ceph-linode/ansible_inventory_tmp
+inventory_file=$script_dir/ceph-linode/ansible_inventory_tmp
 
-cp /automated_ceph_test/ceph-linode/ansible_inventory $inventory_file
+cp $script_dir/ceph-linode/ansible_inventory $inventory_file
 echo &quot;$service_inventory&quot; &gt;&gt; $inventory_file
 
 #Setup and install pbench on all linode host
 cat $inventory_file
 
-if [ -d &quot;/automated_ceph_test/perf-dept&quot; ]; then
-	cd /automated_ceph_test/perf-dept
+if [ -d &quot;$script_dir/perf-dept&quot; ]; then
+	cd $script_dir/perf-dept
     git checkout master
 	git remote update
 	git rebase 
     cd sysadmin/Ansible
 else
-	cd /automated_ceph_test/
+	cd $script_dir/
 	git clone http://git.app.eng.bos.redhat.com/git/perf-dept.git
     cd perf-dept/sysadmin/Ansible
 fi

@@ -47,7 +47,6 @@
         <string>3-CBT_Automated_Testing</string>
         <string>4-Perform_Analysis</string>
         <string>5-Teardown_Linode_Ceph_Cluster</string>
-        <string>test</string>
       </jobNames>
       <jobFilters/>
       <columns>
@@ -61,6 +60,42 @@
       </columns>
       <recurse>false</recurse>
     </listView>
+    <hudson.plugins.view.dashboard.Dashboard plugin="dashboard-view@2.9.11">
+      <owner class="hudson" reference="../../.."/>
+      <name>bene-bluestore</name>
+      <description>trying to re-use Alex&apos;s scripting for my own measurement of Bluestore KB/object ratio</description>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$PropertyList"/>
+      <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>0-RHCS_Automated_Test</string>
+        <string>1-Deploy_Linode_Ceph_Cluster</string>
+        <string>2-Setup_Test_Tools</string>
+        <string>4-Perform_Analysis</string>
+        <string>5-Teardown_Linode_Ceph_Cluster</string>
+      </jobNames>
+      <jobFilters/>
+      <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+      </columns>
+      <recurse>false</recurse>
+      <useCssStyle>false</useCssStyle>
+      <includeStdJobList>false</includeStdJobList>
+      <hideJenkinsPanels>false</hideJenkinsPanels>
+      <leftPortletWidth>50%</leftPortletWidth>
+      <rightPortletWidth>50%</rightPortletWidth>
+      <leftPortlets/>
+      <rightPortlets/>
+      <topPortlets/>
+      <bottomPortlets/>
+    </hudson.plugins.view.dashboard.Dashboard>
   </views>
   <primaryView>RHCS Linode Automated Test</primaryView>
   <slaveAgentPort>-1</slaveAgentPort>
@@ -79,7 +114,7 @@
         <unserializable-parents/>
         <tree-map>
           <default>
-            <comparator class="hudson.util.CaseInsensitiveComparator"/>
+            <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../../../../views/hudson.plugins.view.dashboard.Dashboard/jobNames/comparator"/>
           </default>
           <int>1</int>
           <string>PATH</string>

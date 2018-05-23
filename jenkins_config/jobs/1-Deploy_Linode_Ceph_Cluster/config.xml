@@ -122,11 +122,12 @@ devices:
       <command>#!/bin/bash
 
 echo &quot;test test test&quot;
-inventory_file=/automated_ceph_test/ceph-linode/ansible_inventory
+script_dir=/automated_ceph_test
+inventory_file=$script_dir/ceph-linode/ansible_inventory
 
 #clearout ceph-ansible staging area 
-mv /automated_ceph_test/staging_area/rhcs_latest/* /automated_ceph_test/staging_area/rhcs_old/
-cd /automated_ceph_test/staging_area/rhcs_latest/
+mv $script_dir/staging_area/rhcs_latest/* $script_dir/staging_area/rhcs_old/
+cd $script_dir/staging_area/rhcs_latest/
 
 sudo rm -rf /ceph-ansible-keys
 sudo mkdir -m0777 /ceph-ansible-keys
@@ -141,10 +142,10 @@ fi
 
 
 #mount ISO and create rhcs yum repo file 
-sudo cp /automated_ceph_test/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
+sudo cp $script_dir/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
 sudo mkdir -p /mnt/rhcs-latest/
 sudo umount /mnt/rhcs_latest/
-sudo mount /automated_ceph_test/staging_area/rhcs_latest/RHCEPH* /mnt/rhcs_latest/
+sudo mount $script_dir/staging_area/rhcs_latest/RHCEPH* /mnt/rhcs_latest/
 sudo yum clean all
 
 
@@ -154,16 +155,16 @@ sudo yum install ceph-ansible -y
 sudo sed -i &apos;s/gpgcheck=1/gpgcheck=0/g&apos; /usr/share/ceph-ansible/roles/ceph-common/templates/redhat_storage_repo.j2
 
 #setup all.yml
-echo &quot;$ceph_ansible_all_config&quot; &gt; /automated_ceph_test/staging_area/tmp/all.yml
+echo &quot;$ceph_ansible_all_config&quot; &gt; $script_dir/staging_area/tmp/all.yml
 if [[ $ceph_iso_file =~ &quot;RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso&quot; ]]; then
-	sed -i &quot;s/RHCEPH.*$/$new_ceph_iso_file/g&quot; /automated_ceph_test/staging_area/tmp/all.yml
+	sed -i &quot;s/RHCEPH.*$/$new_ceph_iso_file/g&quot; $script_dir/staging_area/tmp/all.yml
 fi
-sudo cp /automated_ceph_test/staging_area/tmp/all.yml /usr/share/ceph-ansible/group_vars/all.yml
+sudo cp $script_dir/staging_area/tmp/all.yml /usr/share/ceph-ansible/group_vars/all.yml
 
 
 #setup osd.yml
-echo &quot;$ceph_ansible_osds_config&quot; &gt; /automated_ceph_test/staging_area/tmp/osds.yml
-sudo cp /automated_ceph_test/staging_area/tmp/osds.yml /usr/share/ceph-ansible/group_vars/osds.yml
+echo &quot;$ceph_ansible_osds_config&quot; &gt; $script_dir/staging_area/tmp/osds.yml
+sudo cp $script_dir/staging_area/tmp/osds.yml /usr/share/ceph-ansible/group_vars/osds.yml
 
 
 #copy site.yml
@@ -171,7 +172,7 @@ sudo cp /usr/share/ceph-ansible/site.yml.sample /usr/share/ceph-ansible/site.yml
 
 
 #Start Ceph-linode deployment
-cd /automated_ceph_test/ceph-linode
+cd $script_dir/ceph-linode
 echo &quot;$Linode_Cluster_Configuration&quot; &gt; cluster.json
 virtualenv-2 linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
 export LINODE_API_KEY=$Linode_API_KEY
@@ -181,7 +182,7 @@ ANSIBLE_STRATEGY=debug; ./launch.sh --ceph-ansible /usr/share/ceph-ansible
 
 
 #Health check
-/automated_ceph_test/scripts/check_cluster_status.sh
+$script_dir/scripts/check_cluster_status.sh
 exit_status=$?
 
 if [ &quot;$exit_status&quot; -eq &quot;0&quot; ]; then
