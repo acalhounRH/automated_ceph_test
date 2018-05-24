@@ -1,0 +1,60 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>run Bluestore test in linode to measure KB/obj required by RocksDB.  This test will run 3 passes, measuring RocksDB space used with &quot;ceph daemon osd.N perf dump | grep db_used&quot;.  It will compute statistics from this.  If the percent deviation exceedsd 10% the test will fail.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>max_objs</name>
+          <description>maximum objects created by this script (may create less if test runs longer than max_time seconds)</description>
+          <defaultValue>50000</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>obj_size</name>
+          <description>RADOS object size in bytes</description>
+          <defaultValue>4096</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>max_secs</name>
+          <description>maximum duration of test in seconds (test will be shorter if max_objs objects created before then)</description>
+          <defaultValue>600</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>pass_delay</name>
+          <description>seconds to sleep between test passes, to give Ceph time to clean up pool, etc.</description>
+          <defaultValue>60</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash -x
+script_dir=/automated_ceph_test
+export ANSIBLE_INVENTORY=$script_dir/ceph-linode/ansible_inventory
+ansible -m copy -a &quot;src=$script_dir/scripts/rados_create_delete.sh dest=/root&quot; client-000
+ansible -m shell -a &quot;bash -x /root/rados_create_delete.sh $obj_size $max_objs $max_secs $pass_delay 2&gt;&amp;1 | tee /root/rados_create_delete.log&quot; client-000
+# fixme: create archive_dir var
+ansible -m fetch -a &quot;path=/root/rados_create_delete.log dest=$archive_dir&quot; </command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
