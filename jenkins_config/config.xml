@@ -41,7 +41,7 @@
       <properties class="hudson.model.View$PropertyList"/>
       <jobNames>
         <comparator class="hudson.util.CaseInsensitiveComparator"/>
-        <string>0-RHCS_Automated_Test</string>
+        <string>0-RHCS_Linode_Automated_Test</string>
         <string>1-Deploy_Linode_Ceph_Cluster</string>
         <string>2-Setup_Test_Tools</string>
         <string>3-CBT_Automated_Testing</string>
@@ -97,8 +97,10 @@
         <comparator class="hudson.util.CaseInsensitiveComparator" reference="../../../listView[2]/jobNames/comparator"/>
         <string>0-pipeline-bluestore-linode</string>
         <string>1-Deploy_Linode_Ceph_Cluster</string>
+        <string>10-delay_for_debugging</string>
         <string>2-Setup_Test_Tools</string>
         <string>3-Bluestore-linode</string>
+        <string>4-analysis-Bluestore-metadata-size</string>
         <string>4-Perform_Analysis</string>
         <string>5-Teardown_Linode_Ceph_Cluster</string>
       </jobNames>

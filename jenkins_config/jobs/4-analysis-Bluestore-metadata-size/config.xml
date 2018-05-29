@@ -1,7 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>delete Linode VMs after test completes so we don&apos;t get charged for them.</description>
+  <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
@@ -10,11 +10,18 @@
     </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
-        <hudson.model.PasswordParameterDefinition>
-          <name>Linode_API_Key</name>
-          <description>Setup a Linode account and get an API key: https://www.linode.com/docs/platform/api/api-key</description>
-          <defaultValue>{AQAAABAAAAAQq8yZFwyplcuMWX8WjB2u4gptXb4GADxV+8MJ1xRC33s=}</defaultValue>
-        </hudson.model.PasswordParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>Test_ID</name>
+          <description></description>
+          <defaultValue>Jenkins-Test-${BUILD_ID}-${BUILD_TIMESTAMP}</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>archive_dir</name>
+          <description>Directory that analysis scripts are to be run on. </description>
+          <defaultValue>Nul</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -30,10 +37,9 @@
       <command>#!/bin/bash
 
 script_dir=/automated_ceph_test
-virtualenv-2 linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
-cd $script_dir/ceph-linode/
-export LINODE_API_KEY=$Linode_API_Key
-python ./linode-destroy.py
+
+cd $archive_dir
+$script_dir/scripts/evaluateMetaPerObj.py $Test_ID $testscript.log
 </command>
     </hudson.tasks.Shell>
   </builders>

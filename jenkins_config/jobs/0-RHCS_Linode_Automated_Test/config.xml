@@ -11,10 +11,15 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-6a0ba57e-da80-4293-8efa-570e2700daf2</name>
+          <name>separator-eab85b5d-3cb2-44b6-aafe-6e5844ddf4bd</name>
           <description></description>
           <sectionHeader>Linode Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -25,12 +30,17 @@
           <description>Setup a Linode account and get an API key: https://www.linode.com/docs/platform/api/api-key</description>
           <defaultValue>{AQAAABAAAAAQ7bznjY+1ddyQK/LT4BKJP2TjVEkkwm5rPtErxfKsonE=}</defaultValue>
         </hudson.model.PasswordParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>tear_down</name>
+          <description>Tear down Linode cluster when the pipeline finishes, default is true. </description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>Linode_Cluster_Configuration</name>
           <description>Modify to have the desired count and Linode plan for each daemon type.</description>
           <defaultValue>[
   {
-    &quot;count&quot;: 1,
+    &quot;count&quot;: 3,
     &quot;prefix&quot;: &quot;mon&quot;,
     &quot;plan&quot;: 1,
     &quot;group&quot;: &quot;mons&quot;
@@ -59,7 +69,7 @@
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-9fcce388-898b-4053-ab27-264ac9d7ddb2</name>
+          <name>separator-d4a2cbd2-188a-4b4d-8e32-86281b38239a</name>
           <description></description>
           <sectionHeader>Ceph-Ansible Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -92,7 +102,7 @@ valid_ceph_repository_type:
 ceph_rhcs_iso_path: /automated_ceph_test/staging_area/rhcs_latest/$ceph_iso_file
 #monitor_interface: eth0
 journal_size: 5120 # OSD journal size in MB
-public_network: 192.168.128.0/17
+public_network: 192.168.0.0/17
 osd_objectstore: filestore
 ceph_conf_overrides:
   mon:
@@ -110,7 +120,7 @@ devices:
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-311f4406-3c46-492c-9872-0b4df0edddb0</name>
+          <name>separator-62f7b534-6af5-46fa-8564-830f20a3bff6</name>
           <description></description>
           <sectionHeader>Pbench Monitoring Tools</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -152,7 +162,7 @@ devices:
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-75285133-f23f-4412-a0c3-7a7619b29293</name>
+          <name>separator-f9b7894a-197b-4165-9483-ccf29199f27a</name>
           <description></description>
           <sectionHeader>Ceph Benchmark Tool and Analysis Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -166,47 +176,49 @@ devices:
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>archive_dir</name>
-          <description>archive directory, defaults to pbench agent output directory with jenkins build ID (build time stamp).</description>
+          <description>cbt archive directory, defaults to pbench agent output directory with jenkins build ID (build time stamp).</description>
           <defaultValue>/var/lib/pbench-agent/Jenkins-Test-${BUILD_ID}-${BUILD_TIMESTAMP}</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>p_obj_size</name>
-          <description>RADOS object size</description>
-          <defaultValue>4096</defaultValue>
-          <trim>true</trim>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>p_max_objs</name>
-          <description>maximum objects that the test will create (might be less if test time exceeds max_secs)</description>
-          <defaultValue>50000</defaultValue>
-          <trim>true</trim>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>p_max_secs</name>
-          <description>maximum number of seconds that test will run (test time will be less if max_objs objects are accessed)</description>
-          <defaultValue>200</defaultValue>
+        <hudson.model.TextParameterDefinition>
+          <name>CBT_settings</name>
+          <description></description>
+          <defaultValue>cluster:
+    use_existing: true
+    head: &quot;&lt;test_host&gt;&quot;
+    clients: [&lt;CLI_LIST&gt;]
+    osds: [&lt;OSD_LIST&gt;]
+    mons: [&lt;MON_LIST&gt;]
+    conf_file: &apos;/etc/ceph/ceph.conf&apos;
+    osds_per_node: 1 
+    clusterid: ceph
+    iterations: 1
+    pool_profiles:
+      rbd3rep:
+        pg_size: 128
+        pgp_size: 128
+        replication: 3
+benchmarks:
+    librbdfio:
+        time_based: true
+        time: 120
+        ramp: 60
+        vol_size: 4096
+        volumes_per_client: 1
+        log_avg_msec: [1000]
+        mode:  [read] #[read, write, randwrite, randread, randrw] 
+        op_size: [4096] #[4096, 8192, 16384, 32768, 65536] 
+        concurrent_procs: [1]
+        numjobs: [1]
+        iodepth: [32]  #[16]
+        cmd_path: &apos;/usr/local/bin/fio&apos;
+        pool_profile: &apos;rbd3rep&apos;
+        use_existing_volumes: false
+</defaultValue>
           <trim>false</trim>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>p_pass_delay</name>
-          <description>seconds to wait between each pass to let Ceph clean up the old incarnation of the pool that was deleted.</description>
-          <defaultValue>60</defaultValue>
-          <trim>false</trim>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>p_debug_delay</name>
-          <description>delay killing Linodes for this many seconds so that user can debug problems in pipeline</description>
-          <defaultValue>0</defaultValue>
-          <trim>false</trim>
-        </hudson.model.StringParameterDefinition>
+        </hudson.model.TextParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.45">
     <script>pipeline {
@@ -225,29 +237,37 @@ devices:
                 }
                 stage(&apos;Test&apos;) {
                         steps{
-                                build job: &apos;3-Bluestore-linode&apos;, parameters: [string(name: &apos;obj_size&apos;, value: &quot;$p_obj_size&quot;), text(name: &apos;max_objs&apos;, value: &quot;$p_max_objs&quot;), text(name: &apos;max_secs&apos;, value:&quot;$p_max_secs&quot;), text(name: &apos;pass_delay&apos;, value:&quot;$p_pass_delay&quot;)]
+                                build job: &apos;3-CBT_Automated_Testing&apos;, parameters: [string(name: &apos;cbt_archive_dir&apos;, value: &quot;$archive_dir&quot;), text(name: &apos;cbt_settings&apos;, value: &quot;$CBT_settings&quot;)]
                         }
                 }
                 stage(&apos;Analysis&apos;) {
                         steps{
-                                build job: &apos;4-analysis-Bluestore-metadata-size&apos;, parameters: [string(name: &apos;Test_ID&apos;, value: &quot;$Test_ID&quot;), string(name: &apos;archive_dir&apos;, value: &quot;$archive_dir&quot;)]
+                                build job: &apos;4-Perform_Analysis&apos;, parameters: [string(name: &apos;Test_ID&apos;, value: &quot;$Test_ID&quot;), string(name: &apos;archive_dir&apos;, value: &quot;$archive_dir&quot;)]
                         }
                 }
         }
         post {
                 always {
                         build job: &apos;coordinate_jobs&apos;, parameters: [booleanParam(name: &apos;remove_lock&apos;, value: true), string(name: &apos;lock_ID&apos;, value: &quot;${BUILD_TAG}&quot;)]
-                        build job:&apos;5-Teardown_Linode_Ceph_Cluster&apos;, parameters: [password(description: &apos;Linode API Key&apos;, name: &apos;Linode_API_Key&apos;, value: &quot;$Linode_API_Key&quot;)]
+                        if ($tear_down == &apos;true&apos;) {
+                            echo &apos;I only execute on the master branch&apos;
+                            build job:&apos;5-Teardown_Linode_Ceph_Cluster&apos;, parameters: [password(description: &apos;Linode API Key&apos;, name: &apos;Linode_API_Key&apos;, value: &quot;$Linode_API_Key&quot;)]
+                        }
+                        
+                        
                 }
                 success {
-                    mail to: &apos;bengland@redhat.com&apos;,
+                    mail to: &apos;acalhoun@redhat.com&apos;,
                     subject: &quot;Successful Pipeline: ${currentBuild.fullDisplayName}&quot;,
                     body: &quot;Successful completion of ${Test_ID} \n Test results are posted on Elasticsearch/Grafana at the link below. \n http://10.18.81.12:3000/d/Dtsbj1iiz/rhcs-test-results?orgId=1&amp;from=now%2Fd&amp;to=now%2Fd&amp;var-Test_ID=${Test_ID}&quot;
                             
                 }
                 failure {
-                    build job: &apos;10-delay_for_debugging&apos;, parameters: [string(description:&apos;seconds before linode death&apos;, name:&quot;debug_delay&quot;, value:&quot;$p_debug_delay&quot; )]
+                    mail to: &apos;acalhoun@redhat.com&apos;,
+                    subject: &quot;Failed Pipeline: ${currentBuild.fullDisplayName}&quot;,
+                    body: &quot;Something is wrong with ${env.BUILD_URL}&quot;
                 }
+
         }
 }</script>
     <sandbox>false</sandbox>

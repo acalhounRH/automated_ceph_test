@@ -1,7 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>delete Linode VMs after test completes so we don&apos;t get charged for them.</description>
+  <description>sleep for user-specified seconds so that user can login to linode and see what went wrong.  This makes script development more productive.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
@@ -10,11 +10,12 @@
     </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
-        <hudson.model.PasswordParameterDefinition>
-          <name>Linode_API_Key</name>
-          <description>Setup a Linode account and get an API key: https://www.linode.com/docs/platform/api/api-key</description>
-          <defaultValue>{AQAAABAAAAAQq8yZFwyplcuMWX8WjB2u4gptXb4GADxV+8MJ1xRC33s=}</defaultValue>
-        </hudson.model.PasswordParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>debug_delay</name>
+          <description>sleep this many seconds before proceeding to terminate Linodes</description>
+          <defaultValue>600</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -27,13 +28,9 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>#!/bin/bash
-
-script_dir=/automated_ceph_test
-virtualenv-2 linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
-cd $script_dir/ceph-linode/
-export LINODE_API_KEY=$Linode_API_Key
-python ./linode-destroy.py
+      <command>#!/bin/bash -x
+echo sleeping for $debug_delay seconds
+sleep $debug_delay
 </command>
     </hudson.tasks.Shell>
   </builders>
