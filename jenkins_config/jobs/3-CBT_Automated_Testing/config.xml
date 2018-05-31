@@ -10,6 +10,11 @@
     </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
+        <hudson.model.BooleanParameterDefinition>
+          <name>linode_cluster</name>
+          <description>Flag to specify if the setup is being performed in linode. Default is false</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cbt_archive_dir</name>
           <description>cbt archive directory, defaults to pbench agent output directory with jenkins build ID (build time stamp).</description>
@@ -67,9 +72,18 @@ benchmarks:
       <command>#!/bin/bash
 
 script_dir=/automated_ceph_test
+
+if [ &quot;$linode_cluster&quot; == &quot;true&quot; ]; then
+	inventory_file=$script_dir/ceph-linode/ansible_inventory
+else
+	inventory_file=$script_dir/ansible_inventory
+fi
+
 source /etc/profile.d/pbench-agent.sh
 echo &quot;$cbt_settings&quot; &gt; $script_dir/cbt/job_files/jenkins_jobfiles/automated_test.yml
-$script_dir/scripts/addhost_to_jobfile.sh /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
+
+$script_dir/scripts/addhost_to_jobfile.sh /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml $inventory_file
+
 
 echo &quot;################Jenkins Job File################&quot;
 cat $script_dir/cbt/job_files/jenkins_jobfiles/automated_test.yml

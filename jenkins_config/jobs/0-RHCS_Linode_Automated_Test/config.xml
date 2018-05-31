@@ -19,7 +19,7 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-eab85b5d-3cb2-44b6-aafe-6e5844ddf4bd</name>
+          <name>separator-5178051f-8681-406e-b506-a00a1dac3a0c</name>
           <description></description>
           <sectionHeader>Linode Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -30,11 +30,6 @@
           <description>Setup a Linode account and get an API key: https://www.linode.com/docs/platform/api/api-key</description>
           <defaultValue>{AQAAABAAAAAQ7bznjY+1ddyQK/LT4BKJP2TjVEkkwm5rPtErxfKsonE=}</defaultValue>
         </hudson.model.PasswordParameterDefinition>
-        <hudson.model.BooleanParameterDefinition>
-          <name>tear_down</name>
-          <description>Tear down Linode cluster when the pipeline finishes, default is true. </description>
-          <defaultValue>true</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>Linode_Cluster_Configuration</name>
           <description>Modify to have the desired count and Linode plan for each daemon type.</description>
@@ -69,7 +64,7 @@
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-d4a2cbd2-188a-4b4d-8e32-86281b38239a</name>
+          <name>separator-77731db3-012f-45ec-98f4-aa3b1b3c1d92</name>
           <description></description>
           <sectionHeader>Ceph-Ansible Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -120,7 +115,7 @@ devices:
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-62f7b534-6af5-46fa-8564-830f20a3bff6</name>
+          <name>separator-20d53e4c-495a-44f4-af68-fc50b8f580f0</name>
           <description></description>
           <sectionHeader>Pbench Monitoring Tools</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -162,7 +157,7 @@ devices:
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-f9b7894a-197b-4165-9483-ccf29199f27a</name>
+          <name>separator-7ae0dc86-029e-4d1b-add7-c3d3c9af66e8</name>
           <description></description>
           <sectionHeader>Ceph Benchmark Tool and Analysis Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -232,12 +227,12 @@ benchmarks:
                 }
                 stage(&apos;Test Setup&apos;) {
                         steps{
-                                build job: &apos;2-Setup_Test_Tools&apos;, parameters: [booleanParam(name: &apos;sar&apos;, value: Boolean.valueOf(sar)), booleanParam(name: &apos;iostat&apos;, value: Boolean.valueOf(iostat)), booleanParam(name: &apos;mpstat&apos;, value: Boolean.valueOf(mpstat)), booleanParam(name: &apos;pidstat&apos;, value: Boolean.valueOf(pidstat)), booleanParam(name: &apos;proc-vmstat&apos;, value: Boolean.valueOf(proc_vmstat)), booleanParam(name: &apos;proc-interrupts&apos;, value: Boolean.valueOf(proc_interrupts)), booleanParam(name: &apos;turbostat&apos;, value: Boolean.valueOf(turbostat))]
+                                build job: &apos;2-Setup_Test_Tools&apos;, parameters: [booleanParam(name: &apos;linode_cluster&apos;, value: true), booleanParam(name: &apos;sar&apos;, value: Boolean.valueOf(sar)), booleanParam(name: &apos;iostat&apos;, value: Boolean.valueOf(iostat)), booleanParam(name: &apos;mpstat&apos;, value: Boolean.valueOf(mpstat)), booleanParam(name: &apos;pidstat&apos;, value: Boolean.valueOf(pidstat)), booleanParam(name: &apos;proc-vmstat&apos;, value: Boolean.valueOf(proc_vmstat)), booleanParam(name: &apos;proc-interrupts&apos;, value: Boolean.valueOf(proc_interrupts)), booleanParam(name: &apos;turbostat&apos;, value: Boolean.valueOf(turbostat))]
                         }
                 }
                 stage(&apos;Test&apos;) {
                         steps{
-                                build job: &apos;3-CBT_Automated_Testing&apos;, parameters: [string(name: &apos;cbt_archive_dir&apos;, value: &quot;$archive_dir&quot;), text(name: &apos;cbt_settings&apos;, value: &quot;$CBT_settings&quot;)]
+                                build job: &apos;3-CBT_Automated_Testing&apos;, parameters: [booleanParam(name: &apos;linode_cluster&apos;, value: true), string(name: &apos;cbt_archive_dir&apos;, value: &quot;$archive_dir&quot;), text(name: &apos;cbt_settings&apos;, value: &quot;$CBT_settings&quot;)]
                         }
                 }
                 stage(&apos;Analysis&apos;) {
@@ -249,10 +244,8 @@ benchmarks:
         post {
                 always {
                         build job: &apos;coordinate_jobs&apos;, parameters: [booleanParam(name: &apos;remove_lock&apos;, value: true), string(name: &apos;lock_ID&apos;, value: &quot;${BUILD_TAG}&quot;)]
-                        if ($tear_down == &apos;true&apos;) {
-                            echo &apos;I only execute on the master branch&apos;
-                            build job:&apos;5-Teardown_Linode_Ceph_Cluster&apos;, parameters: [password(description: &apos;Linode API Key&apos;, name: &apos;Linode_API_Key&apos;, value: &quot;$Linode_API_Key&quot;)]
-                        }
+                        build job:&apos;5-Teardown_Linode_Ceph_Cluster&apos;, parameters: [password(description: &apos;Linode API Key&apos;, name: &apos;Linode_API_Key&apos;, value: &quot;$Linode_API_Key&quot;)]
+                        
                         
                         
                 }

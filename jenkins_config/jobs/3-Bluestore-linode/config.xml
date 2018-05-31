@@ -1,7 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>run Bluestore test in linode to measure KB/obj required by RocksDB.  This test will run 3 passes, measuring RocksDB space used with &quot;ceph daemon osd.N perf dump | grep db_used&quot;.  It will compute statistics from this.  If the percent deviation exceedsd 10% the test will fail.</description>
+  <description>run Bluestore test in linode to measure KB/obj required by RocksDB.  This test will run 3 passes, measuring RocksDB space used with &quot;ceph daemon osd.N perf dump | grep db_used&quot;.  </description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
@@ -48,12 +48,9 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash -x
 script_dir=/automated_ceph_test
-export ANSIBLE_INVENTORY=$script_dir/ceph-linode/ansible_inventory
-testscript=rados_delete_create.sh
-ansible -m copy -a &quot;src=$ANSIBLE_INVENTORY dest=/root&quot; client-000
-ansible -m copy -a &quot;src=/var/lib/jenkins/.ssh/id_rsa dest=/root/.ssh/id_rsa_jenkins&quot;
-ansible -m copy -a &quot;src=/var/lib/jenkins/.ssh/id_rsa.pub dest=/root/.ssh/id_rsa_jenkins.pub&quot;
-ansible -m copy -a &quot;src=$script_dir/scripts/$testscript dest=/root&quot; client-000
+source $script_dir/ceph-linode/ansible-env.bash
+
+ansible-playbook -vv $script_dir/ceph-linode/setup-client.yml
 ansible -m shell -a &quot;bash -x /root/$testscript $obj_size $max_objs $max_secs $pass_delay 2&gt;&amp;1 | tee /root/$testscript.log&quot; client-000
 ansible -m fetch -a &quot;path=/root/$testscript.log dest=$archive_dir&quot; </command>
     </hudson.tasks.Shell>

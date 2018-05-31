@@ -1,7 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description></description>
+  <description>It will compute statistics on average metadata size in bytes per RADOS object, using results from 3-Bluestore-linode test.  If the percent deviation exceeds 10% the test will fail.</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
@@ -22,6 +22,12 @@
           <defaultValue>Nul</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>pct_deviation</name>
+          <description>if the percent deviation in the result is greater than this then the test will fail.</description>
+          <defaultValue>10</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -39,6 +45,7 @@
 script_dir=/automated_ceph_test
 
 cd $archive_dir
+export PCT_DEVIATION=$pct_deviation
 $script_dir/scripts/evaluateMetaPerObj.py $Test_ID $testscript.log
 </command>
     </hudson.tasks.Shell>

@@ -18,16 +18,41 @@
     </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
+        <hudson.model.PasswordParameterDefinition>
+          <name>Linode_API_KEY</name>
+          <description>Setup a Linode account and get an API key: https://www.linode.com/docs/platform/api/api-key</description>
+          <defaultValue>{AQAAABAAAAAQobzpRnmnlxne8VMSMsBjex0tcts6UnYGADChnNwcnpU=}</defaultValue>
+        </hudson.model.PasswordParameterDefinition>
         <hudson.model.TextParameterDefinition>
-          <name>ceph_inventory</name>
-          <description>Inventory file used to specify ceph cluster</description>
-          <defaultValue>[mons]
-
-[osds]
-
-[mgrs]
-
-[mdss]</defaultValue>
+          <name>Linode_Cluster_Configuration</name>
+          <description>Modify to have the desired count and Linode plan for each daemon type.</description>
+          <defaultValue>[
+  {
+    &quot;count&quot;: 3,
+    &quot;prefix&quot;: &quot;mon&quot;,
+    &quot;plan&quot;: 1,
+    &quot;group&quot;: &quot;mons&quot;
+  },
+  {
+    &quot;count&quot;: 3,
+    &quot;prefix&quot;: &quot;osd&quot;,
+    &quot;plan&quot;: 1,
+    &quot;root_size&quot;: 4096,
+    &quot;group&quot;: &quot;osds&quot;
+  },
+  {
+    &quot;count&quot;: 1,
+    &quot;prefix&quot;: &quot;mgr&quot;,
+    &quot;plan&quot;: 1,
+    &quot;group&quot;: &quot;mgrs&quot;
+  },
+  {
+    &quot;count&quot;: 1,
+    &quot;prefix&quot;: &quot;client&quot;,
+    &quot;plan&quot;: 1,
+    &quot;group&quot;: &quot;clients&quot;
+  }
+]</defaultValue>
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -62,11 +87,11 @@ ceph_repository: rhcs
 ceph_rhcs_version: 3 
 valid_ceph_repository_type:
   - iso
-ceph_rhcs_iso_path: /automated_ceph_test/ceph-linode/staging/rhcs_latest/$ceph_iso_file
+ceph_rhcs_iso_path: /automated_ceph_test/staging_area/rhcs_latest/$ceph_iso_file
 monitor_interface: eth0
-journal_size: 5120 # OSD journal size in MB
+journal_size: 1024 # OSD journal size in MB
 public_network: 192.168.128.0/17
-osd_objectstore: filestore
+osd_objectstore: bluestore
 ceph_conf_overrides:
   mon:
     mon_allow_pool_delete: true</defaultValue>
@@ -98,9 +123,7 @@ devices:
 
 echo &quot;test test test&quot;
 script_dir=/automated_ceph_test
-inventory_file=$script_dir/ansible_inventory
-
-echo &quot;$ceph_inventory&quot; &gt; $inventory_file
+inventory_file=$script_dir/ceph-linode/ansible_inventory
 
 #clearout ceph-ansible staging area 
 mv $script_dir/staging_area/rhcs_latest/* $script_dir/staging_area/rhcs_old/
@@ -115,12 +138,11 @@ sudo mkdir -m0777 /ceph-ansible-keys
 if [[ $ceph_iso_file =~ &quot;RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso&quot; ]]; then
 	echo &quot;**************$ceph_iso_file&quot;
 	sudo wget -r -nd --no-parent -A &quot;$ceph_iso_file&quot; $ceph_iso_path &gt; /dev/null
-    new_ceph_iso_file=&quot;$(ls)&quot;
 else
 	sudo wget $ceph_iso_path/$ceph_iso_file &gt; /dev/null
 fi
 
-sudo yum remove ceph-ansilbe -y
+new_ceph_iso_file=&quot;$(ls)&quot;
 
 #mount ISO and create rhcs yum repo file 
 sudo cp $script_dir/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
@@ -151,15 +173,19 @@ sudo cp $script_dir/staging_area/tmp/osds.yml /usr/share/ceph-ansible/group_vars
 #copy site.yml
 sudo cp /usr/share/ceph-ansible/site.yml.sample /usr/share/ceph-ansible/site.yml
 
-$script_dir/scripts/register_host.sh $inventory_file
 
-echo &quot;Start Ceph installation&quot;
-cd /usr/share/ceph-ansible
-ANSIBLE_STRATEGY=debug; ansible-playbook site.yml -i $inventory_file
+#Start Ceph-linode deployment
+cd $script_dir/ceph-linode
+echo &quot;$Linode_Cluster_Configuration&quot; &gt; cluster.json
+virtualenv-2 linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
+export LINODE_API_KEY=$Linode_API_KEY
+
+ANSIBLE_STRATEGY=debug; ./launch.sh --ceph-ansible /usr/share/ceph-ansible
+#sudo ansible -i ansible_inventory -m shell -a &quot;ceph -s&quot; mon-000
 
 
-echo &quot;Health check&quot;
-$script_dir/scripts/check_cluster_status.sh $inventory_file
+#Health check
+$script_dir/scripts/check_cluster_status.sh
 exit_status=$?
 
 if [ &quot;$exit_status&quot; -eq &quot;0&quot; ]; then
