@@ -14,11 +14,13 @@ es_log.setLevel(logging.CRITICAL)
 urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
-es = Elasticsearch(
-    ['10.18.81.12'],
-    scheme="http",
-    port=9200,
-    ) 
+
+#es 
+#es = Elasticsearch(
+#    ['10.18.81.12'],
+#    scheme="http",
+#    port=9200,
+#    ) 
 
 def main():
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(threadName)s %(message)s ')
@@ -28,17 +30,24 @@ def main():
     maindoc["_type"] = "pbenchdata"
     maindoc["_source"] = {}
 
+    #check for test id, if not set generic test id
+    if len(sys.argv) > 3:
+        maindoc["_source"]['test_id'] = sys.argv[1]
+        host = sys.argv[2]
+        esport = sys.argv[3]
+    else: 
+        maindoc["_source"]['test_id'] = "librbdfio-" +  time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
+
+    globals()['es'] = Elasticsearch(
+        [host],
+        scheme="http",
+        port=esport,
+        ) 
     #if the pbench index doesnt exist create index
     if not es.indices.exists("pbench"):
         request_body = {"settings" : {"refresh_interval": "10s", "number_of_replicas": 0}}
         res = es.indices.create(index="pbench", body=request_body)
         logging.debug("response: '%s' " % (res))
-
-    #check for test id, if not set generic test id
-    if len(sys.argv) > 1:
-        maindoc["_source"]['test_id'] = sys.argv[1]
-    else: 
-        maindoc["_source"]['test_id'] = "librbdfio-" +  time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
     
     for dirpath, dirs, files in os.walk("."):	
 	for filename in files:

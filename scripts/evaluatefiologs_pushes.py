@@ -4,11 +4,13 @@ import os, sys, json, time, types, csv
 from time import gmtime, strftime
 import datetime
 from elasticsearch import Elasticsearch
-es = Elasticsearch(
-        ['10.18.81.12'],
-        scheme="http",
-        port=9200,
-     )
+
+
+#es = Elasticsearch(
+#        ['10.18.81.12'],
+#        scheme="http",
+#        port=9200,
+#     )
 
 
 #time (msec), value, data direction, block size (bytes), offset (bytes)
@@ -23,7 +25,27 @@ es = Elasticsearch(
 #1 I/O is a WRITE
 #2 I/O is a TRIM
 
-#create index 
+def listdir_fullpath(d):
+    return [os.path.join(d, f) for f in os.listdir(d)]
+
+path = os.getcwd()
+newdoc = {}
+iteration_ary = []
+
+
+if len(sys.argv) > 3:
+    newdoc['test_id'] = sys.argv[1]
+    host = sys.argv[2]
+    esport = sys.argv[3]
+else:
+    newdoc['test_id'] = "librbdfio-" +  time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
+    
+
+es = Elasticsearch(
+        [host],
+        scheme="http",
+        port=esport,
+     )
 
 if not es.indices.exists("cbt_librbdfio-log-index"):
 
@@ -36,21 +58,6 @@ if not es.indices.exists("cbt_librbdfio-log-index"):
 
     res = es.indices.create(index="cbt_librbdfio-log-index", body=request_body)
     print ("response: '%s' " % (res))
-
-
-def listdir_fullpath(d):
-    return [os.path.join(d, f) for f in os.listdir(d)]
-
-path = os.getcwd()
-newdoc = {}
-iteration_ary = []
-
-
-if len(sys.argv) > 1:
-    newdoc['test_id'] = sys.argv[1]
-else: 
-    newdoc['test_id'] = "librbdfio-" +  time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
-    
 
 
 dirs = sorted(listdir_fullpath(path), key=os.path.getctime) #get iterations dir in time order
@@ -76,7 +83,10 @@ for cdir in dirs:
                             jsonfile = "%s/json_%s.%s" % (test_dir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
                             newdoc['host'] = os.path.basename(file).split('log.', 1)[1] 
                             jsondoc = json.load(open(jsonfile))
-                            start_time = jsondoc['timestamp_ms']
+                            test_time_ms = long(jsondoc['timestamp_ms'])
+                            test_duration_ms = long(jsondoc['global options']['runtime']) * 1000
+                            start_time = test_time_ms - test_duration_ms
+                            print test_time_ms, test_duration_ms, start_time
                             newdoc['file'] = os.path.basename(file)
                             with open(file) as csvfile:
                                 readCSV = csv.reader(csvfile, delimiter=',')

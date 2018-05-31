@@ -3,12 +3,6 @@
 import os, sys, json, time, types
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch
-es = Elasticsearch(
-        ['10.18.81.12'],
-        scheme="http",
-        port=9200,
-     )
-
 
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
@@ -45,12 +39,18 @@ waver_ary=[]
 raver_ary=[]
 averdoc = {}
 
-if len(sys.argv) > 1:
+if len(sys.argv) > 3:
     averdoc['test_id'] = sys.argv[1]
+    host = sys.argv[2]
+    esport = sys.argv[3]
 else: 
     averdoc['test_id'] = "librbdfio-" +  time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
     
-
+es = Elasticsearch(
+        [host],
+        scheme="http",
+        port=esport,
+     )
 
 dirs = sorted(listdir_fullpath(path), key=os.path.getctime) #get iterations dir in time order
 for cdir in dirs:
