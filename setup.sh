@@ -61,15 +61,16 @@ else
 fi
 
 ansible-playbook pbench-repo-install.yml -i localhost, -k
+wget -O /etc/yum.repos.d/pbench.repo http://pbench.perf.lab.eng.bos.redhat.com/repo/production/yum.repos.d/pbench.repo /etc/yum.repos.d/
 
 if [ "$linode_install" == "true" ]; then
 	echo "******************* install pbench agent in linode"
-	ansible -m shell -a "yum install yum-utils -y; yum-config-manager --disable pbench; yum install pbench-agent -y" -i localhost, -k 
-  echo "*******************install pbench-fio and pdsh for CBT"
-  ansible -m shell -a "yum install pbench-fio -y; yum install pdsh -y;" all -i localhost, -k 
+	yum install yum-utils -y;
+  yum-config-manager --disable pbench;
+  yum install pbench-agent -y
 else
 	echo "******************* install pbench agent"
-	ansible-playbook pbench-agent-internal-install.yml -i localhost, -k 
+	yum install pbench-agent-internal -y
 fi
 
 yum install httpd npm -y
