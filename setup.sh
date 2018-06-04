@@ -40,7 +40,14 @@ if [ ! -d cbt ]; then
   git clone -b pbench-integration https://github.com/acalhounRH/cbt.git
 fi 
 
-yum install httpd -y
+epel_status=`rpm -qa | grep epel`
+
+if [ "$epel_status" != "0" ]; then
+  wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  rpm -ivh epel-release-latest-7.noarch.rpm
+fi 
+
+sed -i 's/enabled=0/enabled=1/g' /etc/yum.repos.d/epel.repo
 
 if [ -d perf-dept ]; then
   cd perf-dept
@@ -55,7 +62,7 @@ fi
 
 ansible-playbook pbench-repo-install.yml -i localhost, -k
 
-if [ $linode_install ]; then
+if [ "$linode_install" == "true" ]; then
 	echo "******************* install pbench agent in linode"
 	ansible -m shell -a "yum install yum-utils -y; yum-config-manager --disable pbench; yum install pbench-agent -y" -i localhost, -k 
   echo "*******************install pbench-fio and pdsh for CBT"
@@ -65,7 +72,10 @@ else
 	ansible-playbook pbench-agent-internal-install.yml -i localhost, -k 
 fi
 
-yum install pbench-web-server
+yum install httpd npm -y
+yum install pbench-web-server -y
+
+sed -i 's/enabled=1/enabled=0/g' /etc/yum.repos.d/epel.repo
 
 ln -sf /opt/pbench-web-server/html/static /var/www/html
 ln -sf /var/lib/pbench-agent /var/www/html
@@ -75,6 +85,6 @@ systemctl start httpd
 echo "browse to http://localhost/pbench-agent for pbench webservice" 
 
 #install jenkins version 110 if master flag is used.
-if [ $master_node ]; then
+if [ "$master_node" == "true" ]; then
   rpm -i https://pkg.jenkins.io/redhat/jenkins-2.110-1.1.noarch.rpm
 fi 
