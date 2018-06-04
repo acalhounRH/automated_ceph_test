@@ -18,7 +18,7 @@ while [ "$exit_status" -eq "0" ]; do
 done
 	echo "nodes up"
 #ceph_status=`ansible -m shell -a "ceph -s" mon-000 -i $inventory_file | grep health: | awk {'print $2'}`
-ceph_status=`ansible -m shell -a "ceph -s" mons -i /automated_ceph_test/ansible_inventory | grep health: | awk {'print $2'}`
+ceph_status=`ansible -m shell -a "ceph -s" mons -i $inventory_file | grep health: | awk {'print $2'}`
 if [[ $ceph_status = *"HEALTH_OK"* ]]; then
 	echo "Health: $ceph_status"
 	exit 0
