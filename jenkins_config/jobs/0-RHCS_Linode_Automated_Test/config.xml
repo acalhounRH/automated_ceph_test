@@ -19,12 +19,18 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-5178051f-8681-406e-b506-a00a1dac3a0c</name>
+          <name>separator-95c81c1a-e98d-4827-8aa4-ff7b9c39da62</name>
           <description></description>
           <sectionHeader>Linode Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
           <separatorStyle>border: 0; border-bottom: 0px dashed #ccc; background: #999;</separatorStyle>
         </jenkins.plugins.parameter__separator.ParameterSeparatorDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>agentName</name>
+          <description>Jenkins agent to perform pipeline</description>
+          <defaultValue>master</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
         <hudson.model.PasswordParameterDefinition>
           <name>Linode_API_key</name>
           <description>Setup a Linode account and get an API key: https://www.linode.com/docs/platform/api/api-key</description>
@@ -64,7 +70,7 @@
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-77731db3-012f-45ec-98f4-aa3b1b3c1d92</name>
+          <name>separator-0a5faae4-3ef1-4f21-acad-7c00cd3b7d36</name>
           <description></description>
           <sectionHeader>Ceph-Ansible Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -115,7 +121,7 @@ devices:
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-20d53e4c-495a-44f4-af68-fc50b8f580f0</name>
+          <name>separator-8be11494-132d-491d-838c-54e52c8b06c9</name>
           <description></description>
           <sectionHeader>Pbench Monitoring Tools</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -157,7 +163,7 @@ devices:
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-7ae0dc86-029e-4d1b-add7-c3d3c9af66e8</name>
+          <name>separator-00019224-3d72-4211-9b47-5d5e66b93d2d</name>
           <description></description>
           <sectionHeader>Ceph Benchmark Tool and Analysis Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -217,7 +223,7 @@ benchmarks:
   </properties>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.45">
     <script>pipeline {
-        agent any
+        agent { node { label &quot;$agentName&quot; } }
         stages {
                 stage(&apos;Build&apos;) {
                         steps{

@@ -137,7 +137,7 @@ def push_bulk_pbench_data_to_es(host_dir, headerdoc):
                                         actions.append(pbenchdoc)
                             # finished with file
                     try:
-                        deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=5, request_timeout=30), maxlen=0)
+                        deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=3, request_timeout=30), maxlen=0)
                     except Exception as e:
                         logging.exception("message")
                         

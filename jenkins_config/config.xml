@@ -8,8 +8,67 @@
   <numExecutors>2</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>false</useSecurity>
-  <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
-    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>
+  <authorizationStrategy class="hudson.security.GlobalMatrixAuthorizationStrategy">
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create:anonymous</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Create:authenticated</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:anonymous</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Delete:authenticated</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:anonymous</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains:authenticated</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Update:anonymous</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.Update:authenticated</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:anonymous</permission>
+    <permission>com.cloudbees.plugins.credentials.CredentialsProvider.View:authenticated</permission>
+    <permission>hudson.model.Computer.Build:anonymous</permission>
+    <permission>hudson.model.Computer.Build:authenticated</permission>
+    <permission>hudson.model.Computer.Configure:anonymous</permission>
+    <permission>hudson.model.Computer.Configure:authenticated</permission>
+    <permission>hudson.model.Computer.Connect:anonymous</permission>
+    <permission>hudson.model.Computer.Connect:authenticated</permission>
+    <permission>hudson.model.Computer.Create:anonymous</permission>
+    <permission>hudson.model.Computer.Create:authenticated</permission>
+    <permission>hudson.model.Computer.Delete:anonymous</permission>
+    <permission>hudson.model.Computer.Delete:authenticated</permission>
+    <permission>hudson.model.Computer.Disconnect:anonymous</permission>
+    <permission>hudson.model.Computer.Disconnect:authenticated</permission>
+    <permission>hudson.model.Hudson.Administer:anonymous</permission>
+    <permission>hudson.model.Hudson.Administer:authenticated</permission>
+    <permission>hudson.model.Hudson.Read:anonymous</permission>
+    <permission>hudson.model.Hudson.Read:authenticated</permission>
+    <permission>hudson.model.Item.Build:anonymous</permission>
+    <permission>hudson.model.Item.Build:authenticated</permission>
+    <permission>hudson.model.Item.Cancel:anonymous</permission>
+    <permission>hudson.model.Item.Cancel:authenticated</permission>
+    <permission>hudson.model.Item.Configure:anonymous</permission>
+    <permission>hudson.model.Item.Configure:authenticated</permission>
+    <permission>hudson.model.Item.Create:anonymous</permission>
+    <permission>hudson.model.Item.Create:authenticated</permission>
+    <permission>hudson.model.Item.Delete:anonymous</permission>
+    <permission>hudson.model.Item.Delete:authenticated</permission>
+    <permission>hudson.model.Item.Discover:anonymous</permission>
+    <permission>hudson.model.Item.Discover:authenticated</permission>
+    <permission>hudson.model.Item.Move:anonymous</permission>
+    <permission>hudson.model.Item.Move:authenticated</permission>
+    <permission>hudson.model.Item.Read:anonymous</permission>
+    <permission>hudson.model.Item.Read:authenticated</permission>
+    <permission>hudson.model.Item.Workspace:anonymous</permission>
+    <permission>hudson.model.Item.Workspace:authenticated</permission>
+    <permission>hudson.model.Run.Delete:anonymous</permission>
+    <permission>hudson.model.Run.Delete:authenticated</permission>
+    <permission>hudson.model.Run.Replay:anonymous</permission>
+    <permission>hudson.model.Run.Replay:authenticated</permission>
+    <permission>hudson.model.Run.Update:anonymous</permission>
+    <permission>hudson.model.Run.Update:authenticated</permission>
+    <permission>hudson.model.View.Configure:anonymous</permission>
+    <permission>hudson.model.View.Configure:authenticated</permission>
+    <permission>hudson.model.View.Create:anonymous</permission>
+    <permission>hudson.model.View.Create:authenticated</permission>
+    <permission>hudson.model.View.Delete:anonymous</permission>
+    <permission>hudson.model.View.Delete:authenticated</permission>
+    <permission>hudson.model.View.Read:anonymous</permission>
+    <permission>hudson.model.View.Read:authenticated</permission>
+    <permission>hudson.scm.SCM.Tag:anonymous</permission>
+    <permission>hudson.scm.SCM.Tag:authenticated</permission>
   </authorizationStrategy>
   <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
     <disableSignup>false</disableSignup>
@@ -19,6 +78,7 @@
   <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
   <workspaceDir>${JENKINS_HOME}/workspace/${ITEM_FULL_NAME}</workspaceDir>
   <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
+  <markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
   <jdks/>
   <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
   <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
@@ -104,6 +164,7 @@
         <string>3-Bluestore-linode</string>
         <string>4-analysis-Bluestore-metadata-size</string>
         <string>4-Perform_Analysis</string>
+        <string>5-Teardown-Linode-ceph-bene</string>
         <string>5-Teardown_Linode_Ceph_Cluster</string>
       </jobNames>
       <jobFilters/>
@@ -120,7 +181,7 @@
     </listView>
   </views>
   <primaryView>RHCS Linode Automated Test</primaryView>
-  <slaveAgentPort>-1</slaveAgentPort>
+  <slaveAgentPort>8081</slaveAgentPort>
   <disabledAgentProtocols>
     <string>JNLP-connect</string>
     <string>JNLP2-connect</string>

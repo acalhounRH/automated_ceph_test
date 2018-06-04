@@ -1,0 +1,108 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>agent_name</name>
+          <description></description>
+          <defaultValue>Jenkins_Agent</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
+          <name>separator-662943c6-8139-42f2-abea-c95a7c9769b0</name>
+          <description></description>
+          <sectionHeader>External Agent Configuration</sectionHeader>
+          <sectionHeaderStyle></sectionHeaderStyle>
+          <separatorStyle></separatorStyle>
+        </jenkins.plugins.parameter__separator.ParameterSeparatorDefinition>
+        <hudson.model.PasswordParameterDefinition>
+          <name>Linode_API_key</name>
+          <description></description>
+          <defaultValue>{AQAAABAAAAAQGujJk4qWkpkfQ080UzKJGoQ8RpTLtQ+bFia/kuvIOAI=}</defaultValue>
+        </hudson.model.PasswordParameterDefinition>
+        <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
+          <name>separator-b1dca5a2-68c7-4a5b-87f6-52e005cc400b</name>
+          <description></description>
+          <sectionHeader>Interal Agent Configuration</sectionHeader>
+          <sectionHeaderStyle></sectionHeaderStyle>
+          <separatorStyle></separatorStyle>
+        </jenkins.plugins.parameter__separator.ParameterSeparatorDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>agent_host</name>
+          <description></description>
+          <defaultValue></defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>master</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#/bin/bash
+
+script_dir=/automated_ceph_test/
+
+
+if [ ! -z &quot;$agent_host&quot; ]; then
+	jenkins_agent=$agent_host
+else
+	cd $script_dir
+    pwd
+	virtualenv linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
+	export LINODE_API_KEY=$Linode_API_key
+	jenkins_agent=`python2 ./scripts/create-linode-agent.py`
+
+	if [ &quot;$jenkins_agent&quot; == &quot;jenkins agent already created&quot; ]; then
+		exit 0 
+	else
+		echo &quot;*****************************&quot;
+		new_host=&quot;
+		Host $jenkins_agent
+	  		User root
+	  		StrictHostKeyChecking no
+		&quot;
+	
+		echo &quot;$new_host&quot; &gt;&gt; $HOME/.ssh/config
+	fi
+fi
+
+
+nohup ssh -nNT -R 8080:localhost:8080 $jenkins_agent &amp;
+nohup ssh -nNT -R 8081:localhost:8081 $jenkins_agent &amp;
+nohup ssh -nNT -R 9000:localhost:9000 $jenkins_agent &amp;
+
+ssh $jenkins_agent &quot;
+	yum install git -y
+    yum install wget -y
+	cd
+	git clone https://github.com/acalhounRH/automated_ceph_test
+    git clone &lt;ceph-linode&gt;
+    # remove when updated to 3.1, needed on 3.0
+    patch command to add ansible firewall off
+	yum install java -y
+    wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar
+    &quot;
+  
+ssh $jenkins_agent &quot;nohup java -jar /swarm-client-3.9.jar -master http://localhost:8080 -name $agent_name -labels $agent_name -executors 2 &amp; &quot; &amp;
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

@@ -11,10 +11,15 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-378c46ca-33ad-4566-b3ae-a97c41975ab3</name>
+          <name>separator-a4466af6-df15-4100-81a6-f23e14a29d5c</name>
           <description></description>
           <sectionHeader>Ceph-Ansible Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -78,7 +83,7 @@ devices:
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-c958bdbc-054f-4587-93da-1b53cd103f14</name>
+          <name>separator-7f428bc8-0593-4df0-a0c6-679f26f5f7e7</name>
           <description></description>
           <sectionHeader>Pbench Monitoring Tools</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -120,7 +125,7 @@ devices:
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-d6464967-9ff0-412b-a4df-3f08e6a1fa71</name>
+          <name>separator-6ec59384-33a1-4408-b449-934a9e6a5979</name>
           <description></description>
           <sectionHeader>Ceph Benchmark Tool and Analysis Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -177,11 +182,6 @@ benchmarks:
         </hudson.model.TextParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.45">
     <script>pipeline {
@@ -205,7 +205,7 @@ benchmarks:
                 }
                 stage(&apos;Analysis&apos;) {
                         steps{
-                                build job: &apos;4-Perform_Analysis&apos;, parameters: [string(name: &apos;Test_ID&apos;, value: &quot;$Test_ID&quot;), string(name: &apos;archive_dir&apos;, value: &quot;$archive_dir&quot;)]
+                                build job: &apos;4-Perform_Analysis&apos;, parameters: [string(name: &apos;Test_ID&apos;, value: &quot;$Test_ID&quot;), string(name: &apos;archive_dir&apos;, value: &quot;$archive_dir&quot;), string(name: &apos;elasticsearch_host&apos;, value: &apos;10.18.81.12&apos;), string(name: &apos;elasticsearch_port&apos;, value: &apos;9200&apos;)]
                         }
                 }
         }

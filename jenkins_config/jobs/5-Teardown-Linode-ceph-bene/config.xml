@@ -19,7 +19,7 @@
     </hudson.model.ParametersDefinitionProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>linode-newark-agent</assignedNode>
+  <assignedNode>linode-newark</assignedNode>
   <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
@@ -29,10 +29,15 @@
   <builders>
     <hudson.tasks.Shell>
       <command>#!/bin/bash
-
-script_dir=/automated_ceph_test
-virtualenv-2 linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
-cd $script_dir/ceph-linode/
+env
+script_dir=$HOME/automated_ceph_test
+cd
+if [ ! -d ceph-linode ] ; then
+	git clone https://github.com/batrick/ceph-linode
+fi
+cd ceph-linode
+yum install -y python-virtualenv
+virtualenv linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
 export LINODE_API_KEY=$Linode_API_Key
 python ./linode-destroy.py
 </command>

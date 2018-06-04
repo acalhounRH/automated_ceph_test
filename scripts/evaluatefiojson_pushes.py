@@ -108,7 +108,7 @@ for oper in op_ary:
         averdoc['read-iops'] = (sum(raver_ary)/len(raver_ary))
         if oper in "randrw":
             averdoc['total-iops'] = (averdoc['write-iops'] + averdoc['read-iops'])
-        res = es.index(index="cbt_librbdfio-log-index", doc_type='fiologfile', body=averdoc)
+        res = es.index(index="cbt_librbdfio-summary-index", doc_type='fiologfile', body=averdoc)
         #print(res['result'])
         del waver_ary[:]
         del raver_ary[:]

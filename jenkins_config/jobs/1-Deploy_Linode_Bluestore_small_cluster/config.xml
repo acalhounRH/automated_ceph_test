@@ -19,7 +19,7 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.PasswordParameterDefinition>
-          <name>Linode_API_KEY</name>
+          <name>MY_LINODE_API_KEY</name>
           <description>Setup a Linode account and get an API key: https://www.linode.com/docs/platform/api/api-key</description>
           <defaultValue>{AQAAABAAAAAQobzpRnmnlxne8VMSMsBjex0tcts6UnYGADChnNwcnpU=}</defaultValue>
         </hudson.model.PasswordParameterDefinition>
@@ -107,11 +107,24 @@ devices:
   - /dev/sdc</defaultValue>
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>CEPH_LINODE_GITHUB_URL</name>
+          <description>should not have to change normally, this is where to git clone ceph-linode from</description>
+          <defaultValue>https://github.com/batrick/ceph-linode</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>CEPH_TEST_GITHUB_URL</name>
+          <description>should not have to change normally, this is where to git clone Alex Calhoun&apos;s Ceph automation</description>
+          <defaultValue>https://github.com/acalhounRH/automated_ceph_test</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
-  <canRoam>true</canRoam>
+  <assignedNode>linode-newark-agent</assignedNode>
+  <canRoam>false</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -122,8 +135,20 @@ devices:
       <command>#!/bin/bash
 
 echo &quot;test test test&quot;
-script_dir=/automated_ceph_test
-inventory_file=$script_dir/ceph-linode/ansible_inventory
+env
+
+yum install -y git
+cd $HOME
+
+ceph_linode_top=$HOME/ceph-linode
+if [ ! -d $ceph_linode_top ] ; then 
+	git clone $CEPH_LINODE_GITHUB_URL
+fi
+
+script_dir=$HOME/automated_ceph_test
+if [ ! -d $script_dir ] ; then
+	git clone $CEPH_TEST_GITHUB_URL
+fi
 
 #clearout ceph-ansible staging area 
 mv $script_dir/staging_area/rhcs_latest/* $script_dir/staging_area/rhcs_old/
@@ -131,15 +156,15 @@ pwd
 cd $script_dir/staging_area/rhcs_latest/
 pwd
 
-sudo rm -rf /ceph-ansible-keys
-sudo mkdir -m0777 /ceph-ansible-keys
+sudo rm -rf $HOME/ceph-ansible-keys
+sudo mkdir -m0777 $HOME/ceph-ansible-keys
 
 #pull iso
 if [[ $ceph_iso_file =~ &quot;RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso&quot; ]]; then
 	echo &quot;**************$ceph_iso_file&quot;
-	sudo wget -r -nd --no-parent -A &quot;$ceph_iso_file&quot; $ceph_iso_path &gt; /dev/null
+	sudo wget -q -r -nd --no-parent -A &quot;$ceph_iso_file&quot; $ceph_iso_path &gt; /dev/null
 else
-	sudo wget $ceph_iso_path/$ceph_iso_file &gt; /dev/null
+	sudo wget -q $ceph_iso_path/$ceph_iso_file &gt; /dev/null
 fi
 
 new_ceph_iso_file=&quot;$(ls)&quot;
@@ -175,14 +200,17 @@ sudo cp /usr/share/ceph-ansible/site.yml.sample /usr/share/ceph-ansible/site.yml
 
 
 #Start Ceph-linode deployment
-cd $script_dir/ceph-linode
+cd $ceph_linode_top
 echo &quot;$Linode_Cluster_Configuration&quot; &gt; cluster.json
 virtualenv-2 linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
-export LINODE_API_KEY=$Linode_API_KEY
+export LINODE_API_KEY=$MY_LINODE_API_KEY
 
+yum install -y ansible
 ANSIBLE_STRATEGY=debug; ./launch.sh --ceph-ansible /usr/share/ceph-ansible
-#sudo ansible -i ansible_inventory -m shell -a &quot;ceph -s&quot; mon-000
-
+if [ $? != 0 ] ; then
+    ansible -i ansible_inventory -m shell -a &apos;systemctl stop firewalld ; systemctl disable firewalld&apos; all
+    ./launch.sh --ceph-ansible /usr/share/ceph-ansible
+fi
 
 #Health check
 $script_dir/scripts/check_cluster_status.sh
@@ -190,7 +218,7 @@ exit_status=$?
 
 if [ &quot;$exit_status&quot; -eq &quot;0&quot; ]; then
 	#copy client key to all clients
-	ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
+	ceph_client_key=$HOME/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
 	ansible -m copy -a &quot;src=$ceph_client_key dest=/etc/ceph/ceph.client.admin.keyring&quot; clients -i $inventory_file 
 else
 	exit 1
