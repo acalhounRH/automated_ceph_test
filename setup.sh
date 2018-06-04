@@ -3,6 +3,8 @@
 #TODO install ceph-linode and CBT-pbench-branch
 
 master_node=false
+agent_node=false
+linode_install=false
 
 while getopts ":ma" opt; do
   case ${opt} in
