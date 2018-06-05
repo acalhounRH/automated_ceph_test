@@ -48,7 +48,7 @@ if [ "$epel_status" != "0" ]; then
 fi 
 
 sed -i 's/enabled=0/enabled=1/g' /etc/yum.repos.d/epel.repo
-yum install python-pip -i 
+yum install python-pip -y 
 pip install elasticsearch 
 
 if [ -d perf-dept ]; then
