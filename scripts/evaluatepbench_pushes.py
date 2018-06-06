@@ -121,23 +121,39 @@ def push_bulk_pbench_data_to_es(host_dir, headerdoc):
                                             piddoc['_source']['process_name'] = pname
                                             piddoc['_source']['process_pid'] = pid
                                             piddoc['_source']['process_value'] = float(row[col])   
-                                            actions.append(piddoc)
+                                            a = copy.deepcopy(piddoc)
+#                                            actions.append(piddoc)
                                     elif 'sar' in pbenchdoc['_source']['tool'] and "network_" in pbenchdoc['_source']['file_name']:
                                         sardoc = copy.deepcopy(pbenchdoc)
                                         sardoc['_source']['network_interface'] = col_ary[col]
                                         sardoc['_source']['network_value'] = float(row[col])
-                                        actions.append(sardoc)
+                                        a = copy.deepcopy(sardoc)
+#                                        actions.append(sardoc)
                                     elif 'iostat' in pbenchdoc['_source']['tool']:
                                         iostatdoc = copy.deepcopy(pbenchdoc)
                                         iostatdoc['_source']['deivce'] = col_ary[col]
                                         iostatdoc['_source']['iops_value'] = float(row[col])
-                                        actions.append(iostatdoc) 
+                                        a = copy.deepcopy(iostatdoc)
+#                                        actions.append(iostatdoc)
+				    elif 'mpstat' in pbenchdoc['_source']['tool']:
+					mpstat = copy.deepcopy(pbenchdoc)
+					mpstat['_source']['cpu_stat'] = col_ary[col]
+					mpstat['_source']['cpu_value'] = float(row[col])
+					a = copy.deepcopy(mpstat)
                                     else:
-                                        pbenchdoc['_source'][col_ary[col]] = float(row[col])
-                                        actions.append(pbenchdoc)
+                                        pbenchdoc['_source'][col_ary[col]] = float(row[col])	
+					a = copy.deepcopy(pbenchdoc)
+#	                                actions.append(pbenchdoc)
+
+	                            actions.append(a)
                             # finished with file
                     try:
-                        deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=3, request_timeout=30), maxlen=0)
+			starttime_bulk_import = datetime.datetime.now()
+                        deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=3, request_timeout=60), maxlen=0)
+			stoptime_bulk_import = datetime.datetime.now()
+			bulk_duration = (stoptime_bulk_import-starttime_bulk_import).total_seconds()
+			logging.debug("throttling for %s seconds" % bulk_duration)
+			time.sleep(bulk_duration)
                     except Exception as e:
                         logging.exception("message")
                         
