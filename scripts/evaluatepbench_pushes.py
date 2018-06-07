@@ -122,19 +122,26 @@ def push_bulk_pbench_data_to_es(host_dir, headerdoc):
                                             piddoc['_source']['process_pid'] = pid
                                             piddoc['_source']['process_value'] = float(row[col])   
                                             a = copy.deepcopy(piddoc)
-#                                            actions.append(piddoc)
                                     elif 'sar' in pbenchdoc['_source']['tool'] and "network_" in pbenchdoc['_source']['file_name']:
                                         sardoc = copy.deepcopy(pbenchdoc)
                                         sardoc['_source']['network_interface'] = col_ary[col]
                                         sardoc['_source']['network_value'] = float(row[col])
                                         a = copy.deepcopy(sardoc)
-#                                        actions.append(sardoc)
+                                    elif 'sar' in pbenchdoc['_source']['tool'] and "memory_" in pbenchdoc['_source']['file_name']:
+                                        sardoc = copy.deepcopy(pbenchdoc)
+                                        sardoc['_source']['memory_stat'] = col_ary[col]
+                                        sardoc['_source']['memory_value'] = float(row[col])
+                                        a = copy.deepcopy(sardoc)
+                                    elif 'sar' in pbenchdoc['_source']['tool'] and "per_cpu_" in pbenchdoc['_source']['file_name']:
+                                        sardoc = copy.deepcopy(pbenchdoc)
+                                        sardoc['_source']['sarcpu_stat'] = col_ary[col]
+                                        sardoc['_source']['sarcpu_value'] = float(row[col])
+                                        a = copy.deepcopy(sardoc)
                                     elif 'iostat' in pbenchdoc['_source']['tool']:
                                         iostatdoc = copy.deepcopy(pbenchdoc)
                                         iostatdoc['_source']['deivce'] = col_ary[col]
                                         iostatdoc['_source']['iops_value'] = float(row[col])
                                         a = copy.deepcopy(iostatdoc)
-#                                        actions.append(iostatdoc)
 				    elif 'mpstat' in pbenchdoc['_source']['tool']:
 					mpstat = copy.deepcopy(pbenchdoc)
 					mpstat['_source']['cpu_stat'] = col_ary[col]
@@ -143,7 +150,6 @@ def push_bulk_pbench_data_to_es(host_dir, headerdoc):
                                     else:
                                         pbenchdoc['_source'][col_ary[col]] = float(row[col])	
 					a = copy.deepcopy(pbenchdoc)
-#	                                actions.append(pbenchdoc)
 
 	                            actions.append(a)
                             # finished with file
