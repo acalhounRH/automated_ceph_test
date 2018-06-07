@@ -109,7 +109,7 @@ for cdir in dirs:
 #                                    del newdoc["_source"]['value']
 #                                    del newdoc["_source"]['data direction']
                             try:
-                                deque(helpers.parallel_bulk(es, actions, chunk_size=500, thread_count=5, request_timeout=30), maxlen=0)
+                                deque(helpers.parallel_bulk(es, actions, chunk_size=500, thread_count=5, request_timeout=60), maxlen=0)
                             except Exception as e:
                                 logging.exception("message")
 

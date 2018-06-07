@@ -104,10 +104,17 @@ for oper in op_ary:
             except:
                 pass
         #print "##################average##################"
-        averdoc['write-iops'] = (sum(waver_ary)/len(waver_ary))
-        averdoc['read-iops'] = (sum(raver_ary)/len(raver_ary))
-        if oper in "randrw":
-            averdoc['total-iops'] = (averdoc['write-iops'] + averdoc['read-iops'])
+	if len(waver_ary) > 0:
+	        averdoc['write-iops'] = (sum(waver_ary)/len(waver_ary))
+	else:
+		averdoc['write-iops'] = 0
+	
+	if len(raver_ary) > 0:
+	        averdoc['read-iops'] = (sum(raver_ary)/len(raver_ary))
+	else:
+		averdoc['read-iops'] = 0
+
+        averdoc['total-iops'] = (averdoc['write-iops'] + averdoc['read-iops'])
         res = es.index(index="cbt_librbdfio-summary-index", doc_type='fiologfile', body=averdoc)
         #print(res['result'])
         del waver_ary[:]
