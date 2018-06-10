@@ -155,7 +155,8 @@ def push_bulk_pbench_data_to_es(host_dir, headerdoc):
                             # finished with file
                     try:
 			starttime_bulk_import = datetime.datetime.now()
-                        deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=3, request_timeout=60), maxlen=0)
+                        deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=3, request_timeout=60, raise_on_error=False, raise_on_exception=False ), maxlen=0)
+			#successes, errors = helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=3, request_timeout=60, raise_on_error=False, raise_on_exception=False)
 			stoptime_bulk_import = datetime.datetime.now()
 			bulk_duration = (stoptime_bulk_import-starttime_bulk_import).total_seconds()
 			logging.debug("throttling for %s seconds" % bulk_duration)
