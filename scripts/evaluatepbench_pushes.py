@@ -8,6 +8,7 @@ from elasticsearch import Elasticsearch, helpers
 import threading
 from threading import Thread
 from collections import deque
+import multiprocessing
 
 es_log = logging.getLogger("elasticsearch")
 es_log.setLevel(logging.CRITICAL)
@@ -15,9 +16,9 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(threadName)s: %(levelname)s - %(message)s ')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(process)d %(threadName)s: %(levelname)s - %(message)s ')
     maindoc = {}
-    threads1 = []
+    process2 = []
     maindoc["_index"] = "pbench"
     maindoc["_type"] = "pbenchdata"
     maindoc["_source"] = {}
@@ -49,13 +50,13 @@ def main():
         	#for each benchmark capture benchmark metadata and process all pbench data
         	if 'benchmark_config.yaml' in fname:
 			bdoc = copy.deepcopy(maindoc)
-			t1 = Thread(target=t_process_benchmark_data, args=(fname, dirpath, bdoc))
-			threads1.append(t1)
-    for thread in threads1:
-    	thread.start()
-    for thread in threads1:
+			p2= multiprocessing.Process(target=t_process_benchmark_data, args=(fname, dirpath, bdoc))
+			process2.append(p2)
+    for process in process2:
+    	process.start()
+    for process in process2:
     	try:
-        	thread.join()
+        	process.join()
         except:
         	logger.exception("failed")
 	
@@ -101,19 +102,19 @@ def push_bulk_pbench_data_to_es(host_dir, headerdoc):
 		#print json.dumps(pbenchdoc, indent=1)
                 col_ary = []
                 actions = []
+		a = {}
                 first_row = True
+		index = False
 
                 pbenchdoc['_source']['host'] = pfname.split("/")[5]
                 pbenchdoc['_source']['tool'] = pfname.split("/")[6]
                 pbenchdoc['_source']['file_name'] = pfname.split("/")[8]
-                logging.info('proccesing %s' % pbenchdoc['_source']['file_name'])
-		#logging.debug('starting with %s actions' % len(actions))
-		starttime_process_file = datetime.datetime.now()
+                #logging.info('proccesing %s' % pbenchdoc['_source']['file_name'])
+		
 		with open(pfname) as csvfile:
                     readCSV = csv.reader(csvfile, delimiter=',')
                     for row in readCSV:
                         if first_row:
-                            #logging.debug("Performing Bulk import of file %s for host %s" % (pbenchdoc['_source']['file_name'], pbenchdoc['_source']['host']))
                             col_num = len(row)
                             for col in range(col_num):
                                 col_ary.append(row[col])
@@ -145,39 +146,34 @@ def push_bulk_pbench_data_to_es(host_dir, headerdoc):
                                         sardoc['_source']['memory_stat'] = col_ary[col]
                                         sardoc['_source']['memory_value'] = float(row[col])
                                         a = copy.deepcopy(sardoc)
-                                    elif 'sar' in pbenchdoc['_source']['tool'] and "per_cpu_" in pbenchdoc['_source']['file_name']:
-                                        sardoc = copy.deepcopy(pbenchdoc)
-                                        sardoc['_source']['sarcpu_stat'] = col_ary[col]
-                                        sardoc['_source']['sarcpu_value'] = float(row[col])
-                                        a = copy.deepcopy(sardoc)
+                                    #elif 'sar' in pbenchdoc['_source']['tool'] and "per_cpu_" in pbenchdoc['_source']['file_name']:
+                                    #    sardoc = copy.deepcopy(pbenchdoc)
+                                    #    sardoc['_source']['sarcpu_stat'] = col_ary[col]
+                                    #    sardoc['_source']['sarcpu_value'] = float(row[col])
+                                    #    a = copy.deepcopy(sardoc)
                                     elif 'iostat' in pbenchdoc['_source']['tool']:
                                         iostatdoc = copy.deepcopy(pbenchdoc)
-                                        iostatdoc['_source']['deivce'] = col_ary[col]
-                                        iostatdoc['_source']['iops_value'] = float(row[col])
+                                        iostatdoc['_source']['device'] = col_ary[col]
+                                        iostatdoc['_source']['iostat_value'] = float(row[col])
                                         a = copy.deepcopy(iostatdoc)
-				    elif 'mpstat' in pbenchdoc['_source']['tool']:
+				    elif 'mpstat' in pbenchdoc['_source']['tool'] and "cpuall_cpuall.csv" in pbenchdoc['_source']['file_name']:
 					mpstat = copy.deepcopy(pbenchdoc)
 					mpstat['_source']['cpu_stat'] = col_ary[col]
 					mpstat['_source']['cpu_value'] = float(row[col])
 					
-				try:
+				if a:
 		                    	actions.append(a)
 					index = True
-				except:
+				else:
 					index = False 
-		stoptime_process_file = datetime.datetime.now()
 		if index:  
-			process_duration = (stoptime_process_file-starttime_process_file).total_seconds()
-			logging.debug("throttling for %s seconds" % process_duration)
-			time.sleep(process_duration)
-			starttime_bulk_import = datetime.datetime.now()
 			try:
 				bulk_status = int((es.cat.thread_pool(thread_pool_patterns='bulk', format=json)).split(" ")[3])
-				logging.info("********* %s ******" % bulk_status)
 				wait_counter=1
-				while bulk_status > 85:
-					wait_time = 30 * wait_counter
-					logging.warn("bulk thread pool high(%s), throttling for %s seconds" % (bulk_status, wait_time))
+				#logging.info("waiting for available bulk thread...")
+				while bulk_status > 75:
+					wait_time = 10 * wait_counter
+					#logging.warn("bulk thread pool high(%s), throttling for %s seconds" % (bulk_status, wait_time))
 					time.sleep(wait_time)
 					if wait_counter == 4:
 						wait_counter = 1 
@@ -186,21 +182,13 @@ def push_bulk_pbench_data_to_es(host_dir, headerdoc):
 					bulk_status = int((es.cat.thread_pool(thread_pool_patterns='bulk', format=json)).split(" ")[3])
 					
 					
-				logging.info('Starting bulk indexing...')
+				logging.info('Bulk indexing of %s %s file :%s for host: %s ' % (pbenchdoc['_source']['mode'], pbenchdoc['_source']['object_size'],  pbenchdoc['_source']['file_name'], pbenchdoc['_source']['host']))
 	                        deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=1, request_timeout=60), maxlen=0)
-				stoptime_bulk_import = datetime.datetime.now()
-				bulk_duration = (stoptime_bulk_import-starttime_bulk_import).total_seconds()
-				logging.debug("throttling for %s seconds" % bulk_duration)
-				time.sleep(bulk_duration)
                  	except Exception as e:
 				bulk_status = (es.cat.thread_pool(thread_pool_patterns='bulk', format=json)).split(" ")[3]
-				stoptime_bulk_import = datetime.datetime.now()
-                                bulk_duration = (stoptime_bulk_import-starttime_bulk_import).total_seconds()
-                                logging.debug("throttling for %s seconds" % bulk_duration)
 	                        logging.error("Failed to update %s bulk thread-pool is %s " % (pbenchdoc['_source']['file_name'], bulk_status)) 
-				time.sleep(bulk_duration)
-		else:
-			logging.debug('not importing %s' % pbenchdoc['_source']['file_name'])
+		#else:
+			#logging.debug('not importing %s' % pbenchdoc['_source']['file_name'])
                         
 
 if __name__ == '__main__':
