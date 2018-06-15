@@ -3,6 +3,7 @@
 import os, sys, json, time, types
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch
+import statistics
 
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
@@ -87,7 +88,7 @@ for cdir in dirs:
                     firsttime = 'false'
 
 
-print json.dumps(c_results, indent=1)
+#print json.dumps(newdoc, indent=1)
 #for each operation and object size iterate over the # of test iteration of that specifc op / object_size and add it to a list
 #after creating a list of IOPS for that specifc operation and object size calculate average and std deviation
 for oper in op_ary:
@@ -95,28 +96,37 @@ for oper in op_ary:
     for obj_size in bs_ary:
         waver_ary = []
         raver_ary = []
+        total_ary = []
         averdoc['object_size'] = obj_size # set document's object size
         firstrecord = 'false'
         for itera in iteration_ary: # 
             try:
                 waver_ary.append(newdoc[itera][oper][obj_size]['write-iops'])
                 raver_ary.append(newdoc[itera][oper][obj_size]['read-iops'])
+
                 if firstrecord is 'false':
                     averdoc['date'] = newdoc[itera][oper][obj_size]['date']
                     firstrecord = 'true'
             except:
                 pass
         #print "##################average##################"
-	if len(waver_ary) > 0:
-	        averdoc['write-iops'] = (sum(waver_ary)/len(waver_ary))
-	else:
-		averdoc['write-iops'] = 0
+
+        if len(waver_ary) > 0:
+            averdoc['write-iops'] = (sum(waver_ary)/len(waver_ary))
+            print statistics.stdev(waver_ary)
+        else:
+	      	  averdoc['write-iops'] = 0
 	
-	if len(raver_ary) > 0:
-	        averdoc['read-iops'] = (sum(raver_ary)/len(raver_ary))
-	else:
-		averdoc['read-iops'] = 0
+        if len(raver_ary) > 0:
+            averdoc['read-iops'] = (sum(raver_ary)/len(raver_ary))
+            print statistics.stdev(waver_ary)
+        else:
+	      	  averdoc['read-iops'] = 0
 
         averdoc['total-iops'] = (averdoc['write-iops'] + averdoc['read-iops'])
+        
         #res = es.index(index="cbt_librbdfio-summary-index", doc_type='fiologfile', body=averdoc)
         #print(res['result'])
+
+
+

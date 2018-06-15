@@ -1,0 +1,27 @@
+--- /usr/share/ceph-ansible/roles/ceph-osd/tasks/check_mandatory_vars.yml	2018-06-15 17:59:49.258217398 +0000
++++ /usr/share/ceph-ansible/roles/ceph-osd/tasks/check_mandatory_vars.yml.new	2018-06-15 17:37:55.758030966 +0000
+@@ -58,15 +58,15 @@
+     - osd_scenario == "lvm"
+     - ceph_release_num.{{ ceph_release }} < ceph_release_num.luminous
+ 
+-- name: verify osd_objectstore is 'filestore' when using the lvm osd_scenario
+-  fail:
+-    msg: "the lvm osd_scenario currently only works for filestore, not bluestore"
+-  when:
+-    - osd_group_name is defined
+-    - osd_group_name in group_names
+-    - osd_scenario == "lvm"
+-    - not osd_auto_discovery
+-    - osd_objectstore != 'filestore'
++#- name: verify osd_objectstore is 'filestore' when using the lvm osd_scenario
++#  fail:
++#    msg: "the lvm osd_scenario currently only works for filestore, not bluestore"
++#  when:
++#    - osd_group_name is defined
++#    - osd_group_name in group_names
++#    - osd_scenario == "lvm"
++#   - not osd_auto_discovery
++#    - osd_objectstore != 'filestore'
+ 
+ - name: verify lvm_volumes have been provided
+   fail:
