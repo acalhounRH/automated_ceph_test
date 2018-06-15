@@ -1,81 +1,128 @@
 #! /usr/bin/python
 
-import os, sys, json, time, types
+import os, sys, json, time, types, copy
 from time import gmtime, strftime
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, helpers
 from decimal import Decimal
+from collections import deque
+import itertools as it
 
-#get args 
-if len(sys.argv) > 3:
-    test1 = sys.argv[1]
-    test2 = sys.argv[2]
-    host = sys.argv[3]
-    esport = sys.argv[4]
-else:
-    print "need more args, test 1, test 2, host, port" 
+def main():
+    #get args 
+    if len(sys.argv) > 2:
+        host = sys.argv[1]
+        esport = sys.argv[2]
+    else:
+        print "need more args,  host, port" 
 
-#setup elasticsearch connection
-es = Elasticsearch(
+    #setup elasticsearch connection
+    globals()['es'] = Elasticsearch(
         [host],
         scheme="http",
         port=esport,
-     )
+        )
 
 
-print ("Comparing %s Versus %s ") % (test1, test2)
-#initialize vars
-test1_doc = {}
-test2_doc = {}
-operations_array = []
-object_size_array = []
 
-#get test 1 results
-test1_results = es.search(index="cbt_librbdfio-summary-index", doc_type="fiologfile", size=10000,  body={"query": {"match": {"test_id.keyword": test1}}})
-print("Test1  %d documents found" % test1_results['hits']['total'])
-
-#get test 2 results
-test2_results = es.search(index="cbt_librbdfio-summary-index", doc_type="fiologfile", size=10000, body={"query": {"match": {"test_id.keyword": test2}}})
-print("Test2 %d documents found" % test2_results['hits']['total'])
-
-
-#process test 1 results
-for doc in test1_results['hits']['hits']:
-    #print json.dumps(test1_doc, indent=1)
-    if doc['_source']['operation'] not in operations_array:
-        operations_array.append(str(doc['_source']['operation']))
-    if doc['_source']['object_size'] not in object_size_array:
-        object_size_array.append(doc['_source']['object_size'])
-
-    if doc['_source']['operation'] not in test1_doc:
-        test1_doc[doc['_source']['operation']] = {}
+    #setup elasticsearch main doc
+    comparison_results_doc = {}
+    comparison_results_doc["_index"] = "cbt-librbdfio-comparison"
+    comparison_results_doc["_type"] = "comparisondata"
     
-    test1_doc[doc['_source']['operation']][doc['_source']['object_size']] = doc['_source']['total-iops']
-   # print("Test 1 (%s) %s %s %s" % (doc['_source']['test_id'], doc['_source']['operation'], doc['_source']['total-iops'], doc['_source']['object_size']))
-
-#process test 2 results
-for doc in test2_results['hits']['hits']:
-    if doc['_source']['operation'] not in operations_array and doc['_source']['object_size']:
-        operations_array.append(str(doc['_source']['operation']))
-    if doc['_source']['object_size'] not in object_size_array:
-        object_size_array.append(doc['_source']['object_size'])
+    #find all test results 
+    result = es.search(index="cbt_librbdfio-summary-index", doc_type="fiologfile", size=10000, body={"query": {"match_all": {}}})
+    print("Test list %d documents found" % result['hits']['total'])
     
-    if doc['_source']['operation'] not in test2_doc:
-        test2_doc[doc['_source']['operation']] = {}
-    test2_doc[doc['_source']['operation']][doc['_source']['object_size']] = doc['_source']['total-iops']
-    #print("Test 2 (%s) %s %s %s" % (doc['_source']['test_id'], doc['_source']['operation'], doc['_source']['total-iops'], doc['_source']['object_size'] ))
+    # create list of test ids, then create a list of all possible cominations of test results
+    test_array = []
+    for item in  result['hits']['hits']:
+        if item['_source']['test_id'] not in test_array:
+                test_array.append(item['_source']['test_id'])
+
+    test_combo = list(it.combinations(test_array, 2))
+
+    #evaluate the percent difference between all combinations of test results
+    for test in test_combo:
+        compare_result(test[0], test[1], comparison_results_doc)
 
 
+def compare_result(test1, test2, headerdoc):
 
-#print json.dumps(test1_doc, indent=1)
-#print json.dumps(test2_doc, indent=1)
+    result_doc = copy.deepcopy(headerdoc)
+    result_doc["_source"] = {}
+    result_doc["_source"]['test1'] = test1
+    result_doc["_source"]['test2'] = test2
 
-object_size_array.sort()
+    print ("Comparing %s Versus %s ") % (test1, test2)
 
-#perform analysis of results
-for operation in operations_array:
-    for object_size in object_size_array:
-        rdelta = round(((test2_doc[operation][object_size] - test1_doc[operation][object_size]) / test1_doc[operation][object_size]) * 100, 3)
-        print (operation, object_size, rdelta)
-        #print ("((%s - %s) / %s) = %s" % (test1_doc[operation][object_size], test2_doc[operation][object_size], test1_doc[operation][object_size], rdelta ))
+    test1_doc = {}
+    test2_doc = {}
+    operations_array = []
+    object_size_array = []
 
+
+    #get test 1 results
+    test1_results = es.search(index="cbt_librbdfio-summary-index", doc_type="fiologfile", size=10000,  body={"query": {"match": {"test_id.keyword": test1}}})
+    print("Test1  %d documents found" % test1_results['hits']['total'])
+
+    #get test 2 results
+    test2_results = es.search(index="cbt_librbdfio-summary-index", doc_type="fiologfile", size=10000, body={"query": {"match": {"test_id.keyword": test2}}})
+    print("Test2 %d documents found" % test2_results['hits']['total'])
+
+
+    #process test 1 results
+    ft = True
+    for doc in test1_results['hits']['hits']:
+        if ft:
+            result_doc["_source"]['date'] = doc["_source"]['date']
+            ft = True
+        #print json.dumps(test1_doc, indent=1)
+        if doc['_source']['operation'] not in operations_array:
+            operations_array.append(str(doc['_source']['operation']))
+        if doc['_source']['object_size'] not in object_size_array:
+            object_size_array.append(doc['_source']['object_size'])
+
+        if doc['_source']['operation'] not in test1_doc:
+            test1_doc[doc['_source']['operation']] = {}
+    
+        test1_doc[doc['_source']['operation']][doc['_source']['object_size']] = doc['_source']['total-iops']
+
+    #process test 2 results
+    for doc in test2_results['hits']['hits']:
+        if doc['_source']['operation'] not in operations_array:
+            operations_array.append(str(doc['_source']['operation']))
+        if doc['_source']['object_size'] not in object_size_array:
+            object_size_array.append(doc['_source']['object_size'])
+        
+        if doc['_source']['operation'] not in test2_doc:
+            test2_doc[doc['_source']['operation']] = {}
+        test2_doc[doc['_source']['operation']][doc['_source']['object_size']] = doc['_source']['total-iops']
+    
+    object_size_array.sort()
+
+    #perform analysis of results
+    actions = []
+    for operation in operations_array:
+        for object_size in object_size_array:
+            rdelta = round(((test2_doc[operation][object_size] - test1_doc[operation][object_size]) / test1_doc[operation][object_size]) * 100, 3)
+            c_results = copy.deepcopy(result_doc)
+            c_results['_source']['operation'] = operation
+            c_results['_source']['%sKB' % object_size] = rdelta
+
+            if rdelta > -5:
+                print ("PASS: %s %s %s" % (operation, object_size, rdelta))
+            elif rdelta < -5 and rdelta > -10:
+                print ("WARN: %s %s %s" % (operation, object_size, rdelta))
+            elif rdelta < -10:
+                print ("FAILED: %s %s %s" % (operation, object_size, rdelta))
+
+        #print json.dumps(c_results, indent=1)
+            a = copy.deepcopy(c_results)
+            actions.append(a)
+
+    deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=1, request_timeout=60), maxlen=0)
+
+
+if __name__ == '__main__':
+    main()
 
