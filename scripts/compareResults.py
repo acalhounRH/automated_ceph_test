@@ -10,8 +10,10 @@ import itertools as it
 def main():
     #get args 
     if len(sys.argv) > 2:
-        host = sys.argv[1]
-        esport = sys.argv[2]
+        t1 = sys.argv[1]
+        t2 = sys.argv[2]
+        host = sys.argv[3]
+        esport = sys.argv[4]
     else:
         print "need more args,  host, port" 
 
@@ -30,20 +32,22 @@ def main():
     comparison_results_doc["_type"] = "comparisondata"
     
     #find all test results 
-    result = es.search(index="cbt_librbdfio-summary-index", doc_type="fiologfile", size=10000, body={"query": {"match_all": {}}})
-    print("Test list %d documents found" % result['hits']['total'])
+#    result = es.search(index="cbt_librbdfio-summary-index", doc_type="fiologfile", size=10000, body={"query": {"match_all": {}}})
+#    print("Test list %d documents found" % result['hits']['total'])
     
     # create list of test ids, then create a list of all possible cominations of test results
-    test_array = []
-    for item in  result['hits']['hits']:
-        if item['_source']['test_id'] not in test_array:
-                test_array.append(item['_source']['test_id'])
+#    test_array = []
+#    for item in  result['hits']['hits']:
+#        if item['_source']['test_id'] not in test_array:
+#                test_array.append(item['_source']['test_id'])
 
-    test_combo = list(it.combinations(test_array, 2))
+#    test_combo = list(it.combinations(test_array, 2))
+    #test_combo = list(it.permutations(test_array, 2))
 
     #evaluate the percent difference between all combinations of test results
-    for test in test_combo:
-        compare_result(test[0], test[1], comparison_results_doc)
+#    for test in test_combo:
+#        compare_result(test[0], test[1], comparison_results_doc)
+    compare_result(t1, t2, comparison_results_doc)
 
 
 def compare_result(test1, test2, headerdoc):
@@ -109,12 +113,12 @@ def compare_result(test1, test2, headerdoc):
             c_results['_source']['operation'] = operation
             c_results['_source']['%sKB' % object_size] = rdelta
 
-            if rdelta > -5:
-                print ("PASS: %s %s %s" % (operation, object_size, rdelta))
-            elif rdelta < -5 and rdelta > -10:
-                print ("WARN: %s %s %s" % (operation, object_size, rdelta))
-            elif rdelta < -10:
-                print ("FAILED: %s %s %s" % (operation, object_size, rdelta))
+         #   if rdelta > -5:
+         #       print ("PASS: %s %s %s" % (operation, object_size, rdelta))
+         #   elif rdelta < -5 and rdelta > -10:
+         #       print ("WARN: %s %s %s" % (operation, object_size, rdelta))
+         #   elif rdelta < -10:
+         #       print ("FAILED: %s %s %s" % (operation, object_size, rdelta))
 
         #print json.dumps(c_results, indent=1)
             a = copy.deepcopy(c_results)
