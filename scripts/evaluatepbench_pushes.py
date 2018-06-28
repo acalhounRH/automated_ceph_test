@@ -42,8 +42,10 @@ def main():
         res = es.indices.create(index="pbench", body=request_body)
         logging.debug("response: '%s' " % (res))
     
-    bulk_status = (es.cat.thread_pool(thread_pool_patterns='bulk', format=json))
-    print "%s" % bulk_status.split(" ")[3]
+    #bulk_status = (es.cat.thread_pool(thread_pool_patterns='write', format=json))
+    #print bulk_status
+    #if bulk_status != "": print "%s" % bulk_status.split(" ")[3] 
+    #exit()
     for dirpath, dirs, files in os.walk("."):	
 	for filename in files:
         	fname = os.path.join(dirpath,filename)
@@ -58,7 +60,7 @@ def main():
     	try:
         	process.join()
         except:
-        	logger.exception("failed")
+        	logging.exception("failed")
 	
 
 def t_process_benchmark_data(file_name, test_directory, headerdoc):
@@ -83,16 +85,16 @@ def t_process_benchmark_data(file_name, test_directory, headerdoc):
         #start all threads 
         for thread in threads2:
                 thread.start()
-                #wait for all threads to complete
+
+        #wait for all threads to complete
         for thread in threads2:
                 try:
                 	thread.join()                
                 except: 
-                        logger.exception("failed")
+                        logging.exception("failed")
 
 
 def push_bulk_pbench_data_to_es(host_dir, headerdoc):
- 
     for pdirpath, pdirs, pfiles in os.walk(host_dir.strip()):
         for pfilename in pfiles:
             pfname = os.path.join(pdirpath, pfilename)
@@ -110,7 +112,7 @@ def push_bulk_pbench_data_to_es(host_dir, headerdoc):
                 pbenchdoc['_source']['tool'] = pfname.split("/")[6]
                 pbenchdoc['_source']['file_name'] = pfname.split("/")[8]
                 #logging.info('proccesing %s' % pbenchdoc['_source']['file_name'])
-		
+		starttime_process = datetime.datetime.now()
 		with open(pfname) as csvfile:
                     readCSV = csv.reader(csvfile, delimiter=',')
                     for row in readCSV:
@@ -160,36 +162,53 @@ def push_bulk_pbench_data_to_es(host_dir, headerdoc):
 					mpstat = copy.deepcopy(pbenchdoc)
 					mpstat['_source']['cpu_stat'] = col_ary[col]
 					mpstat['_source']['cpu_value'] = float(row[col])
-					
+					a = copy.deepcopy(mpstat)
 				if a:
 		                    	actions.append(a)
 					index = True
 				else:
-					index = False 
-		if index:  
-			try:
-				bulk_status = int((es.cat.thread_pool(thread_pool_patterns='bulk', format=json)).split(" ")[3])
-				wait_counter=1
-				#logging.info("waiting for available bulk thread...")
-				while bulk_status > 75:
-					wait_time = 10 * wait_counter
-					#logging.warn("bulk thread pool high(%s), throttling for %s seconds" % (bulk_status, wait_time))
-					time.sleep(wait_time)
-					if wait_counter == 4:
-						wait_counter = 1 
-					else:
-						wait_counter += 1
-					bulk_status = int((es.cat.thread_pool(thread_pool_patterns='bulk', format=json)).split(" ")[3])
-					
-					
-				logging.info('Bulk indexing of %s %s file :%s for host: %s ' % (pbenchdoc['_source']['mode'], pbenchdoc['_source']['object_size'],  pbenchdoc['_source']['file_name'], pbenchdoc['_source']['host']))
-	                        deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=1, request_timeout=60), maxlen=0)
-                 	except Exception as e:
-				bulk_status = (es.cat.thread_pool(thread_pool_patterns='bulk', format=json)).split(" ")[3]
-	                        logging.error("Failed to update %s bulk thread-pool is %s " % (pbenchdoc['_source']['file_name'], bulk_status)) 
-		#else:
-			#logging.debug('not importing %s' % pbenchdoc['_source']['file_name'])
-                        
+					index = False
+		if index:
+			stoptime_process = datetime.datetime.now()
+			process_duration = (stoptime_process-starttime_process).total_seconds()
+			time.sleep(process_duration)
+
+			index = True
+			while index: 
+				try:
+					bulk_status = int((es.cat.thread_pool(thread_pool_patterns='write', format=json)).split(" ")[3])
+					wait_counter=1
+					#logging.info("waiting for available bulk thread...")
+					while bulk_status > 25:
+						wait_time = 10 * wait_counter
+						#logging.warn("bulk thread pool high(%s), throttling for %s seconds" % (bulk_status, wait_time))
+						time.sleep(wait_time)
+						if wait_counter == 4:
+							wait_counter = 1 
+						else:
+							wait_counter += 1
+						bulk_status = int((es.cat.thread_pool(thread_pool_patterns='write', format=json)).split(" ")[3])
+				
+					logging.info('Bulk indexing of %s %s file :%s for host: %s ' % (pbenchdoc['_source']['mode'], pbenchdoc['_source']['object_size'],  pbenchdoc['_source']['file_name'], pbenchdoc['_source']['host']))
+			                deque(helpers.parallel_bulk(es, actions, chunk_size=1000, thread_count=1, request_timeout=60), maxlen=0)
+					#logging.info("indexing complete...")
+					index = False
+	        		except Exception as e:
+					bulk_status = (es.cat.thread_pool(thread_pool_patterns='write', format=json)).split(" ")[3]
+					error_doc = {}
+					error_status_ary = []
+					error_doc = e.args
+					error_type = type(e)
+					try:
+						for i in error_doc:
+							if isinstance(i, list):
+								for j in i:
+									if j['index']['status'] not in error_status_ary:
+										error_status_ary.append(j['index']['status'])
+						for i in error_status_ary: 
+		                        	        logging.error("Failed to update %s bulk thread-pool is %s - Status: %s - %s" % (pbenchdoc['_source']['file_name'], bulk_status, i, type(e)))
+					except:
+						logging.error("Failed to update %s bulk thread-pool is %s - %s" % (pbenchdoc['_source']['file_name'], bulk_status, error_type))
 
 if __name__ == '__main__':
     main()
