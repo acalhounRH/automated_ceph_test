@@ -126,10 +126,12 @@ def main():
 #    for i in run_actions:
 #        print json.dumps(i, indent=1)
 
-    bluk_import(run_actions)
-
+#   bluk_import(run_actions)
+    
+    #Process selected workload stage reports
     stage_actions = []
     stage_doc = copy.deepcopy(maindoc)
+    ws_doc = {}
     for dirpath, dirs, files in os.walk("."):
         for wdir in dirs:
             if wdir.startswith("w"):
@@ -137,6 +139,7 @@ def main():
                 wdirID = wdirID.strip('w')
                 if int(wdirID) in workload_list:
                     stage_doc = copy.deepcopy(maindoc)
+                    ws_doc[wdir] = []
                     stage_doc['_source']['Workload ID'] = int(wdirID)
                     logging.info("Processing %s" % (wdir))
                     with open("%s/%s.csv" % (wdir, wdir)) as csvfile:
@@ -152,35 +155,97 @@ def main():
                                     header_list.append(row[column])
                             else:
                                 for column in range(number_of_columns):
-                                    #if "Submitted-At" in header_list[column]:
-                                    #    run_history['_source'][header_list[column]] = row[column]
-                                    #    thistime = datetime.datetime.strptime(row[column], '%Y-%m-%d %H:%M:%S' )
-                                    #    run_history['_source']['date'] = thistime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                                    #else:
                                         if "Detailed Status" in header_list[column]:
+                                            print row
                                             rowvalue = row[column]
                                             rowvalue = rowvalue.split('@ ')[1]
                                             thistime = datetime.datetime.strptime(rowvalue, '%Y-%m-%d %H:%M:%S' )
                                             stage_doc['_source']['date'] = thistime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-
                                         else:
+                                            if "Stage" in header_list[column]:
+                                                if row[column] not in ws_doc[wdir]:
+                                                    ws_doc[wdir].append(row[column]) 
                                             stage_doc['_source'][header_list[column]] = row[column]
                                 b = copy.deepcopy(stage_doc)
                             if b:
                                 stage_actions.append(b)
-
 #    for i in stage_actions:
 #        print json.dumps(i, indent=1)
+#    print json.dumps(ws_doc, indent=1)
 
-    bluk_import(stage_actions)
+    for work, stages in ws_doc.items():
+        for stage in stages:
+            stagefile = "%s/%s.csv" % (work, stage)
+            stagedata_doc = copy.deepcopy(maindoc)
+            stagedata_doc['_source']['stage'] = stage
+            stagedata_doc['_source']['Workdload'] = work
+            stagedata_doc['_source']['file'] = stagefile
+            try:
+                with open(stagefile) as csvfile:
+                    print stagefile
+                    readCSV = csv.reader(csvfile, delimiter=',')
+                    header_list = []
+                    b=""
+                    row_count = 0
+                    for row in readCSV:
+                        if row_count < 2:
+                            print "header stuff"
+#                            first_header = csvfile.next()
+                            if row_count == 0:
+                                print "first row"
+                                print row
+                                first_header_queue = row
+#                                first_header = first_header.strip('\n')
+#                                first_header_queue = first_header.split(',')
+                            if row_count == 1:
+                                print "second row"
+                                print row
+#                                second_header = csvfile.next()
+                                second_header_queue = row
+#                                second_header = second_header.strip('\n')
+#                                second_header_queue = second_header.split(',')
+                                second_header_queue.pop(0)
 
-                            #a = copy.deepcopy(run_history)
+                            print "evaluate"
+                            if first_header_queue and second_header_queue:
+                                print "process it"
+                                for current_header in first_header_queue:
+                                    if current_header :
+                                        header_list.append(current_header)
+                                        previous_header = current_header
+                                        new_item = True
+                                    else:
+                                        if new_item:
+                                            header_list.pop()
+                                            new_index = first_header_queue.index(current_header)
+                                            first_header_queue.insert(new_index,',')
+                                            new_item = False
+                                        try:
+                                            current_header = "%s-%s" % (previous_header, second_header_queue.pop(0))
+                                        except:
+                                            logging.error("can't set the header var")
+    
+                                        header_list.append(current_header)
 
-#                    if a and run_history['_source']['Workload ID'] in workload_list:
-#                        run_actions.append(a)
+                                print "set it" 
+                                number_of_columns = len(header_list)
+                            row_count += 1
+                        else:
+                    #        for row in readCSV:
+                                print "row info:"
+                     #           print row[0]
+#                        for column in rang(number_of_columns):
+                           # if "Timestamp" in head_list[column]:
+                           #     if new_time > previous_time:
+                           #         #format time
+                           #         stagedata_doc['_source']['date'] = 
+                           # else:
+                           #     stagedata_doc['_source']['stagedata_metric'] = [header_list[column]]
+                           #     stagedata_doc['_source']['stagedata_value'] = row[column]
+            except:
+                logging.warn("unabled open file: %s" % stagefile)
 
-
-
+#   bluk_import(stage_actions)
 
 
     exit()
