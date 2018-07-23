@@ -127,7 +127,7 @@ def main():
 #    for i in run_actions:
 #        print json.dumps(i, indent=1)
 
-#    bluk_import(run_actions)
+    bluk_import(run_actions)
     
     logging.info("Process selected workload stage reports")
     stage_actions = []
@@ -191,9 +191,10 @@ def main():
                                 stage_actions.append(b)
 #    for i in stage_actions:
 #        print json.dumps(i, indent=1)
+
 #   print json.dumps(ws_doc, indent=1)
 
-#    bluk_import(stage_actions)
+    bluk_import(stage_actions)
 
     logging.info("Process Stage data")
     for work, stages in ws_doc.items():
@@ -201,8 +202,8 @@ def main():
             set_starttime = True
             stage_status = []
             process_stage = True
-            for i in stage_actions:
-                if stage in  i["_source"]['Stage']:
+            for i in stage_actions: 
+                if stage in  i["_source"]['Stage'] and work in i["_source"]['Workload']:
                     stage_status.append(i['_source']['Status'])
                     if set_starttime: 
                    # if stage in  i["_source"]['Stage']:
@@ -300,7 +301,7 @@ def main():
                                 else:
                                     logging.error("Corrupted data found, omitting data point")
                         
-     #               bluk_import(stagedata_actions)
+                    bluk_import(stagedata_actions)
 
                 except Exception as e :
                     logging.error(e)
