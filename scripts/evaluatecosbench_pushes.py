@@ -1,6 +1,7 @@
 #! /usr/bin/python
 
 import os, sys, json, time, types, csv, copy
+import xmltodict
 import logging
 import datetime
 from time import gmtime, strftime
@@ -30,6 +31,16 @@ def main():
     port = ""
     workload_list = []
 
+    usage = """ 
+            Usage:
+                evaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>
+                
+                -t or --test_id - test identifier
+                -h or --host - Elasticsearch host ip or hostname
+                -p or --port - Elasticsearch port (elasticsearch default is 9200)
+                -w or --workloads - a list of workloads that should be imported 
+            """
+
     try:
         opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:w:', ['test_id=', 'host=', 'port=', 'workloads'])
     except getopt.GetoptError:
@@ -57,7 +68,8 @@ def main():
     if host and test_id and esport and  workload_list:
         logging.info("Test ID: %s, Host: %s, Port: %s " % (test_id, host, esport))
     else:
-        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
+        logging.info(usage)
+#        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
         exit ()
 
     globals()['es'] = Elasticsearch(
@@ -67,9 +79,9 @@ def main():
         ) 
 
     #if the pbench index doesnt exist create index
-    if not es.indices.exists("pbench"):
+    if not es.indices.exists("cosbench"):
         request_body = {"settings" : {"refresh_interval": "10s", "number_of_replicas": 0}}
-        res = es.indices.create(index="pbench", body=request_body)
+        res = es.indices.create(index="cosbench", body=request_body)
         logging.debug("response: '%s' " % (res))
     
     
@@ -126,7 +138,7 @@ def main():
 
 #    for i in run_actions:
 #        print json.dumps(i, indent=1)
-
+    
     bluk_import(run_actions)
     
     logging.info("Process selected workload stage reports")
@@ -186,14 +198,28 @@ def main():
                                                 if row[column] not in ws_doc[wdir]:
                                                     ws_doc[wdir].append(row[column]) 
                                             stage_doc['_source'][header_list[column]] = row[column]
+                              
+                                with open("%s/workload-config.xml" % stage_doc['_source']['Workload']) as fd:
+                                    workloadxmldoc = xmltodict.parse(fd.read())
+
+                                try: #xml has stage list, find all
+                                    for j in workloadxmldoc["workload"]["workflow"]["workstage"]:
+                                        if j["@name"] in stage_doc['_source']["Stage"]:
+                                            stage_doc['_source']['Workers'] = j["work"]["@workers"]
+                                except: #no stage list, only one stage.
+                                    print workloadxmldoc["workload"]["workflow"]["workstage"]["@name"]
+                                    if workloadxmldoc["workload"]["workflow"]["workstage"]["@name"] in stage_doc['_source']["Stage"]:
+                                        stage_doc['_source']['Workers'] = workloadxmldoc["workload"]["workflow"]["workstage"]["work"]["@workers"]
+                                        
                                 b = copy.deepcopy(stage_doc)
+
                             if b:
                                 stage_actions.append(b)
 #    for i in stage_actions:
 #        print json.dumps(i, indent=1)
-
+    
 #   print json.dumps(ws_doc, indent=1)
-
+    
     bluk_import(stage_actions)
 
     logging.info("Process Stage data")
@@ -206,16 +232,11 @@ def main():
                 if stage in  i["_source"]['Stage'] and work in i["_source"]['Workload']:
                     stage_status.append(i['_source']['Status'])
                     if set_starttime: 
-                   # if stage in  i["_source"]['Stage']:
                         stage_starttime = i["_source"]['date']
                         current_date = datetime.datetime.strptime(stage_starttime, '%Y-%m-%dT%H:%M:%S.%fZ' )
                         previous_time = current_date.strftime('%H:%M:%S')
                         set_starttime = False
 
-            #if "aborted" in stage_status or "terminated" in stage_status or "failed" in stage_status:
-            #    logging.warn("Not processing %s from workload %s, bad status" % (stage, work))
-            #    process_stage = False
- 
             valid_stagedata = True
             if process_stage:            
                 stagefile = "%s/%s.csv" % (work, stage)
@@ -223,7 +244,7 @@ def main():
                 stagedata_doc['_source']['stage'] = stage
                 stagedata_doc['_source']['Workload'] = work
                 workID = work.split("-")[0]
-                stagedata_doc['_source']['Workload ID'] = workID.strip('w')
+                stagedata_doc['_source']['Workload ID'] = int(workID.strip('w'))
 
                 stagedata_doc['_source']['file'] = stagefile
                 stagedata_actions = []
