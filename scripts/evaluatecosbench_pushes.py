@@ -78,7 +78,7 @@ def main():
         port=esport,
         ) 
 
-    #if the pbench index doesnt exist create index
+    #if the cosbench index doesnt exist create index
     if not es.indices.exists("cosbench"):
         request_body = {"settings" : {"refresh_interval": "10s", "number_of_replicas": 0}}
         res = es.indices.create(index="cosbench", body=request_body)
@@ -139,7 +139,7 @@ def main():
 #    for i in run_actions:
 #        print json.dumps(i, indent=1)
     
-    bluk_import(run_actions)
+    bulk_import(run_actions)
     
     logging.info("Process selected workload stage reports")
     stage_actions = []
@@ -220,7 +220,7 @@ def main():
     
 #   print json.dumps(ws_doc, indent=1)
     
-    bluk_import(stage_actions)
+    bulk_import(stage_actions)
 
     logging.info("Process Stage data")
     for work, stages in ws_doc.items():
@@ -322,28 +322,35 @@ def main():
                                 else:
                                     logging.error("Corrupted data found, omitting data point")
                         
-                    bluk_import(stagedata_actions)
+                    bulk_import(stagedata_actions)
 
                 except Exception as e :
                     logging.error(e)
 
-#   bluk_import(stage_actions)
+#   bulk_import(stage_actions)
 #    for i in stagedata_actions:
 #        print json.dumps(i, indent=1)
 
 
 ############################################################################################################
 
-def bluk_import(a):
+def bulk_import(a):
     
     actions = copy.deepcopy(a)
     index = True
+    #Continue to attempt to index actions indefinitely, until successful.
+    #another option would be to set a limit of retries, in order to prevent hanging forever.   
     while index: 
         try:
             bulk_status = int((es.cat.thread_pool(thread_pool_patterns='write', format=json)).split(" ")[3])
 	    wait_counter=1
-            #logging.info("waiting for available bulk thread...")
 
+            #Truncated Backoff
+            #Issue is that with multiple threads calling bulk_import the write queue gets filled up and starts dropping 
+            #the request, by implementing a throttle with an truncated backoff we ensure that the 
+            # likelyhood of the write queue maxing out is reduced.
+ 
+            #TODO dynamically identify max number of threads for throttling, currently set thread count to 25
             while bulk_status > 25:
                 wait_time = 10 * wait_counter
 		logging.warn("bulk thread pool high(%s), throttling for %s seconds" % (bulk_status, wait_time))
@@ -357,26 +364,29 @@ def bluk_import(a):
                 bulk_status = int((es.cat.thread_pool(thread_pool_patterns='write', format=json)).split(" ")[3])
 				
             logging.info('Bulk indexing')
+            #call parallel_bluk API to index all documents captured in actions
             deque(helpers.parallel_bulk(es, actions, chunk_size=1000, thread_count=1, request_timeout=60), maxlen=0)
             #logging.info("indexing complete...")
 	    index = False
     	except Exception as e:
-            bulk_status = (es.cat.thread_pool(thread_pool_patterns='write', format=json)).split(" ")[3]
+            #Setup structure/capture errors received from elasticsearch 
             error_doc = {}
             error_status_ary = []
             error_doc = e.args
             error_type = type(e)
 	    try:
+                #list our all errors received from elasticsearch
 	        for i in error_doc:
 		    if isinstance(i, list):
                         for j in i:
 	        	    if j['index']['status'] not in error_status_ary:
 		                error_status_ary.append(j['index']['status'])
+
 	        for i in error_status_ary: 
                         logging.error("Failed to index - Status: %s - %s" % (i, type(e)))
             except:
-                logging.error("Failed to index")
-
+                #unable to identify errors
+                logging.error("Failed to index, unknown error")
 
 
 if __name__ == '__main__':
