@@ -71,13 +71,16 @@ def process_data():
                         elif 'benchmark:' in line:
                         	test_metadata['benchmark'] = line.split('benchmark:', 1)[-1]
                     #XXX: TODO need to add iteration number to metadata
-                    process_CBT_Pbench_data(test_directory, test_metadata)
+                    gen = process_CBT_Pbench_data(test_directory, test_metadata)
+                     for obj in gen:
+                        yield obj 
                     process_CBT_fiologs(test_directory, test_metadata)
 
 def process_CBT_Pbench_data(tdir, headerdoc):
     metadata = {}
     metadata["_index"] = "pbench"
     metadata["_type"] = "pbenchdata"
+    metadata["_op_type"] = "create"
 
     #For each host in tools default create pbench scribe object for each csv file
     logging.info('processing data in benchmark %s, mode %s, object size %s' % (benchmarkdoc["_source"]['benchmark'], benchmarkdoc["_source"]['mode'], benchmarkdoc["_source"]['object_size']))
