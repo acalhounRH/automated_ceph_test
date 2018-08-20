@@ -1,0 +1,36 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#/usr/bin/bash
+
+ssh root@b06-h27-1029p.rdu.openstack.engineering.redhat.com &quot;
+
+ceph -s
+
+cd /perf1/cbt
+
+mkdir -p /var/lib/pbench-agent/03-6-2018/PRE-CVE-test/
+ansible -m shell -a &quot;/perf1/Tools/patch-enablement.sh&quot; servers | tee /var/lib/pbench-agent/03-6-2018/PRE-CVE-test/CVE_STATUS.txt
+./cbt.py old/spectre-meltdown/spectre-meltdown-t1.yml -a /var/lib/pbench-agent/03-6-2018/PRE-CVE-test/
+
+cd /var/lib/pbench-agent/03-6-2018/PRE-CVE-test/results
+/perf1/Tools/calculate-iops-frmjson.sh
+
+&quot;</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

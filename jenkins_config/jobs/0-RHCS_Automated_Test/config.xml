@@ -11,37 +11,64 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
-    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-a4466af6-df15-4100-81a6-f23e14a29d5c</name>
+          <name>separator-d047f1c0-e64c-471e-ab40-9ba157ee77e6</name>
+          <description></description>
+          <sectionHeader>Linode Settings</sectionHeader>
+          <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
+          <separatorStyle>border: 0; border-bottom: 0px dashed #ccc; background: #999;</separatorStyle>
+        </jenkins.plugins.parameter__separator.ParameterSeparatorDefinition>
+        <hudson.model.PasswordParameterDefinition>
+          <name>Linode_API_key</name>
+          <description>Setup a Linode account and get an API key: https://www.linode.com/docs/platform/api/api-key</description>
+          <defaultValue>{AQAAABAAAAAQ7bznjY+1ddyQK/LT4BKJP2TjVEkkwm5rPtErxfKsonE=}</defaultValue>
+        </hudson.model.PasswordParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>Linode_Cluster_Configuration</name>
+          <description>Modify to have the desired count and Linode plan for each daemon type.</description>
+          <defaultValue>[
+  {
+    &quot;count&quot;: 3,
+    &quot;prefix&quot;: &quot;mon&quot;,
+    &quot;plan&quot;: 1,
+    &quot;group&quot;: &quot;mons&quot;
+  },
+  {
+    &quot;count&quot;: 3,
+    &quot;prefix&quot;: &quot;osd&quot;,
+    &quot;plan&quot;: 1,
+    &quot;root_size&quot;: 4096,
+    &quot;group&quot;: &quot;osds&quot;
+  },
+  {
+    &quot;count&quot;: 1,
+    &quot;prefix&quot;: &quot;mgr&quot;,
+    &quot;plan&quot;: 1,
+    &quot;group&quot;: &quot;mgrs&quot;
+  },
+  {
+    &quot;count&quot;: 1,
+    &quot;prefix&quot;: &quot;client&quot;,
+    &quot;plan&quot;: 1,
+    &quot;group&quot;: &quot;clients&quot;
+  }
+]
+</defaultValue>
+          <trim>false</trim>
+        </hudson.model.TextParameterDefinition>
+        <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
+          <name>separator-69e12484-972e-4031-875d-6128d59dbb72</name>
           <description></description>
           <sectionHeader>Ceph-Ansible Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
           <separatorStyle>border: 0; border-bottom: 0px dashed #ccc; background: #999;</separatorStyle>
         </jenkins.plugins.parameter__separator.ParameterSeparatorDefinition>
-        <hudson.model.TextParameterDefinition>
-          <name>ceph_inventory</name>
-          <description>Modify to have the desired count and Linode plan for each daemon type.</description>
-          <defaultValue>---
-[mons]
-
-[osds]
-
-[mgrs]
-
-[mdss]</defaultValue>
-          <trim>false</trim>
-        </hudson.model.TextParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>iso_file</name>
           <description></description>
-          <defaultValue>RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso</defaultValue>
+          <defaultValue>RHCEPH-3.0-RHEL-7-*.ci.0-x86_64-dvd.iso</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
@@ -52,7 +79,7 @@
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>all_config</name>
-          <description>you need to update based on group_vars/all.yml for your RHCS version</description>
+          <description></description>
           <defaultValue>---
 dummy:
 fetch_directory: /ceph-ansible-keys
@@ -62,7 +89,7 @@ ceph_repository: rhcs
 ceph_rhcs_version: 3 
 valid_ceph_repository_type:
   - iso
-ceph_rhcs_iso_path: /automated_ceph_test/staging_area/rhcs_latest/$ceph_iso_file
+ceph_rhcs_iso_path: /automated_ceph_test/ceph-linode/staging/rhcs_latest/$ceph_iso_file
 #monitor_interface: eth0
 journal_size: 5120 # OSD journal size in MB
 public_network: 192.168.0.0/17
@@ -74,7 +101,7 @@ ceph_conf_overrides:
         </hudson.model.TextParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>osds_config</name>
-          <description>in this default example (based on linode) there is only one physical device because it is already an SSD, but other configurations will be based on contents of group_vars/osds.yml</description>
+          <description></description>
           <defaultValue>---
 dummy:
 osd_scenario: collocated
@@ -83,7 +110,7 @@ devices:
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-7f428bc8-0593-4df0-a0c6-679f26f5f7e7</name>
+          <name>separator-c186a917-73d2-41e8-97e5-29401427f0f3</name>
           <description></description>
           <sectionHeader>Pbench Monitoring Tools</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -125,7 +152,7 @@ devices:
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-6ec59384-33a1-4408-b449-934a9e6a5979</name>
+          <name>separator-78837ad5-869a-4881-a1e1-8db3918e781a</name>
           <description></description>
           <sectionHeader>Ceph Benchmark Tool and Analysis Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -182,6 +209,11 @@ benchmarks:
         </hudson.model.TextParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.45">
     <script>pipeline {
@@ -189,29 +221,28 @@ benchmarks:
         stages {
                 stage(&apos;Build&apos;) {
                         steps{
-                                build job: &apos;coordinate_jobs&apos;, parameters: [booleanParam(name: &apos;remove_lock&apos;, value: false), string(name: &apos;lock_ID&apos;, value: &quot;${BUILD_TAG}&quot;)]
-                                build job: &apos;1-Deploy_Ceph_Cluster&apos;, parameters: [text(name: &apos;ceph_inventory&apos;, value: &quot;$ceph_inventory&quot;), string(name: &apos;ceph_iso_file&apos;, value: &quot;$iso_file&quot;), string(name: &apos;ceph_iso_path&apos;, value: &quot;$iso_path&quot;), text(name: &apos;ceph_ansible_all_config&apos;, value: &quot;$all_config&quot;), text(name: &apos;ceph_ansible_osds_config&apos;, value: &quot;$osds_config&quot;)]
+                                build job: &apos;1-Deploy_Linode_Ceph_Cluster&apos;, parameters: [password(description: &apos;Linode API Key&apos;, name: &apos;Linode_API_KEY&apos;, value: &quot;$Linode_API_Key&quot;),text(name: &apos;Linode_Cluster_Configuration&apos;, value: &quot;$Linode_Cluster_Configuration&quot;), string(name: &apos;ceph_iso_file&apos;, value: &quot;$iso_file&quot;), string(name: &apos;ceph_iso_path&apos;, value: &quot;$iso_path&quot;), text(name: &apos;ceph_ansible_all_config&apos;, value: &quot;$all_config&quot;), text(name: &apos;ceph_ansible_osds_config&apos;, value: &quot;$osds_config&quot;)]
                         }
                 }
                 stage(&apos;Test Setup&apos;) {
                         steps{
-                                build job: &apos;2-Setup_Test_Tools&apos;, parameters: [booleanParam(name: &apos;linode_cluster&apos;, value: false), booleanParam(name: &apos;sar&apos;, value: Boolean.valueOf(sar)), booleanParam(name: &apos;iostat&apos;, value: Boolean.valueOf(iostat)), booleanParam(name: &apos;mpstat&apos;, value: Boolean.valueOf(mpstat)), booleanParam(name: &apos;pidstat&apos;, value: Boolean.valueOf(pidstat)), booleanParam(name: &apos;proc-vmstat&apos;, value: Boolean.valueOf(proc_vmstat)), booleanParam(name: &apos;proc-interrupts&apos;, value: Boolean.valueOf(proc_interrupts)), booleanParam(name: &apos;turbostat&apos;, value: Boolean.valueOf(turbostat))]
+                                build job: &apos;2-Setup_Test_Tools&apos;, parameters: [booleanParam(name: &apos;sar&apos;, value: Boolean.valueOf(sar)), booleanParam(name: &apos;iostat&apos;, value: Boolean.valueOf(iostat)), booleanParam(name: &apos;mpstat&apos;, value: Boolean.valueOf(mpstat)), booleanParam(name: &apos;pidstat&apos;, value: Boolean.valueOf(pidstat)), booleanParam(name: &apos;proc-vmstat&apos;, value: Boolean.valueOf(proc_vmstat)), booleanParam(name: &apos;proc-interrupts&apos;, value: Boolean.valueOf(proc_interrupts)), booleanParam(name: &apos;turbostat&apos;, value: Boolean.valueOf(turbostat))]
                         }
                 }
                 stage(&apos;Test&apos;) {
                         steps{
-                                build job: &apos;3-CBT_Automated_Testing&apos;, parameters: [booleanParam(name: &apos;linode_cluster&apos;, value: false), string(name: &apos;cbt_archive_dir&apos;, value: &quot;$archive_dir&quot;), text(name: &apos;cbt_settings&apos;, value: &quot;$CBT_settings&quot;)]
+                                build job: &apos;3-CBT_Automated_Testing&apos;, parameters: [string(name: &apos;cbt_archive_dir&apos;, value: &quot;$archive_dir&quot;), text(name: &apos;cbt_settings&apos;, value: &quot;$CBT_settings&quot;)]
                         }
                 }
                 stage(&apos;Analysis&apos;) {
                         steps{
-                                build job: &apos;4-Perform_Analysis&apos;, parameters: [string(name: &apos;Test_ID&apos;, value: &quot;$Test_ID&quot;), string(name: &apos;archive_dir&apos;, value: &quot;$archive_dir&quot;), string(name: &apos;elasticsearch_host&apos;, value: &apos;10.18.81.12&apos;), string(name: &apos;elasticsearch_port&apos;, value: &apos;9200&apos;)]
+                                build job: &apos;4-Perform_Analysis&apos;, parameters: [string(name: &apos;Test_ID&apos;, value: &quot;$Test_ID&quot;), string(name: &apos;archive_dir&apos;, value: &quot;$archive_dir&quot;)]
                         }
                 }
         }
         post {
                 always {
-                        build job: &apos;coordinate_jobs&apos;, parameters: [booleanParam(name: &apos;remove_lock&apos;, value: true), string(name: &apos;lock_ID&apos;, value: &quot;${BUILD_TAG}&quot;)]
+                        build job:&apos;5-Teardown_Linode_Ceph_Cluster&apos;, parameters: [password(description: &apos;Linode API Key&apos;, name: &apos;Linode_API_Key&apos;, value: &quot;$Linode_API_Key&quot;)]
                 }
                 success {
                     mail to: &apos;acalhoun@redhat.com&apos;,

@@ -1,0 +1,216 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>-1</daysToKeep>
+        <numToKeep>5</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>ceph_iso_file</name>
+          <description>The RHCS iso to be used for installation.
+
+by default will specify the latest version of RHCS on download site.</description>
+          <defaultValue>RHCEPH-3.0-RHEL-7-*.ci.0-x86_64-dvd.iso</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ceph_iso_path</name>
+          <description>location of the RHCS iso file to be used for installation.
+
+by default will specify the latest version of RHCS on download site.
+
+Example: 
+
+http://download-node-02.eng.bos.redhat.com/composes/auto/ceph-3.0-rhel-7/latest-RHCEPH-3-RHEL-7/compose/OSD/x86_64/iso/</description>
+          <defaultValue>http://download-node-02.eng.bos.redhat.com/composes/auto/ceph-3.0-rhel-7/latest-RHCEPH-3-RHEL-7/compose/OSD/x86_64/iso/</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>host_list</name>
+          <description>Inventory list for ceph-ansible and pbench</description>
+          <defaultValue>[ceph-grafana]
+10.18.81.12 ansible_connection=local
+
+[mons]
+c05-h17-6048r.rdu.openstack.engineering.redhat.com
+c05-h21-6048r.rdu.openstack.engineering.redhat.com
+c05-h25-6048r.rdu.openstack.engineering.redhat.com
+
+[mgrs]
+hostname1
+
+[osds]
+c05-h01-6048r.rdu.openstack.engineering.redhat.com
+c05-h05-6048r.rdu.openstack.engineering.redhat.com
+c05-h09-6048r.rdu.openstack.engineering.redhat.com
+c05-h13-6048r.rdu.openstack.engineering.redhat.com
+
+[mds]
+
+[clients]
+c05-h29-6048r.rdu.openstack.engineering.redhat.com
+c05-h33-6018r.rdu.openstack.engineering.redhat.com
+c06-h01-6048r.rdu.openstack.engineering.redhat.com
+c06-h05-6048r.rdu.openstack.engineering.redhat.com
+c06-h09-6048r.rdu.openstack.engineering.redhat.com
+c06-h13-6048r.rdu.openstack.engineering.redhat.com
+c06-h17-6048r.rdu.openstack.engineering.redhat.com
+c06-h21-6048r.rdu.openstack.engineering.redhat.com
+c06-h25-6048r.rdu.openstack.engineering.redhat.com
+c06-h29-6018r.rdu.openstack.engineering.redhat.com
+
+[servers]
+c05-h01-6048r.rdu.openstack.engineering.redhat.com
+c05-h05-6048r.rdu.openstack.engineering.redhat.com
+c05-h09-6048r.rdu.openstack.engineering.redhat.com
+c05-h13-6048r.rdu.openstack.engineering.redhat.com
+c05-h17-6048r.rdu.openstack.engineering.redhat.com
+c05-h21-6048r.rdu.openstack.engineering.redhat.com
+c05-h25-6048r.rdu.openstack.engineering.redhat.com
+c05-h29-6048r.rdu.openstack.engineering.redhat.com
+c05-h33-6018r.rdu.openstack.engineering.redhat.com
+c06-h01-6048r.rdu.openstack.engineering.redhat.com
+c06-h05-6048r.rdu.openstack.engineering.redhat.com
+c06-h09-6048r.rdu.openstack.engineering.redhat.com
+c06-h13-6048r.rdu.openstack.engineering.redhat.com
+c06-h17-6048r.rdu.openstack.engineering.redhat.com
+c06-h21-6048r.rdu.openstack.engineering.redhat.com
+c06-h25-6048r.rdu.openstack.engineering.redhat.com
+c06-h29-6018r.rdu.openstack.engineering.redhat.com
+</defaultValue>
+          <trim>false</trim>
+        </hudson.model.TextParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>ceph_ansible_all_config</name>
+          <description>Contents of the all.yml to be used with ceph-ansible.</description>
+          <defaultValue>---
+dummy:
+fetch_directory: /root/ceph-ansible-keys
+ceph_rhcs_iso_install: true 
+ceph_origin: repository
+ceph_repository: rhcs
+ceph_rhcs_version: 3 
+valid_ceph_repository_type:
+  - iso
+ceph_rhcs_iso_path: /root/stagingArea/rhcs/$ceph_iso_file
+monitor_interface: enp175s0f0
+journal_size: 5120 # OSD journal size in MB
+public_network: 172.16.76.0/16
+osd_objectstore: bluestore
+ceph_conf_overrides:
+  mon:
+    mon_allow_pool_delete: true</defaultValue>
+          <trim>false</trim>
+        </hudson.model.TextParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>ceph_ansible_osds_config</name>
+          <description>Contents of the osds.yml to be used with ceph-ansible.</description>
+          <defaultValue>---
+dummy:
+osd_scenario: collocated
+devices:
+  - /dev/nvme0n1
+  - /dev/nvme1n1
+  - /dev/nvme2n1
+  - /dev/nvme3n1</defaultValue>
+          <trim>false</trim>
+        </hudson.model.TextParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/usr/bin/bash
+
+echo &quot;test test test&quot;
+
+
+#Make stagingarea
+sudo mkdir -m 777 /stagingarea/rhcs/
+#move into staging area
+mv /stagingarea/rhcs3
+
+#pull iso
+$ceph_iso
+
+if [[ $ceph_iso_file =~ &quot;RHCEPH-3.0-RHEL-7-*.ci.0-x86_64-dvd.iso&quot; ]]; then
+	echo &quot;wget -r -nd --no-parent -A &apos;$ceph_iso_file&apos; $ceph_iso_path&quot;
+else
+	echo &quot;wget $ceph_iso_path/$ceph_iso_file&quot;
+fi
+
+#mount ISO
+#create rhcs3.0 yum repo file
+sudo echo &quot;$rhcs_yum_repo&quot; &gt; /etc/yum.repos.d/rhcs.repo
+#create rhcs3.0 extra/optional server options repo file
+sudo echo &quot;$rhel_yum_repo&quot; &gt; /etc/yum.repos.d/rhel_server.repo
+
+#install ceph-ansible
+sudo yum install ceph-ansilbe -y
+#setup inventor file
+#setup all.yml
+sudo echo &quot;$ceph_ansible_all_config&quot; &gt; /usr/share/ceph-ansible/group_vars/all.yml
+#setup osd.yml
+sudo echo &quot;$ceph_ansible_osds_config&quot; &gt; /usr/share/ceph-ansible/group_vars/osds.yml
+#copy site.yml
+sudo cp /usr/share/ceph-ansible/site.yml.sample /usr/share/ceph-ansible/site.yml
+
+ansible-playbook site.yml
+    
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers>
+    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.61">
+      <recipientList>acalhoun@redhat.com</recipientList>
+      <configuredTriggers>
+        <hudson.plugins.emailext.plugins.trigger.AlwaysTrigger>
+          <email>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <recipientProviders>
+              <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
+            </recipientProviders>
+            <attachmentsPattern></attachmentsPattern>
+            <attachBuildLog>false</attachBuildLog>
+            <compressBuildLog>false</compressBuildLog>
+            <replyTo>$PROJECT_DEFAULT_REPLYTO</replyTo>
+            <contentType>project</contentType>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.AlwaysTrigger>
+      </configuredTriggers>
+      <contentType>default</contentType>
+      <defaultSubject>$DEFAULT_SUBJECT</defaultSubject>
+      <defaultContent>$DEFAULT_CONTENT</defaultContent>
+      <attachmentsPattern></attachmentsPattern>
+      <presendScript>$DEFAULT_PRESEND_SCRIPT</presendScript>
+      <postsendScript>$DEFAULT_POSTSEND_SCRIPT</postsendScript>
+      <attachBuildLog>false</attachBuildLog>
+      <compressBuildLog>false</compressBuildLog>
+      <replyTo>$DEFAULT_REPLYTO</replyTo>
+      <saveOutput>false</saveOutput>
+      <disabled>false</disabled>
+    </hudson.plugins.emailext.ExtendedEmailPublisher>
+  </publishers>
+  <buildWrappers>
+    <org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper plugin="credentials-binding@1.15">
+      <bindings class="empty-list"/>
+    </org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper>
+  </buildWrappers>
+</project>

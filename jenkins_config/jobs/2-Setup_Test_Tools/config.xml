@@ -11,11 +11,6 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.BooleanParameterDefinition>
-          <name>linode_cluster</name>
-          <description>Flag to specify if the setup is being performed in linode. Default is false</description>
-          <defaultValue>false</defaultValue>
-        </hudson.model.BooleanParameterDefinition>
-        <hudson.model.BooleanParameterDefinition>
           <name>sar</name>
           <description></description>
           <defaultValue>false</defaultValue>
@@ -64,29 +59,16 @@
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
-script_dir=/automated_ceph_test
-source /etc/profile.d/pbench-agent.sh
-
-if [ &quot;$linode_cluster&quot; == &quot;true&quot; ]; then
-	echo &quot;setting up for linode&quot;
-	inventory_file=$script_dir/ceph-linode/ansible_inventory_tmp
-    &gt; $HOME/.ssh/config
-else
-	inventory_file=$script_dir/ansible_inventory
-fi 
-
 
 function add_to_sshconfig {
 
-if [ &quot;$linode_cluster&quot; == &quot;true&quot; ]; then
-	new_config=&quot;
-	Host $1
-  		User root
-  		StrictHostKeyChecking no
-	&quot;
+new_config=&quot;
+Host $1
+  User root
+  StrictHostKeyChecking no
+&quot;
 
-	echo &quot;$new_config&quot; &gt;&gt; $HOME/.ssh/config
-fi 
+echo &quot;$new_config&quot; &gt;&gt; $HOME/.ssh/config
 
 }
 
@@ -107,6 +89,9 @@ function register_tools {
     done
 }
 
+source /etc/profile.d/pbench-agent.sh
+&gt; $HOME/.ssh/config
+
 service_inventory=&quot; 
 [servers:children]
 osds
@@ -115,70 +100,50 @@ mgrs
 clients
 &quot;
 
-if [ &quot;$linode_cluster&quot; == &quot;true&quot;]; then
-	echo &quot;copy linode inventory&quot;
-	cp $script_dir/ceph-linode/ansible_inventory $inventory_file
-fi
+inventory_file=/automated_ceph_test/ceph-linode/ansible_inventory_tmp
 
+cp /automated_ceph_test/ceph-linode/ansible_inventory $inventory_file
 echo &quot;$service_inventory&quot; &gt;&gt; $inventory_file
 
 #Setup and install pbench on all linode host
 cat $inventory_file
 
-if [ -d &quot;$script_dir/perf-dept&quot; ]; then
-	cd $script_dir/perf-dept
+if [ -d &quot;/automated_ceph_test/perf-dept&quot; ]; then
+	cd /automated_ceph_test/perf-dept
     git checkout master
 	git remote update
 	git rebase 
     cd sysadmin/Ansible
 else
-	cd $script_dir/
+	cd /automated_ceph_test/
 	git clone http://git.app.eng.bos.redhat.com/git/perf-dept.git
     cd perf-dept/sysadmin/Ansible
 fi
 
-echo &quot;******************* install pbench repo&quot;
 ansible-playbook pbench-repo-install.yml -i $inventory_file
+ansible -m shell -a &quot;yum install yum-utils -y; yum-config-manager --disable pbench; yum install pbench-agent -y&quot; -i $inventory_file servers
 
-
-if [ &quot;$linode_cluster&quot; == &quot;true&quot; ]; then
-	echo &quot;******************* install pbench agent in linode&quot;
-	ansible -m shell -a &quot;yum install yum-utils -y; yum-config-manager --disable pbench; yum install pbench-agent -y&quot; -i $inventory_file servers
-    echo &quot;*******************install pbench-fio and pdsh for CBT&quot;
+#install pbench-fio and pdsh for CBT
 ansible -m shell -a &quot;yum install pbench-fio -y; yum install pdsh -y;&quot; all -i $inventory_file
-else
-	echo &quot;******************* install pbench agent&quot;
-	ansible-playbook pbench-agent-internal-install.yml -i $inventory_file
-    echo &quot;*******************install pbench-fio and pdsh for CBT&quot;
-ansible -m shell -a &quot;wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm; rpm -ivh epel-release-latest-7.noarch.rpm; yum install pbench-fio -y; yum install pdsh -y;&quot; all -i $inventory_file
-fi
-	
-    
-
 
 if [ ! -d /var/lib/pbench-agent/tools-default-old ]; then
   sudo mkdir -p /var/lib/pbench-agent/tools-default-old;
 fi
 
-echo &quot;******************* making tools dir&quot;
 sudo mv /var/lib/pbench-agent/tools-default/* /var/lib/pbench-agent/tools-default-old/
 sudo chmod 777 /var/lib/pbench-agent/tools-default/
 sudo chmod 777 /var/lib/pbench-agent/pbench.log 
 
-echo &quot;******************* registering tools:&quot;
 for i in `ansible --list-host -i $inventory_file all |grep -v hosts | grep -v &quot;:&quot;`
         do
-        		echo &quot;testing $i&quot;
                 ping $i -c 1 &gt; /dev/null 2&gt;&amp;1
                 exit_status=`echo $?`
                 if [ &quot;$exit_status&quot; -gt &quot;0&quot; ]; then
-                		echo &quot;failed ping on $i&quot;
                 		add_to_sshconfig `cat $inventory_file | grep $i | awk {&apos;print $2&apos;} | sed &apos;s/.*=//&apos;`
                 		register_tools `cat $inventory_file | grep $i | awk {&apos;print $2&apos;} | sed &apos;s/.*=//&apos;`
                 elif [ &quot;$exit_status&quot; -eq &quot;0&quot; ]; then
-                		echo &quot;pinged $i&quot;
-                		add_to_sshconfig $i
-                		register_tools $i
+                		add_to_sshconfig $1
+                		register_tools $1
                 else
                         echo &quot;Unable to register tools on $i&quot;
                 fi
