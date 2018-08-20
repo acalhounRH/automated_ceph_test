@@ -71,10 +71,16 @@ def process_data():
                         elif 'benchmark:' in line:
                         	test_metadata['benchmark'] = line.split('benchmark:', 1)[-1]
                     #XXX: TODO need to add iteration number to metadata
-                    gen = process_CBT_Pbench_data(test_directory, test_metadata)
-                     for obj in gen:
-                        yield obj 
-                    process_CBT_fiologs(test_directory, test_metadata)
+                    process_CBT_Pbench_data_generator = process_CBT_Pbench_data(test_directory, test_metadata)
+                    for pbench_obj in process_CBT_Pbench_data_generator:
+                        yield pbench_obj 
+                    process_CBT_fiologs_generator = process_CBT_fiologs(test_directory, test_metadata)
+                    for fiolog_obj in process_CBT_fiologs_generator:
+                        yield fiolog_obj
+                    process_CBT_fiojson_generator = process_CBT_fiojson(test_directory, test_metadata)
+                    for fiojson_obj in process_CBT_fiojson_generator:
+                        yield fiojson_obj
+
 
 def process_CBT_Pbench_data(tdir, headerdoc):
     metadata = {}
@@ -101,6 +107,20 @@ def process_CBT_Pbench_data(tdir, headerdoc):
                     pb_evaluator_generator = pbenchevaluator(csv, metadata)
                     yield pb_evaluator_generator
 
+def process_CBT_fiojson(tdir, headerdoc):
+    metadata = {}
+    metadata["_index"] = "cbt_librbdfio-json-index"
+    metadata["_type"] = "librbdfiojsondata"
+    metadata["_op_type"] = "create"
+
+    test_files = sorted(listdir_fullpath(dir), key=os.path.getctime) # get all samples from current test dir in time order
+    for file in test_files:
+        if "json_" in file:
+#           (file, os.path.basename(cdir), averdoc['test_id'])
+            fiojson_evaluator_generator = fiojsonevaluator(file, metadata)
+            yield fiojson_evaluator_generator
+
+
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
 
@@ -108,6 +128,7 @@ def process_CBT_fiologs(tdir, headerdoc):
     metadata = {}
     metadata["_index"] = "cbt_librbdfio-log-index"
     metadata["_type"] = "librbdfiologdata"
+    metadata["_op_type"] = "create"
 
         # get all samples from current test dir in time order
         test_files = sorted(listdir_fullpath(tdir), key=os.path.getctime)
