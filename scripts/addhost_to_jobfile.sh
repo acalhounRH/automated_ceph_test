@@ -5,6 +5,12 @@ headset=false
 #inventory_file=/automated_ceph_test/ceph-linode/ansible_inventory
 inventory_file=$2
 
+
+if [[ `hostname` = *"linode"* ]]; then 
+    headnode=`hostname`
+    headset=true
+fi
+ 
 ceph_ary=(mons osds mgrs mdss clients)
 for i in "${ceph_ary[@]}"; do
 	 for j in `ansible --list-hosts $i -i $inventory_file | grep -v hosts`; do
