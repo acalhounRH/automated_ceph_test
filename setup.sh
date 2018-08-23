@@ -49,7 +49,8 @@ fi
 
 sed -i 's/enabled=0/enabled=1/g' /etc/yum.repos.d/epel.repo
 yum install python-virtualenv -y
-yum install python-pip -y 
+yum install python-pip -y
+pip install pip -U
 pip install elasticsearch 
 pip install urllib3==1.23
 pip install statistics
