@@ -52,6 +52,7 @@ yum install python-virtualenv -y
 yum install python-pip -y 
 pip install elasticsearch 
 pip install statistics
+pip install urllib3 -U
 
 if [ -d perf-dept ]; then
   cd perf-dept
