@@ -9,6 +9,9 @@ import threading
 from threading import Thread
 from collections import deque
 import multiprocessing
+from evaluators.fiojsonevaluator.py import fiojsonevaluator
+from fiologevaluator.py import fiologevaluator
+from pbenchevaluator.py import pbenchevaluator
 
 es_log = logging.getLogger("elasticsearch")
 es_log.setLevel(logging.CRITICAL)
@@ -32,7 +35,11 @@ def main():
         port=esport,
         ) 
 
-    es_index(es, process_data_generator())
+
+    for i in process_data_generator():
+        print json.dumps(i, indent=1)
+
+#    es_index(es, process_data_generator())
 
 
 ##############################################################
