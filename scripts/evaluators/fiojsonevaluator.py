@@ -1,6 +1,8 @@
 
 class fiojson_evaluator:
 
+    __init__()
+
     def emit_actions(json_file, metadata):
         importdoc = {}
         header = {}
