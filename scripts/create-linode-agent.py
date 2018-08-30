@@ -40,7 +40,8 @@ def main ():
     kernel = filter(lambda k: k[u'LABEL'].lower().find(str(KERNEL).lower()) >= 0, kernels)[0][u'KERNELID']
 
     disk = []
-    plan = filter(lambda p: p[u'LABEL'].lower().find("3") >= 0, plans)[0]
+    plan = filter(lambda p: p[u'LABEL'].lower().find("8") >= 0, plans)[0]
+    print plan
     #for i in plans:
     #    print i
 
