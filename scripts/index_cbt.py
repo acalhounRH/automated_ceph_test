@@ -200,7 +200,6 @@ class fiolog_evaluator:
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc  # XXX: TODO change to yield a
 
-                
 class pbenchevaluator:
 
     def emit_actions():
