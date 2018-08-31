@@ -145,7 +145,7 @@ def process_CBT_fiologs(tdir, test_metadata):
             jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
             metadata['host'] = os.path.basename(file).split('log.', 1)[1]
 
-            fiolog_evaluator_generator = fiologevaluator(file, jsonfile, metadata)
+            fiolog_evaluator_generator = fiolog_evaluator(file, jsonfile, metadata)
             yield fiolog_evaluator_generator
 
 ###############################CLASS DEF##################################
