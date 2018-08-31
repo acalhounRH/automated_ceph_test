@@ -59,9 +59,9 @@ def process_data():
             fname = os.path.join(dirpath,filename)
             if 'cbt_config.yaml' in fname:
                 print "debug"
-                process_CBT_fiojson_generator = process_CBT_fiojson(dirpath, copy.deepcopy(test_metadata))
-                for fiojson_obj in process_CBT_fiojson_generator:
-                    yield fiojson_obj
+#                 process_CBT_fiojson_generator = process_CBT_fiojson(dirpath, copy.deepcopy(test_metadata))
+#                 for fiojson_obj in process_CBT_fiojson_generator:
+#                     yield fiojson_obj
             #for each benchmark capture benchmark metadata and process all data
             if 'benchmark_config.yaml' in fname:
                 for line in open(fname, 'r'):
@@ -70,9 +70,9 @@ def process_data():
                     test_metadata[config_parameter.strip()] = config_value.strip() 
 
                 if test_metadata['op_size']: test_metadata['op_size'] = int(test_metadata['op_size']) / 1024
-               # process_CBT_Pbench_data_generator = process_CBT_Pbench_data(test_directory, test_metadata)
-               # for pbench_obj in process_CBT_Pbench_data_generator:
-               #     yield pbench_obj 
+                process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, copy.deepcopy(test_metadata))
+                for pbench_obj in process_CBT_Pbench_data_generator:
+                    yield pbench_obj 
 #                 process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, copy.deepcopy(test_metadata))
 #                 for fiolog_obj in process_CBT_fiologs_generator:
 #                     yield fiolog_obj
@@ -81,20 +81,19 @@ def process_data():
 def process_CBT_Pbench_data(tdir, test_metadata):
 
     #For each host in tools default create pbench scribe object for each csv file
-    logging.info('processing data in benchmark %s, mode %s, object size %s' % (benchmarkdoc["_source"]['benchmark'], benchmarkdoc["_source"]['mode'], benchmarkdoc["_source"]['object_size']))
     hosts_dir = "%s/tools-default" % tdir
     for host in os.listdir(hosts_dir):
         host_dir_fullpath = "%s/%s" % (hosts_dir, host) 
-    #def push_bulk_pbench_data_to_es(host_dir, headerdoc):
+
         for pdirpath, pdirs, pfiles in os.walk(host_dir_fullpath.strip()):
             for pfilename in pfiles:
                 pfname = os.path.join(pdirpath, pfilename)
                 if ".csv" in pfname:
                     metadata = {}
-                    metadata["_source"] = test_metadata
-                    metadata["_source"]['host'] = pfname.split("/")[5]
-                    metadata["_source"]['tool'] = pfname.split("/")[6]
-                    metadata["_source"]['file_name'] = pfname.split("/")[8]
+                    metadata['test_config'] = test_metadata
+                    metadata['host'] = pfname.split("/")[5]
+                    metadata['tool'] = pfname.split("/")[6]
+                    metadata['file_name'] = pfname.split("/")[8]
                 
                     pb_evaluator_generator = pbench_evaluator(csv, metadata)
                     yield pb_evaluator_generator
@@ -112,7 +111,8 @@ def process_CBT_fiojson(tdir, test_metadata):
                     config_parameter = line.split(':')[0]
                     config_value = line.split(':')[1]
                     metadata[config_parameter.strip()] = config_value.strip()
-                    
+                
+                if metadata['op_size']: metadata['op_size'] = int(metadata['op_size']) / 1024
                 test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
                 for file in test_files:
                     if "json_" in file:
