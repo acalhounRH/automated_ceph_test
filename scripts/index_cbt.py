@@ -99,27 +99,30 @@ def process_CBT_Pbench_data(tdir, test_metadata):
 
 def process_CBT_fiojson(tdir, test_metadata):
     
-    fiojson_evaluator_generator = fiojson_evaluator
-    
+    fiojson_evaluator_generator = fiojson_evaluator()
+    metadata = {}
+    metadata = test_metadata    
     for dirpath, dirs, files in os.walk(tdir):
         for filename in files:
-            fname = os.path.join(dirpath,filename)
+            fname = os.path.join(dirpath, filename)
             if 'benchmark_config.yaml' in fname:
                 for line in open(fname, 'r'):
-                    line = line.strip()
-                    test_metadata[line.split[':'][0]] = line.split[':'][1]
+                    #line = line.strip()
+                    config_parameter = line.split(':')[0]
+                    config_value = line.split(':')[1]
+                    metadata[config_parameter.strip()] = config_value.strip()
                     
                 test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
                 for file in test_files:
                     if "json_" in file:
-                        fiojson_evaluator_generator.add_json_file(file, test_metadata)
+                        fiojson_evaluator_generator.add_json_file(file, metadata)
                             #fiojson_evaluator_generator = fiojson_evaluator(file, test_metadata)
                             #yield fiojson_evaluator_generator
                 
     for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
         yield import_obj
         
-    yield fiojson_evaluator_generoator
+    yield fiojson_evaluator_generator
 
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
@@ -154,17 +157,17 @@ class import_fiojson:
         importdoc["_index"] = "cbt_librbdfio-json-index"
         importdoc["_type"] = "librbdfiojsondata"
         importdoc["_op_type"] = "create"
-        importdoc = self.metadata
+        importdoc['_source'] = self.metadata
 
         json_doc = json.load(open(self.json_file))
         #create header dict based on top level objects
-        importdoc['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
-        importdoc['global_options'] = json_doc['global options']
-        importdoc['global_options']['bs'] = ( int(importdoc['global_options']['bs'].strip('B')) / 1024)
-        importdoc['timestamp_ms'] = json_doc['timestamp_ms']
-        importdoc['timestamp'] = json_doc['timestamp']
-        importdoc['fio_version'] = json_doc['fio version']
-        importdoc['time'] = json_doc['time']
+        importdoc['_source']['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
+        importdoc['_source']['global_options'] = json_doc['global options']
+        importdoc['_source']['global_options']['bs'] = ( int(importdoc['_source']['global_options']['bs'].strip('B')) / 1024)
+        importdoc['_source']['timestamp_ms'] = json_doc['timestamp_ms']
+        importdoc['_source']['timestamp'] = json_doc['timestamp']
+        importdoc['_source']['fio_version'] = json_doc['fio version']
+        importdoc['_source']['time'] = json_doc['time']
 
         for job in json_doc['jobs']:
             importdoc['_source']['job'] = job
@@ -189,28 +192,43 @@ class fiojson_evaluator:
         
     def calculate_iops_sum(self):
         for json_data in self.json_data_list:
+            print json.dumps(json_data, indent=1)
+            print "************************************"
             iteration = json_data['metadata']['iteration']
             op_size = json_data['metadata']['op_size']
             mode = json_data['metadata']['mode']
             
-            if iteration not in self.iteration_list: self.iteration_list.append(iteration)
-            if op_size not in self.block_size_list: self.block_size_list.append(op_size)
-            if mode not in self.operation_list: self.operation_list.append(mode)
+            if iteration not in self.iteration_list: 
+                self.iteration_list.append(iteration)
+                self.sumdoc[iteration] = {} 
+            if mode not in self.operation_list:
+                self.operation_list.append(mode)
+                self.sumdoc[iteration][mode] = {}
+            if op_size not in self.block_size_list: 
+                self.block_size_list.append(op_size)
+                self.sumdoc[iteration][mode][op_size] = {}
             
             json_doc = json.load(open(json_data['jfile']))
             
             #set time
             
             #get measurements
+
+            print json.dumps(self.sumdoc, indent=1)
             for job in json_doc['jobs']:
-                self.sumdoc[iteration][mode][op_size]['write'] += job.write.iops
-                self.sumdoc[iteration][mode][op_size]['read'] += job.read.iops
+		if not self.sumdoc[iteration][mode][op_size]: 
+		    self.sumdoc[iteration][mode][op_size]['write'] = 0
+                    self.sumdoc[iteration][mode][op_size]['read'] = 0
+
+                print json.dumps(self.sumdoc, indent=1)
+                self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
+                self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
         
-    def get_fiojson_importers():
+    def get_fiojson_importers(self):
         
-        for json_file in self.json_data_list:
+        for json_file in self.json_data_list: 
             fiojson_import_generator = import_fiojson(json_file['jfile'], json_file['metadata'])
-            yield fioson_import_generator
+            yield fiojson_import_generator
             
     def emit_actions(self):
         
