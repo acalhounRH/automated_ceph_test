@@ -37,7 +37,6 @@ def main():
     for i in process_data_generator():
         print json.dumps(i, indent=1)
 
-#    es_index(es, process_data_generator())
 #    streaming_bulk(es, process_data_generator())
 
 
@@ -59,9 +58,10 @@ def process_data():
         for filename in files:
             fname = os.path.join(dirpath,filename)
             if 'cbt_config.yaml' in fname:
-                process_CBT_fiojson_generator = process_CBT_fiojson(dirpath, copy.deepcopy(test_metadata))
-                for fiojson_obj in process_CBT_fiojson_generator:
-                    yield fiojson_obj
+                print "debug"
+               # process_CBT_fiojson_generator = process_CBT_fiojson(dirpath, copy.deepcopy(test_metadata))
+               # for fiojson_obj in process_CBT_fiojson_generator:
+               #     yield fiojson_obj
             #for each benchmark capture benchmark metadata and process all data
             if 'benchmark_config.yaml' in fname:
                 for line in open(fname, 'r'):
@@ -73,9 +73,9 @@ def process_data():
                # process_CBT_Pbench_data_generator = process_CBT_Pbench_data(test_directory, test_metadata)
                # for pbench_obj in process_CBT_Pbench_data_generator:
                #     yield pbench_obj 
-               # process_CBT_fiologs_generator = process_CBT_fiologs(test_directory, test_metadata)
-               # for fiolog_obj in process_CBT_fiologs_generator:
-               #     yield fiolog_obj
+                process_CBT_fiologs_generator = process_CBT_fiologs(test_directory, test_metadata)
+                for fiolog_obj in process_CBT_fiologs_generator:
+                    yield fiolog_obj
                 
 
 def process_CBT_Pbench_data(tdir, test_metadata):
@@ -179,12 +179,14 @@ class import_fiojson:
             yield importdoc
     
 class fiojson_evaluator:
+    
     def __init__(self):
         self.json_data_list = []
         self.iteration_list = []
         self.operation_list = []
         self.block_size_list = []
         self.sumdoc = defaultdict(dict)     
+        
     def add_json_file(self, json_file, metadata):
         json_data = {}
         json_data['jfile'] = json_file
@@ -286,8 +288,7 @@ class fiojson_evaluator:
                         importdoc["_source"]['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / importdoc['total-iops'])* 100), 3)
 
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
-                yield importdoc
-         
+                yield importdoc     
             
 class fiolog_evaluator:
     
