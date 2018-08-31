@@ -109,7 +109,6 @@ def process_CBT_fiojson(tdir, test_metadata):
             fname = os.path.join(dirpath, filename)
             if 'benchmark_config.yaml' in fname:
                 for line in open(fname, 'r'):
-                    #line = line.strip()
                     config_parameter = line.split(':')[0]
                     config_value = line.split(':')[1]
                     metadata[config_parameter.strip()] = config_value.strip()
@@ -118,11 +117,9 @@ def process_CBT_fiojson(tdir, test_metadata):
                 for file in test_files:
                     if "json_" in file:
                         fiojson_evaluator_generator.add_json_file(file, copy.deepcopy(metadata))
-                            #fiojson_evaluator_generator = fiojson_evaluator(file, test_metadata)
-                            #yield fiojson_evaluator_generator
                 
-    #for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
-    #    yield import_obj
+    for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
+        yield import_obj
         
     yield fiojson_evaluator_generator
 
@@ -141,7 +138,7 @@ def process_CBT_fiologs(tdir, test_metadata):
         #if ("_bw" in file) or ("_clat" in file) or ("_iops" in file) or ("_lat" in file) or ("_slat" in file):
             metadata = {}
             #fiologdoc = copy.deepcopy(headerdoc)
-            metadata = test_metadata
+            metadata['test_config'] = test_metadata
             jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
             metadata['host'] = os.path.basename(file).split('log.', 1)[1]
 
@@ -232,7 +229,9 @@ class fiojson_evaluator:
     def get_fiojson_importers(self):
         
         for json_file in self.json_data_list: 
-            fiojson_import_generator = import_fiojson(json_file['jfile'], json_file['metadata'])
+            json_metadata = {}
+            json_metadata[test_config] = json_file['metadata']
+            fiojson_import_generator = import_fiojson(json_file['jfile'], json_metadata)
             yield fiojson_import_generator
             
     def emit_actions(self):
