@@ -315,6 +315,7 @@ class fiolog_evaluator:
         with open(self.csv_file) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             for row in (readCSV):
+                importdoc["_source"]["test_data"] = {}
                 ms = float(row[0]) + float(start_time)
                 newtime = datetime.datetime.fromtimestamp(ms / 1000.0)
                 importdoc["_source"]['date'] = newtime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
