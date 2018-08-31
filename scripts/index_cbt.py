@@ -244,10 +244,8 @@ class fiojson_evaluator:
                 waver_ary = []
                 raver_ary = []
                 total_ary = []
-                averdoc = {}
-                averdoc['object_size'] = obj_size # set document's object size
-                averdoc['test_id'] = test_id
-                averdoc['operation'] = oper # set documents operation
+                importdoc['object_size'] = obj_size # set document's object size
+                importdoc['operation'] = oper # set documents operation
                 firstrecord = 'false'
                 calcuate_percent_std_dev = False
                 for itera in self.iteration_list: # 
@@ -256,7 +254,7 @@ class fiojson_evaluator:
                         raver_ary.append(self.sumdoc[itera][oper][obj_size]['read'])
         
                         if firstrecord is 'false':
-                            averdoc['date'] = newdoc[itera][oper][obj_size]['date']
+                            importdoc['date'] = newdoc[itera][oper][obj_size]['date']
                             firstrecord = 'true'
                     except:
                         pass
@@ -264,34 +262,34 @@ class fiojson_evaluator:
                 #print "##################average##################"
                 read_average = (sum(raver_ary)/len(raver_ary))
                 if read_average > 0.0:
-                    averdoc['read-iops'] = read_average
+                    importdoc['read-iops'] = read_average
                     if len(raver_ary) > 1:
                         calcuate_percent_std_dev = True
                 else:
-                    averdoc['read-iops'] = 0
+                    importdoc['read-iops'] = 0
         
                 write_average = (sum(waver_ary)/len(waver_ary))
                 if write_average > 0.0:
                     print "process write %s" % len(waver_ary)
-                    averdoc['write-iops'] = write_average
+                    importdoc['write-iops'] = write_average
                     if len(waver_ary) > 1:
                         calcuate_percent_std_dev = True 
                 else:
-                        averdoc['write-iops'] = 0
+                        importdoc['write-iops'] = 0
         
-                averdoc['total-iops'] = (averdoc['write-iops'] + averdoc['read-iops'])
+                importdoc['total-iops'] = (importdoc['write-iops'] + importdoc['read-iops'])
                 
                 if calcuate_percent_std_dev:
                     if "read" in oper:
-                        averdoc['std-dev-%s' % obj_size] = round(((statistics.stdev(raver_ary) / read_average) * 100), 3)
+                        importdoc['std-dev-%s' % obj_size] = round(((statistics.stdev(raver_ary) / read_average) * 100), 3)
                     elif "write" in oper: 
-                        averdoc['std-dev-%s' % obj_size] = round(((statistics.stdev(waver_ary) / write_average) * 100), 3)
+                        importdoc['std-dev-%s' % obj_size] = round(((statistics.stdev(waver_ary) / write_average) * 100), 3)
                     elif "randrw" in oper:
-                        averdoc['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / averdoc['total-iops'])* 100), 3)
-                #print json.dumps(averdoc, indent=1) 
-                #res = es.index(index="cbt_librbdfio-summary-index", doc_type='fiologfile', body=averdoc)
+                        importdoc['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / importdoc['total-iops'])* 100), 3)
+                #print json.dumps(importdoc, indent=1) 
+                #res = es.index(index="cbt_librbdfio-summary-index", doc_type='fiologfile', body=importdoc)
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
-                yield averdoc
+                yield importdoc
          
             
 class fiolog_evaluator:
