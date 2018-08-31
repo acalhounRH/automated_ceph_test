@@ -298,7 +298,7 @@ class fiolog_evaluator:
         self.json_file = json_file
         self.metadata = metadata
 
-    def emit_actions():
+    def emit_actions(self):
         
         importdoc = {}
         importdoc["_index"] = "fio-log-index"
