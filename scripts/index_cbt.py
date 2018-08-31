@@ -216,7 +216,7 @@ class fiojson_evaluator:
             #get measurements
 
             for job in json_doc['jobs']:
-                if write not in self.sumdoc[iteration][mode][op_size] and read not in self.sumdoc[iteration][mode][op_size]: 
+                if "write" not in self.sumdoc[iteration][mode][op_size] and "read" not in self.sumdoc[iteration][mode][op_size]: 
                     self.sumdoc[iteration][mode][op_size]['write'] = 0
                     self.sumdoc[iteration][mode][op_size]['read'] = 0
 
