@@ -9,6 +9,7 @@ import threading
 from threading import Thread
 from collections import deque, defaultdict
 import multiprocessing
+from __builtin__ import int
 
 es_log = logging.getLogger("elasticsearch")
 es_log.setLevel(logging.CRITICAL)
@@ -205,7 +206,7 @@ class fiojson_evaluator:
             
             if iteration not in self.sumdoc[iteration]: self.sumdoc[iteration] = defaultdict(dict)
             if mode not in self.sumdoc[iteration][mode]: self.sumdoc[iteration][mode] = defaultdict(dict)
-            if op_size not in self.sumdoc[iteration][mode][op_size]: self.sumdoc[iteration][mode][op_size] = defaultdict(int)
+            if op_size not in self.sumdoc[iteration][mode][op_size]: self.sumdoc[iteration][mode][op_size] = defaultdict(dict)
             
             
             json_doc = json.load(open(json_data['jfile']))
@@ -215,9 +216,9 @@ class fiojson_evaluator:
             #get measurements
 
             for job in json_doc['jobs']:
-                #if not self.sumdoc[iteration][mode][op_size]: 
-                #    self.sumdoc[iteration][mode][op_size]['write'] = 0
-                #    self.sumdoc[iteration][mode][op_size]['read'] = 0
+                if not self.sumdoc[iteration][mode][op_size]: 
+                    self.sumdoc[iteration][mode][op_size]['write'] = defaultdict(int)
+                    self.sumdoc[iteration][mode][op_size]['read'] = defaultdict(int)
 
                 print json.dumps(self.sumdoc, indent=1)
                 print self.block_size_list
