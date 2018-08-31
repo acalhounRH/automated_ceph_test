@@ -193,8 +193,6 @@ class fiojson_evaluator:
         
     def calculate_iops_sum(self):
         
-        print json.dumps(self.json_data_list, indent=1)
-        
         for json_data in self.json_data_list:
             print json.dumps(json_data, indent=1)
             print "************************************"
@@ -224,6 +222,7 @@ class fiojson_evaluator:
             self.sumdoc[iteration][mode][op_size]['read'] = 0
 
         print json.dumps(self.sumdoc, indent=1)
+        print block_size_list
         self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
         self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
         
