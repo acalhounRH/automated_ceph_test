@@ -391,7 +391,18 @@ class pbench_evaluator:
 
 ###############################PY_ES_BULK##################################
 
+_request_timeout = 100000000*60
+_MAX_SLEEP_TIME = 120
+
+
+def _calc_backoff_sleep(backoff):
+    global _r
+    b = math.pow(2, backoff)
+    return _r.uniform(0, min(b, ))
+
 def streaming_bulk(es, actions):
+    
+    
     """
     streaming_bulk(es, actions, errorsfp)
      Arguments:
