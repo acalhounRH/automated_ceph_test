@@ -393,6 +393,7 @@ class pbench_evaluator:
 
 _request_timeout = 100000000*60
 _MAX_SLEEP_TIME = 120
+_op_type = "create"
 
 
 def _calc_backoff_sleep(backoff):
