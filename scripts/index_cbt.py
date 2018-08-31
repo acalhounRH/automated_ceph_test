@@ -116,7 +116,7 @@ def process_CBT_fiojson(tdir, test_metadata):
                 test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
                 for file in test_files:
                     if "json_" in file:
-                        fiojson_evaluator_generator.add_json_file(file, metadata)
+                        fiojson_evaluator_generator.add_json_file(file, copy.deepcopy(metadata))
                             #fiojson_evaluator_generator = fiojson_evaluator(file, test_metadata)
                             #yield fiojson_evaluator_generator
                 
@@ -192,6 +192,9 @@ class fiojson_evaluator:
         self.json_data_list.append(json_data)
         
     def calculate_iops_sum(self):
+        
+        print json.dumps(self.json_data_list)
+        
         for json_data in self.json_data_list:
             print json.dumps(json_data, indent=1)
             print "************************************"
@@ -219,11 +222,11 @@ class fiojson_evaluator:
             for job in json_doc['jobs']:
 		if not self.sumdoc[iteration][mode][op_size]: 
 		    self.sumdoc[iteration][mode][op_size]['write'] = 0
-                    self.sumdoc[iteration][mode][op_size]['read'] = 0
+            self.sumdoc[iteration][mode][op_size]['read'] = 0
 
-                print json.dumps(self.sumdoc, indent=1)
-                self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
-                self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
+        print json.dumps(self.sumdoc, indent=1)
+        self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
+        self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
         
     def get_fiojson_importers(self):
         
