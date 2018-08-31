@@ -208,8 +208,6 @@ class fiojson_evaluator:
                 self.sumdoc[iteration][mode] = {}
                 for op_size in self.block_size_list:
                     self.sumdoc[iteration][mode][op_size] = {}
-         
-        print json.dumps(self.sumdoc, indent=1)           
             
             #get measurements
         for json_data in self.json_data_list:
