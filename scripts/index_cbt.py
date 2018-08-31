@@ -193,7 +193,7 @@ class fiojson_evaluator:
         
     def calculate_iops_sum(self):
         
-        print json.dumps(self.json_data_list)
+        print json.dumps(self.json_data_list, indent=1)
         
         for json_data in self.json_data_list:
             print json.dumps(json_data, indent=1)
