@@ -340,7 +340,9 @@ class pbench_evaluator:
         with open(self.csv_file) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             first_row = True
+            col_ary = []
             for row in readCSV:
+                a = {}
                 if first_row:
                     col_num = len(row)
                     for col in range(col_num):
