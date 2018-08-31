@@ -7,7 +7,7 @@ from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 import threading
 from threading import Thread
-from collections import deque
+from collections import deque, defaultdict
 import multiprocessing
 
 es_log = logging.getLogger("elasticsearch")
@@ -181,10 +181,9 @@ class fiojson_evaluator:
     def __init__(self):
         self.json_data_list = []
         self.iteration_list = []
-        self.operation_list = []
+        self.operation_list = []upda
         self.block_size_list = []
-        self.sumdoc = {}
-        
+        self.sumdoc = defaultdict(dict)     
     def add_json_file(self, json_file, metadata):
         json_data = {}
         json_data['jfile'] = json_file
