@@ -181,7 +181,7 @@ class fiojson_evaluator:
     def __init__(self):
         self.json_data_list = []
         self.iteration_list = []
-        self.operation_list = []upda
+        self.operation_list = []
         self.block_size_list = []
         self.sumdoc = defaultdict(dict)     
     def add_json_file(self, json_file, metadata):
