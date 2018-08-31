@@ -363,7 +363,7 @@ class pbench_evaluator:
                                     pid = col_ary[col].split('-', 1)[0]
                                     importdoc['_source']['test_data']['process_name'] = pname
                                     importdoc['_source']['test_data']['process_pid'] = pid
-                                    importdocc['_source']['test_data']['process_value'] = float(row[col])
+                                    importdoc['_source']['test_data']['process_value'] = float(row[col])
                                     a = importdoc
                             elif 'sar' in importdoc['_source']['tool'] and "network_" in importdoc['_source']['file_name']:
                                 importdoc['_source']['test_data']['network_interface'] = col_ary[col]
