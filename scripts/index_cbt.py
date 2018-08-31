@@ -253,17 +253,16 @@ class fiojson_evaluator:
                 firstrecord = True
                 calcuate_percent_std_dev = False
                 for itera in self.iteration_list: # 
-                    try:
-                        waver_ary.append(self.sumdoc[itera][oper][obj_size]['write'])
-                        raver_ary.append(self.sumdoc[itera][oper][obj_size]['read'])
-        
-                        if firstrecord:
-                            print "set the time"
-                            importdoc['date'] = self.sumdoc[itera][oper][obj_size]['date']
-                            firstrecord = True
-                    except:
-                        pass
-                    
+#                 try:
+                    waver_ary.append(self.sumdoc[itera][oper][obj_size]['write'])
+                    raver_ary.append(self.sumdoc[itera][oper][obj_size]['read'])
+    
+                    if firstrecord:
+                        importdoc['date'] = self.sumdoc[itera][oper][obj_size]['date']
+                        firstrecord = True
+#                 except:
+#                     pass
+#                 
                 #print "##################average##################"
                 read_average = (sum(raver_ary)/len(raver_ary))
                 if read_average > 0.0:
