@@ -205,8 +205,8 @@ class fiojson_evaluator:
             
             if iteration not in self.sumdoc[iteration]: self.sumdoc[iteration] = defaultdict(dict)
             if mode not in self.sumdoc[iteration][mode]: self.sumdoc[iteration][mode] = defaultdict(dict)
-            
             if op_size not in self.sumdoc[iteration][mode][op_size]: self.sumdoc[iteration][mode][op_size] = defaultdict(dict)
+            
             
             json_doc = json.load(open(json_data['jfile']))
             
@@ -215,9 +215,9 @@ class fiojson_evaluator:
             #get measurements
 
             for job in json_doc['jobs']:
-                if not self.sumdoc[iteration][mode][op_size]: 
-                    self.sumdoc[iteration][mode][op_size]['write'] = 0
-                    self.sumdoc[iteration][mode][op_size]['read'] = 0
+                #if not self.sumdoc[iteration][mode][op_size]: 
+                #    self.sumdoc[iteration][mode][op_size]['write'] = 0
+                #    self.sumdoc[iteration][mode][op_size]['read'] = 0
 
                 print json.dumps(self.sumdoc, indent=1)
                 print self.block_size_list
