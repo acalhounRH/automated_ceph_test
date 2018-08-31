@@ -67,7 +67,7 @@ def process_data():
                     line = line.strip()
                     test_metadata[line.split[':'][0]] = line.split[':'][1] 
 
-            if test_metadata['op_size']: test_metadata['op_size'] = int(test_metadata['op_size']) / 1024
+                if test_metadata['op_size']: test_metadata['op_size'] = int(test_metadata['op_size']) / 1024
                # process_CBT_Pbench_data_generator = process_CBT_Pbench_data(test_directory, test_metadata)
                # for pbench_obj in process_CBT_Pbench_data_generator:
                #     yield pbench_obj 
