@@ -304,7 +304,7 @@ class fiolog_evaluator:
         importdoc["_index"] = "fio-log-index"
         importdoc["_type"] = "librbdfiologdata"
         importdoc["_op_type"] = "create"
-        importdoc = self.metadata
+        importdoc["_source"] = self.metadata
         
         jsondoc = json.load(open(self.json_file))
         test_time_ms = long(jsondoc['timestamp_ms'])
