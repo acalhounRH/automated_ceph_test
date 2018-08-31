@@ -230,7 +230,7 @@ class fiojson_evaluator:
         
         for json_file in self.json_data_list: 
             json_metadata = {}
-            json_metadata[test_config] = json_file['metadata']
+            json_metadata["test_config"] = json_file['metadata']
             fiojson_import_generator = import_fiojson(json_file['jfile'], json_metadata)
             yield fiojson_import_generator
             
