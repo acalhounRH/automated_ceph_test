@@ -202,7 +202,6 @@ class fiojson_evaluator:
             if mode not in self.operation_list: self.operation_list.append(mode)
             if op_size not in self.block_size_list: self.block_size_list.append(op_size)
              
-            #set time
         for iteration in self.iteration_list:
             self.sumdoc[iteration] = {}
             for mode in self.operation_list:
@@ -223,6 +222,7 @@ class fiojson_evaluator:
             for job in json_doc['jobs']:
                 if "write" not in self.sumdoc[iteration][mode][op_size] and "read" not in self.sumdoc[iteration][mode][op_size]:
                 #    print "set to zero"
+                    self.sundoc[iteration][mode][op_size]['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
                     self.sumdoc[iteration][mode][op_size]['write'] = 0
                     self.sumdoc[iteration][mode][op_size]['read'] = 0
 
