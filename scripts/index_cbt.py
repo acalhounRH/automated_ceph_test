@@ -275,7 +275,7 @@ class fiojson_evaluator:
                 else:
                         importdoc["_source"]['write-iops'] = 0
         
-                importdoc["_source"]['total-iops'] = (importdoc['write-iops'] + importdoc['read-iops'])
+                importdoc["_source"]['total-iops'] = (importdoc["_source"]['write-iops'] + importdoc["_source"]['read-iops'])
                 
                 if calcuate_percent_std_dev:
                     if "read" in oper:
