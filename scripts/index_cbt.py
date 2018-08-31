@@ -73,7 +73,7 @@ def process_data():
                # process_CBT_Pbench_data_generator = process_CBT_Pbench_data(test_directory, test_metadata)
                # for pbench_obj in process_CBT_Pbench_data_generator:
                #     yield pbench_obj 
-                process_CBT_fiologs_generator = process_CBT_fiologs(test_directory, test_metadata)
+                process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, copy.deepcopy(test_metadata))
                 for fiolog_obj in process_CBT_fiologs_generator:
                     yield fiolog_obj
                 
