@@ -370,8 +370,8 @@ class pbench_evaluator:
                                 importdoc['_source']['test_data']['network_value'] = float(row[col])
                                 a = importdoc
                             elif 'sar' in importdoc['_source']['tool'] and "memory_" in importdoc['_source']['file_name']:
-                                sardoc['_source']['test_data']['memory_stat'] = col_ary[col]
-                                sardoc['_source']['test_data']['memory_value'] = float(row[col])
+                                importdoc['_source']['test_data']['memory_stat'] = col_ary[col]
+                                importdoc['_source']['test_data']['memory_value'] = float(row[col])
                                 a = importdoc
                             # elif 'sar' in pbenchdoc['_source']['tool'] and "per_cpu_" in pbenchdoc['_source']['file_name']:
                             #    sardoc['_source']['sarcpu_stat'] = col_ary[col]
