@@ -201,8 +201,6 @@ class fiojson_evaluator:
             if iteration not in self.iteration_list: self.iteration_list.append(iteration) 
             if mode not in self.operation_list: self.operation_list.append(mode)
             if op_size not in self.block_size_list: self.block_size_list.append(op_size)
-            
-            print json.dumps(self.sumdoc, indent=1)
              
             #set time
         for iteration in self.iteration_list:
