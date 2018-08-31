@@ -218,7 +218,6 @@ class fiojson_evaluator:
             
             #get measurements
 
-            print json.dumps(self.sumdoc, indent=1)
             for job in json_doc['jobs']:
 		if not self.sumdoc[iteration][mode][op_size]: 
 		    self.sumdoc[iteration][mode][op_size]['write'] = 0
