@@ -243,6 +243,9 @@ class fiojson_evaluator:
         
         self.calculate_iops_sum()
         
+        print json.dumps(self.sumdoc, indent=2)
+        
+        exit 1
         for oper in self.operation_list:
             for obj_size in self.block_size_list:
                 waver_ary = []
