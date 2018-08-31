@@ -252,16 +252,16 @@ class fiojson_evaluator:
                 total_ary = []
                 importdoc['object_size'] = obj_size # set document's object size
                 importdoc['operation'] = oper # set documents operation
-                firstrecord = 'false'
+                firstrecord = True
                 calcuate_percent_std_dev = False
                 for itera in self.iteration_list: # 
                     try:
                         waver_ary.append(self.sumdoc[itera][oper][obj_size]['write'])
                         raver_ary.append(self.sumdoc[itera][oper][obj_size]['read'])
         
-                        if firstrecord is 'false':
-                            importdoc['date'] = newdoc[itera][oper][obj_size]['date']
-                            firstrecord = 'true'
+                        if firstrecord:
+                            importdoc['date'] = self.sumdoc[itera][oper][obj_size]['date']
+                            firstrecord = True
                     except:
                         pass
                     
