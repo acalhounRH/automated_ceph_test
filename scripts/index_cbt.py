@@ -260,6 +260,7 @@ class fiojson_evaluator:
                         raver_ary.append(self.sumdoc[itera][oper][obj_size]['read'])
         
                         if firstrecord:
+                            print "set the time"
                             importdoc['date'] = self.sumdoc[itera][oper][obj_size]['date']
                             firstrecord = True
                     except:
@@ -276,7 +277,6 @@ class fiojson_evaluator:
         
                 write_average = (sum(waver_ary)/len(waver_ary))
                 if write_average > 0.0:
-                    print "process write %s" % len(waver_ary)
                     importdoc['write-iops'] = write_average
                     if len(waver_ary) > 1:
                         calcuate_percent_std_dev = True 
