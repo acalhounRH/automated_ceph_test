@@ -9,10 +9,7 @@ import threading
 from threading import Thread
 from collections import deque
 import multiprocessing
-
-script_dir = os.path.dirname(os.path.realpath(__file__))
-print script_dir
-
+from ansible.parsing import metadata
 
 es_log = logging.getLogger("elasticsearch")
 es_log.setLevel(logging.CRITICAL)
@@ -78,11 +75,7 @@ def process_data():
                     for fiojson_obj in process_CBT_fiojson_generator:
                         yield fiojson_obj
 
-def process_CBT_Pbench_data(tdir, headerdoc):
-    metadata = {}
-    metadata["_index"] = "pbench"
-    metadata["_type"] = "pbenchdata"
-    metadata["_op_type"] = "create"
+def process_CBT_Pbench_data(tdir, test_metadata):
 
     #For each host in tools default create pbench scribe object for each csv file
     logging.info('processing data in benchmark %s, mode %s, object size %s' % (benchmarkdoc["_source"]['benchmark'], benchmarkdoc["_source"]['mode'], benchmarkdoc["_source"]['object_size']))
@@ -94,32 +87,28 @@ def process_CBT_Pbench_data(tdir, headerdoc):
             for pfilename in pfiles:
                 pfname = os.path.join(pdirpath, pfilename)
                 if ".csv" in pfname:
-                    
-                    metadata["_source"] = headerdoc
+                    metadata = {}
+                    metadata["_source"] = test_metadata
                     metadata["_source"]['host'] = pfname.split("/")[5]
                     metadata["_source"]['tool'] = pfname.split("/")[6]
                     metadata["_source"]['file_name'] = pfname.split("/")[8]
                 
-                    pb_evaluator_generator = pbenchevaluator(csv, metadata)
+                    pb_evaluator_generator = pbench_evaluator(csv, metadata)
                     yield pb_evaluator_generator
 
-def process_CBT_fiojson(tdir, headerdoc):
-    esdata = {}
-    esdata["_index"] = "cbt_librbdfio-json-index"
-    esdata["_type"] = "librbdfiojsondata"
-    esdata["_op_type"] = "create"
+def process_CBT_fiojson(tdir, test_metadata):
 
     test_files = sorted(listdir_fullpath(tdir), key=os.path.getctime) # get all samples from current test dir in time order
     for file in test_files:
         if "json_" in file:
 #           (file, os.path.basename(cdir), averdoc['test_id'])
-            fiojson_evaluator_generator = fiojson_evaluator(file, esdata)
+            fiojson_evaluator_generator = fiojson_evaluator(file, test_metadata)
             yield fiojson_evaluator_generator
 
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
 
-def process_CBT_fiologs(tdir, headerdoc):
+def process_CBT_fiologs(tdir, test_metadata):
 
 
         # get all samples from current test dir in time order
@@ -130,7 +119,7 @@ def process_CBT_fiologs(tdir, headerdoc):
     	if ("_iops" in file) or ("_lat" in file):
         #if ("_bw" in file) or ("_clat" in file) or ("_iops" in file) or ("_lat" in file) or ("_slat" in file):
             #fiologdoc = copy.deepcopy(headerdoc)
-            metadata["_source"] = headerdoc
+            metadata["_source"] = test_metadata
             jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
             metadata["_source"]['host'] = os.path.basename(file).split('log.', 1)[1]
 
@@ -140,32 +129,32 @@ def process_CBT_fiologs(tdir, headerdoc):
 ###############################CLASS DEF##################################
 class fiojson_evaluator:
 
-    def __init__(self, json_file, esdata):
-        self.esdata = esdata
+    def __init__(self, json_file, metadata):
+        self.metadata = metadata
         self.json_file = json_file
         
     def emit_actions(self):
         importdoc = {}
-        header = {}
-        importdoc = self.esdata
-        importdoc['header'] = {}
+        importdoc["_index"] = "cbt_librbdfio-json-index"
+        importdoc["_type"] = "librbdfiojsondata"
+        importdoc["_op_type"] = "create"
+        importdoc = self.metadata
 
         json_doc = json.load(open(self.json_file))
         #create header dict based on top level objects
         importdoc['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
-        importdoc['header']['global_options'] = json_doc['global options']
-        importdoc['header']['global_options']['bs'] = ( int(importdoc['header']['global_options']['bs'].strip('B')) / 1024)
-        importdoc['header']['timestamp_ms'] = json_doc['timestamp_ms']
-        importdoc['header']['timestamp'] = json_doc['timestamp']
-        importdoc['header']['fio_version'] = json_doc['fio version']
-        importdoc['header']['time'] = json_doc['time']
-        #importdoc['header']['iteration'] = iteration
-        #importdoc['header']['test_id'] = test_id
+        importdoc['global_options'] = json_doc['global options']
+        importdoc['global_options']['bs'] = ( int(importdoc['global_options']['bs'].strip('B')) / 1024)
+        importdoc['timestamp_ms'] = json_doc['timestamp_ms']
+        importdoc['timestamp'] = json_doc['timestamp']
+        importdoc['fio_version'] = json_doc['fio version']
+        importdoc['time'] = json_doc['time']
 
         for job in json_doc['jobs']:
             importdoc['job'] = job
+            #XXX: TODO need to add total_iops for all jons in current record
+            importdoc['_source']['total_iops'] = int(importdoc['_source']['job']['write']['iops']) + int(importdoc['_source']['job']['read']['iops'])
             yield importdoc
-
             
 class fiolog_evaluator:
     
@@ -200,55 +189,67 @@ class fiolog_evaluator:
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc  # XXX: TODO change to yield a
 
-class pbenchevaluator:
+class pbench_evaluator:
 
-    def emit_actions():
-            with open(pfname) as csvfile:
-                readCSV = csv.reader(csvfile, delimiter=',')
-                for row in readCSV:
-                    if first_row:
-                        col_num = len(row)
-                        for col in range(col_num):
-                            col_ary.append(row[col])
-                            first_row = False
-                    else:
-                        for col in range(col_num):
-                            if 'timestamp_ms' in col_ary[col]:
-                                ms = float(row[col])
-                                thistime = datetime.datetime.fromtimestamp(ms / 1000.0)
-                                pbenchdoc['_source']['date'] = thistime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                            else:
-                                if 'pidstat' in pbenchdoc['_source']['tool']:
+    def __init__(self, csv_file, metadata):
+        self.csv_file = csv_file
+        self.metadata = metadata
 
-                                    pname = col_ary[col].split('/')[-1]
-                                    if "ceph-osd" in pname or "ceph-mon" in pname or "ceph-mgr" in pname:
-                                        pid = col_ary[col].split('-', 1)[0]
-                                        piddoc['_source']['process_name'] = pname
-                                        piddoc['_source']['process_pid'] = pid
-                                        piddoc['_source']['process_value'] = float(row[col])
-                                        a = copy.deepcopy(piddoc)
-                                elif 'sar' in pbenchdoc['_source']['tool'] and "network_" in pbenchdoc['_source']['file_name']:
-                                    sardoc['_source']['network_interface'] = col_ary[col]
-                                    sardoc['_source']['network_value'] = float(row[col])
-                                    a = copy.deepcopy(sardoc)
-                                elif 'sar' in pbenchdoc['_source']['tool'] and "memory_" in pbenchdoc['_source']['file_name']:
-                                    sardoc['_source']['memory_stat'] = col_ary[col]
-                                    sardoc['_source']['memory_value'] = float(row[col])
-                                    a = copy.deepcopy(sardoc)
-                                # elif 'sar' in pbenchdoc['_source']['tool'] and "per_cpu_" in pbenchdoc['_source']['file_name']:
-                                #    sardoc['_source']['sarcpu_stat'] = col_ary[col]
-                                #    sardoc['_source']['sarcpu_value'] = float(row[col])
-                                #    a = copy.deepcopy(sardoc)
-                                elif 'iostat' in pbenchdoc['_source']['tool']:
-                                    iostatdoc['_source']['device'] = col_ary[col]
-                                    iostatdoc['_source']['iostat_value'] = float(row[col])
-                                    a = copy.deepcopy(iostatdoc)
-                                elif 'mpstat' in pbenchdoc['_source']['tool'] and "cpuall_cpuall.csv" in pbenchdoc['_source']['file_name']:
-                                    mpstat['_source']['cpu_stat'] = col_ary[col]
-                                    mpstat['_source']['cpu_value'] = float(row[col])
-                                    a = copy.deepcopy(mpstat)
-                            if a:
-                                    yield a 
+    def emit_actions(self):
+        importdoc = {}
+        importdoc["_index"] = "pbench"
+        importdoc["_type"] = "pbenchdata"
+        importdoc["_op_type"] = "create"
+        importdoc['_source'] = self.metadata
+    
+        with open(pfname) as csvfile:
+            readCSV = csv.reader(csvfile, delimiter=',')
+            for row in readCSV:
+                if first_row:
+                    col_num = len(row)
+                    for col in range(col_num):
+                        col_ary.append(row[col])
+                        first_row = False
+                else:
+                    for col in range(col_num):
+                        importdoc['_source']['test_data'] = {}
+                        if 'timestamp_ms' in col_ary[col]:
+                            ms = float(row[col])
+                            thistime = datetime.datetime.fromtimestamp(ms / 1000.0)
+                            importdoc['_source']['date'] = thistime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                        else:
+                            if 'pidstat' in importdoc['_source']['tool']:
+
+                                pname = col_ary[col].split('/')[-1]
+                                if "ceph-osd" in pname or "ceph-mon" in pname or "ceph-mgr" in pname:
+                                    pid = col_ary[col].split('-', 1)[0]
+                                    importdoc['_source']['test_data']['process_name'] = pname
+                                    importdoc['_source']['test_data']['process_pid'] = pid
+                                    importdocc['_source']['test_data']['process_value'] = float(row[col])
+                                    a = importdoc
+                            elif 'sar' in importdoc['_source']['tool'] and "network_" in importdoc['_source']['file_name']:
+                                importdoc['_source']['test_data']['network_interface'] = col_ary[col]
+                                importdoc['_source']['test_data']['network_value'] = float(row[col])
+                                a = importdoc
+                            elif 'sar' in importdoc['_source']['tool'] and "memory_" in importdoc['_source']['file_name']:
+                                sardoc['_source']['test_data']['memory_stat'] = col_ary[col]
+                                sardoc['_source']['test_data']['memory_value'] = float(row[col])
+                                a = importdoc
+                            # elif 'sar' in pbenchdoc['_source']['tool'] and "per_cpu_" in pbenchdoc['_source']['file_name']:
+                            #    sardoc['_source']['sarcpu_stat'] = col_ary[col]
+                            #    sardoc['_source']['sarcpu_value'] = float(row[col])
+                            #    a = copy.deepcopy(sardoc)
+                            elif 'iostat' in importdoc['_source']['tool']:
+                                importdoc['_source']['test_data']['device'] = col_ary[col]
+                                importdoc['_source']['test_data']['iostat_value'] = float(row[col])
+                                a = importdoc
+                            elif 'mpstat' in importdoc['_source']['tool'] and "cpuall_cpuall.csv" in importdoc['_source']['file_name']:
+                                importdoc['_source']['test_data']['cpu_stat'] = col_ary[col]
+                                importdoc['_source']['test_data']['cpu_value'] = float(row[col])
+                                a = importdoc
+                        if a:
+                                importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
+                                yield a 
 
 ###############################PY_ES_BULK##################################
 
@@ -341,7 +342,7 @@ def streaming_bulk(es, actions):
 #                        }
 #                jsonstr = json.dumps(doc, indent=4, sort_keys=True)
 #                print(jsonstr, file=errorsfp)
-               errorsfp.flush()
+#               errorsfp.flush()
                failures += 1
            else:
                # Retry all other errors
