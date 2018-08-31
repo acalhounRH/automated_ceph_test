@@ -337,7 +337,7 @@ class pbench_evaluator:
         importdoc["_op_type"] = "create"
         importdoc['_source'] = self.metadata
     
-        with open(pfname) as csvfile:
+        with open(self.csv_file) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             for row in readCSV:
                 if first_row:
