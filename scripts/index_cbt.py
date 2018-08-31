@@ -238,59 +238,53 @@ class fiojson_evaluator:
         importdoc["_index"] = "cbt_librbdfio-summary-index"
         importdoc["_type"] = "librbdfiosummarydata"
         importdoc["_op_type"] = "create"
+        importdoc["_source"] = {}
         
         self.calculate_iops_sum()
-        
-        print json.dumps(self.sumdoc, indent=1)
         
         for oper in self.operation_list:
             for obj_size in self.block_size_list:
                 waver_ary = []
                 raver_ary = []
                 total_ary = []
-                importdoc['object_size'] = obj_size # set document's object size
-                importdoc['operation'] = oper # set documents operation
+                importdoc["_source"]['object_size'] = obj_size # set document's object size
+                importdoc["_source"]['operation'] = oper # set documents operation
                 firstrecord = True
                 calcuate_percent_std_dev = False
                 for itera in self.iteration_list: # 
-#                 try:
                     waver_ary.append(self.sumdoc[itera][oper][obj_size]['write'])
                     raver_ary.append(self.sumdoc[itera][oper][obj_size]['read'])
     
                     if firstrecord:
                         importdoc['date'] = self.sumdoc[itera][oper][obj_size]['date']
                         firstrecord = True
-#                 except:
-#                     pass
-#                 
-                #print "##################average##################"
+
                 read_average = (sum(raver_ary)/len(raver_ary))
                 if read_average > 0.0:
-                    importdoc['read-iops'] = read_average
+                    importdoc["_source"]['read-iops'] = read_average
                     if len(raver_ary) > 1:
                         calcuate_percent_std_dev = True
                 else:
-                    importdoc['read-iops'] = 0
+                    importdoc["_source"]['read-iops'] = 0
         
                 write_average = (sum(waver_ary)/len(waver_ary))
                 if write_average > 0.0:
-                    importdoc['write-iops'] = write_average
+                    importdoc["_source"]['write-iops'] = write_average
                     if len(waver_ary) > 1:
                         calcuate_percent_std_dev = True 
                 else:
-                        importdoc['write-iops'] = 0
+                        importdoc["_source"]['write-iops'] = 0
         
-                importdoc['total-iops'] = (importdoc['write-iops'] + importdoc['read-iops'])
+                importdoc["_source"]['total-iops'] = (importdoc['write-iops'] + importdoc['read-iops'])
                 
                 if calcuate_percent_std_dev:
                     if "read" in oper:
-                        importdoc['std-dev-%s' % obj_size] = round(((statistics.stdev(raver_ary) / read_average) * 100), 3)
+                        importdoc["_source"]['std-dev-%s' % obj_size] = round(((statistics.stdev(raver_ary) / read_average) * 100), 3)
                     elif "write" in oper: 
-                        importdoc['std-dev-%s' % obj_size] = round(((statistics.stdev(waver_ary) / write_average) * 100), 3)
+                        importdoc["_source"]['std-dev-%s' % obj_size] = round(((statistics.stdev(waver_ary) / write_average) * 100), 3)
                     elif "randrw" in oper:
-                        importdoc['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / importdoc['total-iops'])* 100), 3)
-                #print json.dumps(importdoc, indent=1) 
-                #res = es.index(index="cbt_librbdfio-summary-index", doc_type='fiologfile', body=importdoc)
+                        importdoc["_source"]['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / importdoc['total-iops'])* 100), 3)
+
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc
          
