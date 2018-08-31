@@ -95,7 +95,7 @@ def process_CBT_Pbench_data(tdir, test_metadata):
                     metadata['tool'] = pfname.split("/")[6]
                     metadata['file_name'] = pfname.split("/")[8]
                 
-                    pb_evaluator_generator = pbench_evaluator(csv, metadata)
+                    pb_evaluator_generator = pbench_evaluator(pfname, metadata)
                     yield pb_evaluator_generator
 
 def process_CBT_fiojson(tdir, test_metadata):
