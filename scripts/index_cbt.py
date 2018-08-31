@@ -342,7 +342,6 @@ class pbench_evaluator:
             first_row = True
             col_ary = []
             for row in readCSV:
-                a = {}
                 if first_row:
                     col_num = len(row)
                     for col in range(col_num):
@@ -350,6 +349,7 @@ class pbench_evaluator:
                         first_row = False
                 else:
                     for col in range(col_num):
+                        a = {}
                         importdoc['_source']['test_data'] = {}
                         if 'timestamp_ms' in col_ary[col]:
                             ms = float(row[col])
