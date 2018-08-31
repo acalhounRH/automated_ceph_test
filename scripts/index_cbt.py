@@ -154,7 +154,7 @@ class import_fiojson:
         
     def emit_actions(self):
         importdoc = {}
-        importdoc["_index"] = "cbt_librbdfio-json-index"
+        importdoc["_index"] = "cbt_librbdfio-json-indextest1"
         importdoc["_type"] = "librbdfiojsondata"
         importdoc["_op_type"] = "create"
         importdoc['_source'] = self.metadata
@@ -237,7 +237,7 @@ class fiojson_evaluator:
     def emit_actions(self):
         
         importdoc = {}
-        importdoc["_index"] = "cbt_librbdfio-summary-index"
+        importdoc["_index"] = "cbt_librbdfio-summary-indextest1"
         importdoc["_type"] = "librbdfiosummarydata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = {}
@@ -300,7 +300,7 @@ class fiolog_evaluator:
     def emit_actions(self):
         
         importdoc = {}
-        importdoc["_index"] = "fio-log-index"
+        importdoc["_index"] = "fio-log-indextest1"
         importdoc["_type"] = "librbdfiologdata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
@@ -332,7 +332,7 @@ class pbench_evaluator:
 
     def emit_actions(self):
         importdoc = {}
-        importdoc["_index"] = "pbench"
+        importdoc["_index"] = "pbenchtest1"
         importdoc["_type"] = "pbenchdata"
         importdoc["_op_type"] = "create"
         importdoc['_source'] = self.metadata
