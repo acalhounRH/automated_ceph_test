@@ -194,8 +194,8 @@ class fiojson_evaluator:
     def calculate_iops_sum(self):
         
         for json_data in self.json_data_list:
-            print json.dumps(json_data, indent=1)
-            print "************************************"
+            #print json.dumps(json_data, indent=1)
+            #print "************************************"
             iteration = json_data['metadata']['iteration']
             op_size = json_data['metadata']['op_size']
             mode = json_data['metadata']['mode']
@@ -217,14 +217,14 @@ class fiojson_evaluator:
             #get measurements
 
             for job in json_doc['jobs']:
-		if not self.sumdoc[iteration][mode][op_size]: 
-		    self.sumdoc[iteration][mode][op_size]['write'] = 0
-            self.sumdoc[iteration][mode][op_size]['read'] = 0
+                if not self.sumdoc[iteration][mode][op_size]: 
+                    self.sumdoc[iteration][mode][op_size]['write'] = 0
+                    self.sumdoc[iteration][mode][op_size]['read'] = 0
 
-        print json.dumps(self.sumdoc, indent=1)
-        print self.block_size_list
-        self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
-        self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
+                print json.dumps(self.sumdoc, indent=1)
+                print self.block_size_list
+                self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
+                self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
         
     def get_fiojson_importers(self):
         
