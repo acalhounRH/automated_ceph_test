@@ -139,10 +139,11 @@ def process_CBT_fiologs(tdir, test_metadata):
     for file in test_files:
     	if ("_iops" in file) or ("_lat" in file):
         #if ("_bw" in file) or ("_clat" in file) or ("_iops" in file) or ("_lat" in file) or ("_slat" in file):
+            metadata = {}
             #fiologdoc = copy.deepcopy(headerdoc)
-            metadata["_source"] = test_metadata
+            metadata = test_metadata
             jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
-            metadata["_source"]['host'] = os.path.basename(file).split('log.', 1)[1]
+            metadata['host'] = os.path.basename(file).split('log.', 1)[1]
 
             fiolog_evaluator_generator = fiologevaluator(file, jsonfile, metadata)
             yield fiolog_evaluator_generator
