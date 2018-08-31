@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 import os, sys, json, time, types, csv, copy, hashlib
-import logging
+import logging, statistics
 import datetime
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
@@ -9,7 +9,6 @@ import threading
 from threading import Thread
 from collections import deque
 import multiprocessing
-from ansible.parsing import metadata
 
 es_log = logging.getLogger("elasticsearch")
 es_log.setLevel(logging.CRITICAL)
@@ -56,24 +55,26 @@ def process_data():
 
     #parse CBT achive dir and call process method
     for dirpath, dirs, files in os.walk("."):
-	for filename in files:
-        	fname = os.path.join(dirpath,filename)
-        	#for each benchmark capture benchmark metadata and process all data
-        	if 'benchmark_config.yaml' in fname:
-                    for line in open(fname, 'r'):
-                	line = line.strip()
-                        test_metadata[line.split[':'][0]] = line.split[':'][1] 
+        for filename in files:
+            fname = os.path.join(dirpath,filename)
+            if 'cbt_config.yaml' in fname:
+                process_CBT_fiojson_generator = process_CBT_fiojson(dirpath, copy.deepcopy(test_metadata))
+                for fiojson_obj in process_CBT_fiojson_generator:
+                    yield fiojson_obj
+            #for each benchmark capture benchmark metadata and process all data
+            if 'benchmark_config.yaml' in fname:
+                for line in open(fname, 'r'):
+                    line = line.strip()
+                    test_metadata[line.split[':'][0]] = line.split[':'][1] 
 
-                 	if test_metadata['object_size']: test_metadata['object_size'] = int(test_metadata['object_size']) / 1024
-                   # process_CBT_Pbench_data_generator = process_CBT_Pbench_data(test_directory, test_metadata)
-                   # for pbench_obj in process_CBT_Pbench_data_generator:
-                   #     yield pbench_obj 
-                   # process_CBT_fiologs_generator = process_CBT_fiologs(test_directory, test_metadata)
-                   # for fiolog_obj in process_CBT_fiologs_generator:
-                   #     yield fiolog_obj
-                    process_CBT_fiojson_generator = process_CBT_fiojson(dirpath, copy.deepcopy(test_metadata))
-                    for fiojson_obj in process_CBT_fiojson_generator:
-                        yield fiojson_obj
+            if test_metadata['object_size']: test_metadata['object_size'] = int(test_metadata['object_size']) / 1024
+               # process_CBT_Pbench_data_generator = process_CBT_Pbench_data(test_directory, test_metadata)
+               # for pbench_obj in process_CBT_Pbench_data_generator:
+               #     yield pbench_obj 
+               # process_CBT_fiologs_generator = process_CBT_fiologs(test_directory, test_metadata)
+               # for fiolog_obj in process_CBT_fiologs_generator:
+               #     yield fiolog_obj
+                
 
 def process_CBT_Pbench_data(tdir, test_metadata):
 
@@ -97,13 +98,28 @@ def process_CBT_Pbench_data(tdir, test_metadata):
                     yield pb_evaluator_generator
 
 def process_CBT_fiojson(tdir, test_metadata):
-
-    test_files = sorted(listdir_fullpath(tdir), key=os.path.getctime) # get all samples from current test dir in time order
-    for file in test_files:
-        if "json_" in file:
-#           (file, os.path.basename(cdir), averdoc['test_id'])
-            fiojson_evaluator_generator = fiojson_evaluator(file, test_metadata)
-            yield fiojson_evaluator_generator
+    
+    fiojson_evaluator_generator = fiojson_evaluator
+    
+    for dirpath, dirs, files in os.walk(tdir):
+        for filename in files:
+            fname = os.path.join(dirpath,filename)
+            if 'benchmark_config.yaml' in fname:
+                for line in open(fname, 'r'):
+                    line = line.strip()
+                    test_metadata[line.split[':'][0]] = line.split[':'][1]
+                    
+                test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
+                for file in test_files:
+                    if "json_" in file:
+                        fiojson_evaluator_generator.add_json_file(file, test_metadata)
+                            #fiojson_evaluator_generator = fiojson_evaluator(file, test_metadata)
+                            #yield fiojson_evaluator_generator
+                
+    for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
+        yield import_obj
+        
+    yield fiojson_evaluator_generoator
 
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
@@ -127,7 +143,7 @@ def process_CBT_fiologs(tdir, test_metadata):
             yield fiolog_evaluator_generator
 
 ###############################CLASS DEF##################################
-class fiojson_evaluator:
+class import_fiojson:
 
     def __init__(self, json_file, metadata):
         self.metadata = metadata
@@ -151,10 +167,114 @@ class fiojson_evaluator:
         importdoc['time'] = json_doc['time']
 
         for job in json_doc['jobs']:
-            importdoc['job'] = job
+            importdoc['_source']['job'] = job
             #XXX: TODO need to add total_iops for all jons in current record
             importdoc['_source']['total_iops'] = int(importdoc['_source']['job']['write']['iops']) + int(importdoc['_source']['job']['read']['iops'])
+            importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
             yield importdoc
+    
+class fiojson_evaluator:
+    def __init__(self):
+        self.json_data_list = []
+        self.iteration_list = []
+        self.operation_list = []
+        self.block_size_list = []
+        self.sumdoc = {}
+        
+    def add_json_file(self, json_file, metadata):
+        json_data = {}
+        json_data['jfile'] = json_file
+        json_data['metadata'] = metadata 
+        self.json_data_list.append(json_data)
+        
+    def calculate_iops_sum(self):
+        for json_data in self.json_data_list:
+            iteration = json_data['metadata']['iteration']
+            op_size = json_data['metadata']['op_size']
+            mode = json_data['metadata']['mode']
+            
+            if iteration not in self.iteration_list: self.iteration_list.append(iteration)
+            if op_size not in self.block_size_list: self.block_size_list.append(op_size)
+            if mode not in self.operation_list: self.operation_list.append(mode)
+            
+            json_doc = json.load(open(json_data['jfile']))
+            
+            #set time
+            
+            #get measurements
+            for job in json_doc['jobs']:
+                self.sumdoc[iteration][mode][op_size]['write'] += job.write.iops
+                self.sumdoc[iteration][mode][op_size]['read'] += job.read.iops
+        
+    def get_fiojson_importers():
+        
+        for json_file in self.json_data_list:
+            fiojson_import_generator = import_fiojson(json_file['jfile'], json_file['metadata'])
+            yield fioson_import_generator
+            
+    def emit_actions(self):
+        
+        importdoc = {}
+        importdoc["_index"] = "cbt_librbdfio-summary-index"
+        importdoc["_type"] = "librbdfiosummarydata"
+        importdoc["_op_type"] = "create"
+        
+        self.calculate_iops_sum()
+        
+        for oper in self.operation_list:
+            for obj_size in self.block_size_list:
+                waver_ary = []
+                raver_ary = []
+                total_ary = []
+                averdoc = {}
+                averdoc['object_size'] = obj_size # set document's object size
+                averdoc['test_id'] = test_id
+                averdoc['operation'] = oper # set documents operation
+                firstrecord = 'false'
+                calcuate_percent_std_dev = False
+                for itera in self.iteration_list: # 
+                    try:
+                        waver_ary.append(self.sumdoc[itera][oper][obj_size]['write'])
+                        raver_ary.append(self.sumdoc[itera][oper][obj_size]['read'])
+        
+                        if firstrecord is 'false':
+                            averdoc['date'] = newdoc[itera][oper][obj_size]['date']
+                            firstrecord = 'true'
+                    except:
+                        pass
+                    
+                #print "##################average##################"
+                read_average = (sum(raver_ary)/len(raver_ary))
+                if read_average > 0.0:
+                    averdoc['read-iops'] = read_average
+                    if len(raver_ary) > 1:
+                        calcuate_percent_std_dev = True
+                else:
+                    averdoc['read-iops'] = 0
+        
+                write_average = (sum(waver_ary)/len(waver_ary))
+                if write_average > 0.0:
+                    print "process write %s" % len(waver_ary)
+                    averdoc['write-iops'] = write_average
+                    if len(waver_ary) > 1:
+                        calcuate_percent_std_dev = True 
+                else:
+                        averdoc['write-iops'] = 0
+        
+                averdoc['total-iops'] = (averdoc['write-iops'] + averdoc['read-iops'])
+                
+                if calcuate_percent_std_dev:
+                    if "read" in oper:
+                        averdoc['std-dev-%s' % obj_size] = round(((statistics.stdev(raver_ary) / read_average) * 100), 3)
+                    elif "write" in oper: 
+                        averdoc['std-dev-%s' % obj_size] = round(((statistics.stdev(waver_ary) / write_average) * 100), 3)
+                    elif "randrw" in oper:
+                        averdoc['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / averdoc['total-iops'])* 100), 3)
+                #print json.dumps(averdoc, indent=1) 
+                #res = es.index(index="cbt_librbdfio-summary-index", doc_type='fiologfile', body=averdoc)
+                importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
+                yield averdoc
+         
             
 class fiolog_evaluator:
     
@@ -320,8 +440,8 @@ def streaming_bulk(es, actions):
            # resp is not of expected form
            print(resp)
            status = 999
-       else:
-           assert action['_id'] == resp['_id']
+#        else:
+#            assert action['_id'] == resp['_id']
        if ok:
            successes += 1
        else:
