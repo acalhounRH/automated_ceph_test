@@ -66,7 +66,7 @@ def process_data():
                 for line in open(fname, 'r'):
                     config_parameter = line.split(':')[0]
                     config_value = line.split(':')[1]
-                    metadata[config_parameter.strip()] = config_value.strip() 
+                    test_metadata[config_parameter.strip()] = config_value.strip() 
 
                 if test_metadata['op_size']: test_metadata['op_size'] = int(test_metadata['op_size']) / 1024
                # process_CBT_Pbench_data_generator = process_CBT_Pbench_data(test_directory, test_metadata)
