@@ -217,8 +217,8 @@ class fiojson_evaluator:
 
             for job in json_doc['jobs']:
                 if not self.sumdoc[iteration][mode][op_size]: 
-                    self.sumdoc[iteration][mode][op_size]['write'] = defaultdict(int)
-                    self.sumdoc[iteration][mode][op_size]['read'] = defaultdict(int)
+                    self.sumdoc[iteration][mode][op_size]['write'] = 0
+                    self.sumdoc[iteration][mode][op_size]['read'] = 0
 
                 print json.dumps(self.sumdoc, indent=1)
                 print self.block_size_list
