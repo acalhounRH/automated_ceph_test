@@ -193,12 +193,12 @@ class fiojson_evaluator:
         
     def calculate_iops_sum(self):
         
-        for json_data in self.json_data_list:
+        for cjson_data in self.json_data_list:
             #print json.dumps(json_data, indent=1)
             #print "************************************"
-            iteration = json_data['metadata']['iteration']
-            op_size = json_data['metadata']['op_size']
-            mode = json_data['metadata']['mode']
+            iteration = cjson_data['metadata']['iteration']
+            op_size = cjson_data['metadata']['op_size']
+            mode = cjson_data['metadata']['mode']
             
             if iteration not in self.iteration_list: self.iteration_list.append(iteration) 
             if mode not in self.operation_list: self.operation_list.append(mode)
@@ -214,7 +214,8 @@ class fiojson_evaluator:
                 self.sumdoc[iteration][mode] = {}
                 for op_size in self.block_size_list:
                     self.sumdoc[iteration][mode][op_size] = {}
-                    
+         
+        print json.dumps(self.sumdoc, indent=1)           
             
             #get measurements
         for json_data in self.json_data_list:
@@ -224,12 +225,11 @@ class fiojson_evaluator:
             
             for job in json_doc['jobs']:
                 if "write" not in self.sumdoc[iteration][mode][op_size] and "read" not in self.sumdoc[iteration][mode][op_size]:
-                    print "set to zero"
+                #    print "set to zero"
                     self.sumdoc[iteration][mode][op_size]['write'] = 0
                     self.sumdoc[iteration][mode][op_size]['read'] = 0
 
-                print json.dumps(self.sumdoc, indent=1)
-                print self.block_size_list
+               # print json.dumps(self.sumdoc, indent=1)
                 self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
                 self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
         
