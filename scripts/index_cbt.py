@@ -59,9 +59,9 @@ def process_data():
             fname = os.path.join(dirpath,filename)
             if 'cbt_config.yaml' in fname:
                 print "debug"
-               # process_CBT_fiojson_generator = process_CBT_fiojson(dirpath, copy.deepcopy(test_metadata))
-               # for fiojson_obj in process_CBT_fiojson_generator:
-               #     yield fiojson_obj
+                process_CBT_fiojson_generator = process_CBT_fiojson(dirpath, copy.deepcopy(test_metadata))
+                for fiojson_obj in process_CBT_fiojson_generator:
+                    yield fiojson_obj
             #for each benchmark capture benchmark metadata and process all data
             if 'benchmark_config.yaml' in fname:
                 for line in open(fname, 'r'):
@@ -73,10 +73,10 @@ def process_data():
                # process_CBT_Pbench_data_generator = process_CBT_Pbench_data(test_directory, test_metadata)
                # for pbench_obj in process_CBT_Pbench_data_generator:
                #     yield pbench_obj 
-                process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, copy.deepcopy(test_metadata))
-                for fiolog_obj in process_CBT_fiologs_generator:
-                    yield fiolog_obj
-                
+#                 process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, copy.deepcopy(test_metadata))
+#                 for fiolog_obj in process_CBT_fiologs_generator:
+#                     yield fiolog_obj
+#                 
 
 def process_CBT_Pbench_data(tdir, test_metadata):
 
