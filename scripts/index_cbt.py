@@ -217,13 +217,13 @@ class fiojson_evaluator:
             op_size = json_data['metadata']['op_size']
             mode = json_data['metadata']['mode']
             
-            for job in json_doc['jobs']:
-                if not self.sumdoc[iteration][mode][op_size] and not self.sumdoc[iteration][mode][op_size]:
+            if not self.sumdoc[iteration][mode][op_size]:
                 #    print "set to zero"
-                    self.sundoc[iteration][mode][op_size]['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
-                    self.sumdoc[iteration][mode][op_size]['write'] = 0
-                    self.sumdoc[iteration][mode][op_size]['read'] = 0
-
+                self.sundoc[iteration][mode][op_size]['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
+                self.sumdoc[iteration][mode][op_size]['write'] = 0
+                self.sumdoc[iteration][mode][op_size]['read'] = 0
+            
+            for job in json_doc['jobs']:      
                # print json.dumps(self.sumdoc, indent=1)
                 self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
                 self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
