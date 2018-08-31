@@ -120,8 +120,8 @@ def process_CBT_fiojson(tdir, test_metadata):
                             #fiojson_evaluator_generator = fiojson_evaluator(file, test_metadata)
                             #yield fiojson_evaluator_generator
                 
-    for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
-        yield import_obj
+    #for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
+    #    yield import_obj
         
     yield fiojson_evaluator_generator
 
