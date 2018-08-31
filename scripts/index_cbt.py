@@ -194,8 +194,6 @@ class fiojson_evaluator:
     def calculate_iops_sum(self):
         
         for cjson_data in self.json_data_list:
-            #print json.dumps(json_data, indent=1)
-            #print "************************************"
             iteration = cjson_data['metadata']['iteration']
             op_size = cjson_data['metadata']['op_size']
             mode = cjson_data['metadata']['mode']
@@ -205,8 +203,7 @@ class fiojson_evaluator:
             if op_size not in self.block_size_list: self.block_size_list.append(op_size)
             
             print json.dumps(self.sumdoc, indent=1)
-            json_doc = json.load(open(json_data['jfile']))
-            
+             
             #set time
         for iteration in self.iteration_list:
             self.sumdoc[iteration] = {}
@@ -219,6 +216,8 @@ class fiojson_evaluator:
             
             #get measurements
         for json_data in self.json_data_list:
+            json_doc = json.load(open(json_data['jfile']))
+            
             iteration = json_data['metadata']['iteration']
             op_size = json_data['metadata']['op_size']
             mode = json_data['metadata']['mode']
