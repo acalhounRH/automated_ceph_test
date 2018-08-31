@@ -204,11 +204,17 @@ class fiojson_evaluator:
             if mode not in self.operation_list: self.operation_list.append(mode)
             if op_size not in self.block_size_list: self.block_size_list.append(op_size)
             
-            if iteration not in self.sumdoc[iteration]: self.sumdoc[iteration] = defaultdict(dict)
-            if mode not in self.sumdoc[iteration][mode]: self.sumdoc[iteration][mode] = defaultdict(dict)
-            if op_size not in self.sumdoc[iteration][mode][op_size]: self.sumdoc[iteration][mode][op_size] = defaultdict(dict)
+            if iteration not in self.sumdoc[iteration]: 
+                print "added iteration"
+                self.sumdoc[iteration] = defaultdict(dict)
+            if mode not in self.sumdoc[iteration][mode]:
+                print "added mode" 
+                self.sumdoc[iteration][mode] = defaultdict(dict)
+            if op_size not in self.sumdoc[iteration][mode][op_size]:
+                print "added op_size"
+                self.sumdoc[iteration][mode][op_size] = defaultdict(dict)
             
-            
+            print json.dumps(self.sumdoc, indent=1)
             json_doc = json.load(open(json_data['jfile']))
             
             #set time
