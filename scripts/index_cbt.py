@@ -7,7 +7,7 @@ from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 import threading
 from threading import Thread
-from collections import deque, defaultdict
+from collections import deque, defaultdict, Counter
 import multiprocessing
 from __builtin__ import int
 
@@ -448,6 +448,7 @@ def streaming_bulk(es, actions):
     streaming_bulk_generator = helpers.streaming_bulk(
            es, generator, raise_on_error=False,
            raise_on_exception=False, request_timeout=_request_timeout)
+    logging.info("Starting Bulk Indexing")
     for ok, resp_payload in streaming_bulk_generator:
        retry_count, action = actions_deque.popleft()
        try:
