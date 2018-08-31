@@ -311,7 +311,7 @@ class fiolog_evaluator:
         test_duration_ms = long(jsondoc['global options']['runtime']) * 1000
         start_time = test_time_ms - test_duration_ms
     
-        importdoc["_source"]["test_data"]['file'] = os.path.basename(self.csv_file)
+        importdoc["_source"]['file'] = os.path.basename(self.csv_file)
         with open(self.csv_file) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             for row in (readCSV):
