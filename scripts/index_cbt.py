@@ -222,7 +222,7 @@ class fiojson_evaluator:
             self.sumdoc[iteration][mode][op_size]['read'] = 0
 
         print json.dumps(self.sumdoc, indent=1)
-        print block_size_list
+        print self.block_size_list
         self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
         self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
         
