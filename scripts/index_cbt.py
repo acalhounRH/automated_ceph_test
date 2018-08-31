@@ -256,7 +256,7 @@ class fiojson_evaluator:
                     raver_ary.append(self.sumdoc[itera][oper][obj_size]['read'])
     
                     if firstrecord:
-                        importdoc['date'] = self.sumdoc[itera][oper][obj_size]['date']
+                        importdoc["_source"]['date'] = self.sumdoc[itera][oper][obj_size]['date']
                         firstrecord = True
 
                 read_average = (sum(raver_ary)/len(raver_ary))
