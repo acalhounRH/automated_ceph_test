@@ -285,7 +285,7 @@ class fiojson_evaluator:
                     elif "write" in oper: 
                         importdoc["_source"]['std-dev-%s' % obj_size] = round(((statistics.stdev(waver_ary) / write_average) * 100), 3)
                     elif "randrw" in oper:
-                        importdoc["_source"]['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / importdoc['total-iops'])* 100), 3)
+                        importdoc["_source"]['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / importdoc['_source']['total-iops'])* 100), 3)
 
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc     
