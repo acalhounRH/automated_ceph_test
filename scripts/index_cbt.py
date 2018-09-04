@@ -64,6 +64,7 @@ def process_data(test_id):
                 #append datetime stamp 
                 
                 cbt_config_gen = cbt_config_evaluator(test_id, fname)
+                yield cbt_config_gen
             
                 #if rbd test, process json data 
                 #if "librbdfio" in cbt_config:
