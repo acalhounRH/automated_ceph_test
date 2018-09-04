@@ -68,7 +68,7 @@ def process_data(test_id):
                 yield cbt_config_gen
             
                 #if rbd test, process json data 
-                if "librbdfio" in cbt_config:
+                if "librbdfio" in cbt_config_gen.config:
                     process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, copy.deepcopy(test_metadata))
                     for fiojson_obj in process_CBT_fio_results_generator:
                         yield fiojson_obj
