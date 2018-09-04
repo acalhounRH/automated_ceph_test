@@ -100,7 +100,7 @@ def process_CBT_Pbench_data(tdir, test_metadata):
 
 def process_CBT_fiojson(tdir, test_metadata):
     
-    fiojson_evaluator_generator = fiojson_evaluator()
+    fiojson_evaluator_generator = fiojson_evaluator(test_metadata['test_id'])
     metadata = {}
     metadata = test_metadata    
     for dirpath, dirs, files in os.walk(tdir):
@@ -178,12 +178,13 @@ class import_fiojson:
     
 class fiojson_evaluator:
     
-    def __init__(self):
+    def __init__(self, test_id):
         self.json_data_list = []
         self.iteration_list = []
         self.operation_list = []
         self.block_size_list = []
-        self.sumdoc = defaultdict(dict)     
+        self.sumdoc = defaultdict(dict)    
+        self.test_id = test_id
         
     def add_json_file(self, json_file, metadata):
         json_data = {}
@@ -241,6 +242,7 @@ class fiojson_evaluator:
         importdoc["_type"] = "librbdfiosummarydata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = {}
+        importdoc['test_id'] = self.test_id
         
         self.calculate_iops_sum()
         
