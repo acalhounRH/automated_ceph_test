@@ -172,13 +172,14 @@ class cbt_config_evaluator:
     def get_host_type(self, hostname_or_ip):
         
         cluster_config = {}
-        cluster_config = self.config['cluster']
-        for k,v in cluster_config.items():
+        cluster_host_to_type_map['osds'] = self.config['cluster']['osds']
+        cluster_host_to_type_map['mons'] = self.config['cluster']['mons']
+        cluster_host_to_type_map['clients'] self.config['cluster']['clients']
+        
+        for k,v in cluster_host_to_type_map.items():
             
             if hostname_or_ip in v:
                 print(k)
-            else:
-                print "@@@@@@@@@@@@@@@@@@NOT FOUND@@@@@@@@@@@@@@@@@@@@@@@"
     
     def emit_actions(self):
         
