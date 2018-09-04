@@ -174,7 +174,7 @@ class cbt_config_evaluator:
         cluster_config = {}
         cluster_host_to_type_map['osds'] = self.config['cluster']['osds']
         cluster_host_to_type_map['mons'] = self.config['cluster']['mons']
-        cluster_host_to_type_map['clients'] self.config['cluster']['clients']
+        cluster_host_to_type_map['clients'] = self.config['cluster']['clients']
         
         for k,v in cluster_host_to_type_map.items():
             
