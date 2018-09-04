@@ -65,7 +65,7 @@ def process_data(test_id):
                 
                 cbt_config_gen = cbt_config_evaluator(test_id, fname)
                 
-                cbt_config_gen.get_host_type(test)
+                cbt_config_gen.get_host_type('test')
                 
                 yield cbt_config_gen
             
