@@ -5,6 +5,8 @@ import logging, statistics, yaml
 import datetime, socket
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
+from collections import deque, defaultdict, Counter
+
 
 es_log = logging.getLogger("elasticsearch")
 es_log.setLevel(logging.CRITICAL)
