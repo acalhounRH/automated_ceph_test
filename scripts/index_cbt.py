@@ -172,14 +172,10 @@ class cbt_config_evaluator:
         
     
     def get_host_type(self, hostname_or_ip):
-           
-        print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-        print hostname_or_ip
-        
+                   
         for k,v in self.cluster_host_to_type_map.items():
             
             if hostname_or_ip in v:
-                print "GOT IT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
                 return k
     
     def emit_actions(self):
