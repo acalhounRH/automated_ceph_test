@@ -69,7 +69,7 @@ def process_data(test_id):
                     config_value = line.split(':')[1]
                     test_metadata['test_config'][config_parameter.strip()] = config_value.strip() 
 
-                if test_metadata['op_size']: test_metadata['op_size'] = int(test_metadata['op_size']) / 1024
+                if test_metadata['test_config']['op_size']: test_metadata['test_config']['op_size'] = int(test_metadata['test_config']['op_size']) / 1024
                 process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, copy.deepcopy(test_metadata))
                 for pbench_obj in process_CBT_Pbench_data_generator:
                     yield pbench_obj 
@@ -112,7 +112,7 @@ def process_CBT_fiojson(tdir, test_metadata):
                     config_value = line.split(':')[1]
                     metadata['test_config'][config_parameter.strip()] = config_value.strip()
                 
-                if metadata['op_size']: metadata['op_size'] = int(metadata['op_size']) / 1024
+                if metadata['test_config']['op_size']: metadata['test_config']['op_size'] = int(metadata['test_config']['op_size']) / 1024
                 test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
                 for file in test_files:
                     if "json_" in file:
