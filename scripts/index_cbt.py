@@ -2,14 +2,9 @@
 
 import os, sys, json, time, types, csv, copy, hashlib
 import logging, statistics, yaml 
-import datetime
+import datetime, socket
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
-import threading
-from threading import Thread
-from collections import deque, defaultdict, Counter
-import multiprocessing
-from __builtin__ import int
 
 es_log = logging.getLogger("elasticsearch")
 es_log.setLevel(logging.CRITICAL)
@@ -65,7 +60,7 @@ def process_data(test_id):
                 
                 global cbt_config_gen
                 cbt_config_gen = cbt_config_evaluator(test_id, fname)             
-
+                yield cbt_config_gen
             
                 #if rbd test, process json data 
                 if "librbdfio" in cbt_config_gen.config['benchmarks']:
@@ -81,7 +76,7 @@ def process_data(test_id):
                 
                 #romve for more cbt benchmark test
                 
-                yield cbt_config_gen                
+                                
 
 def process_CBT_Pbench_data(tdir, test_metadata):
 
@@ -96,8 +91,9 @@ def process_CBT_Pbench_data(tdir, test_metadata):
                 if ".csv" in pfname:
                     metadata = {}
                     metadata = test_metadata
-                    metadata['host'] = pfname.split("/")[5]
-                    metadata['ceph_node-type'] = cbt_config_gen.get_host_type(metadata['host'])
+                    metadata['hostname'] = pfname.split("/")[5]
+                    metadata['ipaddress'] = socket.gethostbyname(metadat['hostname'])
+                    metadata['ceph_node-type'] = cbt_config_gen.get_host_type(metadata['ipaddress'])
                     metadata['tool'] = pfname.split("/")[6]
                     metadata['file_name'] = pfname.split("/")[8]
                 
