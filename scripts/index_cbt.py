@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 import os, sys, json, time, types, csv, copy, hashlib
-import logging, statistics, pyyaml 
+import logging, statistics, yaml 
 import datetime
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
