@@ -172,7 +172,7 @@ class cbt_config_evaluator:
     def get_host_type(self, hostname_or_ip):
         
         cluster_config = {}
-        cluster_config = self.confg['cluster']
+        cluster_config = self.config['cluster']
         for k,v in cluster_config.items():
             
             if hostname_or_ip in v:
