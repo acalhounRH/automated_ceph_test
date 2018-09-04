@@ -33,7 +33,7 @@ def main():
         port=esport,
         ) 
 
-    for i in process_data_generator():
+    for i in process_data_generator(test_id):
         print json.dumps(i, indent=1)
 
 #    streaming_bulk(es, process_data_generator(test_id))
