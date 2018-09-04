@@ -311,6 +311,11 @@ class fiolog_evaluator:
         start_time = test_time_ms - test_duration_ms
     
         importdoc["_source"]['file'] = os.path.basename(self.csv_file)
+        
+        thread_n_metric_ = self.csv_file.split('.')[1]
+        thread, metric_name = thread_n_metric.split('_', 1)
+                
+        
         with open(self.csv_file) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             for row in (readCSV):
@@ -318,8 +323,9 @@ class fiolog_evaluator:
                 ms = float(row[0]) + float(start_time)
                 newtime = datetime.datetime.fromtimestamp(ms / 1000.0)
                 importdoc["_source"]['date'] = newtime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                importdoc["_source"]["test_data"]['value'] = int(row[1])
+                importdoc["_source"]["test_data"][metric_name] = int(row[1])
                 importdoc["_source"]["test_data"]['data direction'] = row[2]
+                importdoc['_source']['test_data']['fio_thread'] = metric_name 
                 
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc  # XXX: TODO change to yield a
