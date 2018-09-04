@@ -63,17 +63,15 @@ def process_data(test_id):
                 #append test id 
                 #append datetime stamp 
                 
-                cbt_config_gen = cbt_config_evaluator(test_id, fname)
-                
-                print cbt_config_gen.get_host_type('192.168.128.154')
-                
+                global cbt_config_gen
+                cbt_config_gen = cbt_config_evaluator(test_id, fname)             
                 yield cbt_config_gen
             
                 #if rbd test, process json data 
-                #if "librbdfio" in cbt_config:
-                #    process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, copy.deepcopy(test_metadata))
-                #    for fiojson_obj in process_CBT_fio_results_generator:
-                #        yield fiojson_obj
+                if "librbdfio" in cbt_config:
+                    process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, copy.deepcopy(test_metadata))
+                    for fiojson_obj in process_CBT_fio_results_generator:
+                        yield fiojson_obj
                 #if radons bench test, process data 
                 #elif "radosbench" in cbt_config:
                 #    print "underdevelopment"
@@ -97,6 +95,7 @@ def process_CBT_Pbench_data(tdir, test_metadata):
                     metadata = {}
                     metadata = test_metadata
                     metadata['host'] = pfname.split("/")[5]
+                    metadata['ceph_node-type'] = cbt_config_gen.get_host_type(metadata['host'])
                     metadata['tool'] = pfname.split("/")[6]
                     metadata['file_name'] = pfname.split("/")[8]
                 
