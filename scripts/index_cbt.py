@@ -64,6 +64,9 @@ def process_data(test_id):
                 #append datetime stamp 
                 
                 cbt_config_gen = cbt_config_evaluator(test_id, fname)
+                
+                cbt_config_gen.get_host_type(test)
+                
                 yield cbt_config_gen
             
                 #if rbd test, process json data 
@@ -165,6 +168,11 @@ class cbt_config_evaluator:
     def __init__(self, test_id, cbt_yaml_config):
         self.test_id = test_id 
         self.config = yaml.load(open(cbt_yaml_config))
+    
+    def get_host_type(self, hostname_or_ip):
+        
+        for k,v in self.config.item():
+            print(k,v)
     
     def emit_actions(self):
         
