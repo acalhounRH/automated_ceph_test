@@ -56,17 +56,13 @@ def process_data(test_id):
             fname = os.path.join(dirpath,filename)
             #capture cbt configuration 
             if 'cbt_config.yaml' in fname:
-                cbt_config = yaml.load(open(fname))
-                #append test id 
-                #append datetime stamp 
-                
-                global cbt_config_gen
+
                 cbt_config_gen = cbt_config_evaluator(test_id, fname)             
                 yield cbt_config_gen
             
                 #if rbd test, process json data 
                 if "librbdfio" in cbt_config_gen.config['benchmarks']:
-                    process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, copy.deepcopy(test_metadata))
+                    process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
                     for fiojson_obj in process_CBT_fio_results_generator:
                         yield fiojson_obj
                 #if radons bench test, process data 
@@ -80,7 +76,7 @@ def process_data(test_id):
                 
                                 
 
-def process_CBT_Pbench_data(tdir, test_metadata):
+def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
 
     #For each host in tools default create pbench scribe object for each csv file
     hosts_dir = "%s/tools-default" % tdir
@@ -95,14 +91,14 @@ def process_CBT_Pbench_data(tdir, test_metadata):
                     metadata = test_metadata
                     metadata['hostname'] = pfname.split("/")[5]
                     metadata['ipaddress'] = socket.gethostbyname(metadata['hostname'])
-                    metadata['ceph_node-type'] = cbt_config_gen.get_host_type(metadata['ipaddress'])
+                    metadata['ceph_node-type'] = cbt_config_obj.get_host_type(metadata['ipaddress'])
                     metadata['tool'] = pfname.split("/")[6]
                     metadata['file_name'] = pfname.split("/")[8]
                 
                     pb_evaluator_generator = pbench_evaluator(pfname, metadata)
                     yield pb_evaluator_generator
 
-def process_CBT_fio_results(tdir, test_metadata): # change to process_CBT_fioresults this will call the logs and json processor
+def process_CBT_fio_results(tdir, cbt_config_obj test_metadata): # change to process_CBT_fioresults this will call the logs and json processor
     
     fiojson_evaluator_generator = fiojson_evaluator(test_metadata['test_id'])
     metadata = {}
@@ -119,12 +115,12 @@ def process_CBT_fio_results(tdir, test_metadata): # change to process_CBT_fiores
                 if metadata['test_config']['op_size']: metadata['test_config']['op_size'] = int(metadata['test_config']['op_size']) / 1024
                 
                 #process fio logs 
-                process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, copy.deepcopy(metadata))
+                process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
                 for fiolog_obj in process_CBT_fiologs_generator:
                     yield fiolog_obj
                 
                 #process pbench logs
-                process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, copy.deepcopy(test_metadata))
+                process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(test_metadata))
                 for pbench_obj in process_CBT_Pbench_data_generator:
                     yield pbench_obj
                 
@@ -141,7 +137,7 @@ def process_CBT_fio_results(tdir, test_metadata): # change to process_CBT_fiores
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
 
-def process_CBT_fiologs(tdir, test_metadata):
+def process_CBT_fiologs(tdir, cbt_config_obj, test_metadata):
 
 
         # get all samples from current test dir in time order
@@ -156,7 +152,7 @@ def process_CBT_fiologs(tdir, test_metadata):
             metadata = test_metadata
             jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
             metadata['host'] = os.path.basename(file).split('log.', 1)[1]
-            metadata['ceph_node-type'] = cbt_config_gen.get_host_type(metadata['host'])
+            metadata['ceph_node-type'] = cbt_config_obj.get_host_type(metadata['host'])
             
 
             fiolog_evaluator_generator = fiolog_evaluator(file, jsonfile, metadata)
