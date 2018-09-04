@@ -156,6 +156,8 @@ def process_CBT_fiologs(tdir, test_metadata):
             metadata = test_metadata
             jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
             metadata['host'] = os.path.basename(file).split('log.', 1)[1]
+            metadata['ceph_node-type'] = cbt_config_gen.get_host_type(metadata['host'])
+            
 
             fiolog_evaluator_generator = fiolog_evaluator(file, jsonfile, metadata)
             yield fiolog_evaluator_generator
@@ -167,15 +169,16 @@ class cbt_config_evaluator:
     def __init__(self, test_id, cbt_yaml_config):
         self.test_id = test_id 
         self.config = yaml.load(open(cbt_yaml_config))
+        self.cluster_host_to_type_map = {}
+        self.cluster_host_to_type_map['osds'] = self.config['cluster']['osds']
+        self.cluster_host_to_type_map['mons'] = self.config['cluster']['mons']
+        self.cluster_host_to_type_map['clients'] = self.config['cluster']['clients']
+        
     
     def get_host_type(self, hostname_or_ip):
-        
-        cluster_host_to_type_map = {}
-        cluster_host_to_type_map['osds'] = self.config['cluster']['osds']
-        cluster_host_to_type_map['mons'] = self.config['cluster']['mons']
-        cluster_host_to_type_map['clients'] = self.config['cluster']['clients']
-        
-        for k,v in cluster_host_to_type_map.items():
+           
+        print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+        for k,v in self.cluster_host_to_type_map.items():
             
             if hostname_or_ip in v:
                 return k
