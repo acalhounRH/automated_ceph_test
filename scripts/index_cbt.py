@@ -30,10 +30,10 @@ def main():
         port=esport,
         ) 
 
-    for i in process_data_generator(test_id):
-        print json.dumps(i, indent=1)
+#    for i in process_data_generator(test_id):
+#        print json.dumps(i, indent=1)
 
-#    streaming_bulk(es, process_data_generator(test_id))
+    streaming_bulk(es, process_data_generator(test_id))
 
 
 #########################################################################
@@ -66,16 +66,9 @@ def process_data(test_id):
                     for fiojson_obj in process_CBT_fio_results_generator:
                         yield fiojson_obj
                 #if radons bench test, process data 
-                #elif "radosbench" in cbt_config:
-                #    print "underdevelopment"
-                #.
-                #.
-                #.
-                
-                #romve for more cbt benchmark test
-                
-                                
-
+                elif "radosbench" in cbt_config_gen.config['benchmarks']:
+                    print "underdevelopment"
+  
 def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
 
     #For each host in tools default create pbench scribe object for each csv file
@@ -98,7 +91,7 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
                     pb_evaluator_generator = pbench_evaluator(pfname, metadata)
                     yield pb_evaluator_generator
 
-def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata): # change to process_CBT_fioresults this will call the logs and json processor
+def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
     
     fiojson_evaluator_generator = fiojson_evaluator(test_metadata['test_id'])
     metadata = {}
