@@ -65,7 +65,7 @@ def process_data(test_id):
                 
                 cbt_config_gen = cbt_config_evaluator(test_id, fname)
                 
-                cbt_config_gen.get_host_type('192.168.128.154')
+                print cbt_config_gen.get_host_type('192.168.128.154')
                 
                 yield cbt_config_gen
             
@@ -179,7 +179,7 @@ class cbt_config_evaluator:
         for k,v in cluster_host_to_type_map.items():
             
             if hostname_or_ip in v:
-                print(k)
+                return k
     
     def emit_actions(self):
         
