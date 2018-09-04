@@ -171,7 +171,7 @@ class cbt_config_evaluator:
     
     def get_host_type(self, hostname_or_ip):
         
-        cluster_config = {}
+        cluster_host_to_type_map = {}
         cluster_host_to_type_map['osds'] = self.config['cluster']['osds']
         cluster_host_to_type_map['mons'] = self.config['cluster']['mons']
         cluster_host_to_type_map['clients'] = self.config['cluster']['clients']
