@@ -158,6 +158,7 @@ class cbt_config_evaluator:
     def __init__(self, test_id, cbt_yaml_config):
         self.test_id = test_id 
         self.config = yaml.load(open(cbt_yaml_config))
+        self.config_file = cbt_yaml_config
         self.cluster_host_to_type_map = {}
         self.cluster_host_to_type_map['osds'] = self.config['cluster']['osds']
         self.cluster_host_to_type_map['mons'] = self.config['cluster']['mons']
@@ -180,8 +181,12 @@ class cbt_config_evaluator:
         importdoc["_source"] = self.config
         importdoc["_source"]['test_id'] = self.test_id
         
+        file_time = os.path.getmtime(self.config_file)
+        file_time = datetime.datetime.fromtimestamp(file_time)
+        importdoc['date'] = file_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        
         importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
-        yield importdoc
+        yield importdoc 
 
 class import_fiojson:
 
