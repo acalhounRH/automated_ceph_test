@@ -177,6 +177,8 @@ class cbt_config_evaluator:
             
             if hostname_or_ip in v:
                 print(k)
+            else:
+                print "@@@@@@@@@@@@@@@@@@NOT FOUND@@@@@@@@@@@@@@@@@@@@@@@"
     
     def emit_actions(self):
         
