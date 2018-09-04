@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 import os, sys, json, time, types, csv, copy, hashlib
-import logging, statistics
+import logging, statistics, pyyaml 
 import datetime
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
@@ -33,13 +33,13 @@ def main():
         port=esport,
         ) 
 
-#     for i in process_data_generator():
-#         print json.dumps(i, indent=1)
+     for i in process_data_generator():
+         print json.dumps(i, indent=1)
 
-    streaming_bulk(es, process_data_generator(test_id))
+#    streaming_bulk(es, process_data_generator(test_id))
 
 
-##############################################################
+#########################################################################
 
 def process_data_generator(test_id):
     
@@ -57,26 +57,27 @@ def process_data(test_id):
     for dirpath, dirs, files in os.walk("."):
         for filename in files:
             fname = os.path.join(dirpath,filename)
+            #capture cbt configuration 
             if 'cbt_config.yaml' in fname:
-                print "debug"
-                process_CBT_fiojson_generator = process_CBT_fiojson(dirpath, copy.deepcopy(test_metadata))
-                for fiojson_obj in process_CBT_fiojson_generator:
-                    yield fiojson_obj
-            #for each benchmark capture benchmark metadata and process all data
-            if 'benchmark_config.yaml' in fname:
-                for line in open(fname, 'r'):
-                    config_parameter = line.split(':')[0]
-                    config_value = line.split(':')[1]
-                    test_metadata['test_config'][config_parameter.strip()] = config_value.strip() 
-
-                if test_metadata['test_config']['op_size']: test_metadata['test_config']['op_size'] = int(test_metadata['test_config']['op_size']) / 1024
-                process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, copy.deepcopy(test_metadata))
-                for pbench_obj in process_CBT_Pbench_data_generator:
-                    yield pbench_obj 
-                process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, copy.deepcopy(test_metadata))
-                for fiolog_obj in process_CBT_fiologs_generator:
-                    yield fiolog_obj
-#                 
+                cbt_config = yaml.load(open(fname))
+                #append test id 
+                #append datetime stamp 
+                
+                cbt_config_gen = cbt_config_evaluator(test_id, fname)
+            
+                #if rbd test, process json data 
+                #if "librbdfio" in cbt_config:
+                #    process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, copy.deepcopy(test_metadata))
+                #    for fiojson_obj in process_CBT_fio_results_generator:
+                #        yield fiojson_obj
+                #if radons bench test, process data 
+                #elif "radosbench" in cbt_config:
+                #    print "underdevelopment"
+                #.
+                #.
+                #.
+                
+                #romve for more cbt benchmark test
 
 def process_CBT_Pbench_data(tdir, test_metadata):
 
@@ -98,11 +99,11 @@ def process_CBT_Pbench_data(tdir, test_metadata):
                     pb_evaluator_generator = pbench_evaluator(pfname, metadata)
                     yield pb_evaluator_generator
 
-def process_CBT_fiojson(tdir, test_metadata):
+def process_CBT_fio_results(tdir, test_metadata): # change to process_CBT_fioresults this will call the logs and json processor
     
     fiojson_evaluator_generator = fiojson_evaluator(test_metadata['test_id'])
     metadata = {}
-    metadata = test_metadata    
+    metadata = test_metadata
     for dirpath, dirs, files in os.walk(tdir):
         for filename in files:
             fname = os.path.join(dirpath, filename)
@@ -113,6 +114,17 @@ def process_CBT_fiojson(tdir, test_metadata):
                     metadata['test_config'][config_parameter.strip()] = config_value.strip()
                 
                 if metadata['test_config']['op_size']: metadata['test_config']['op_size'] = int(metadata['test_config']['op_size']) / 1024
+                
+                #process fio logs 
+                process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, copy.deepcopy(metadata))
+                for fiolog_obj in process_CBT_fiologs_generator:
+                    yield fiolog_obj
+                
+                #process pbench logs
+                process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, copy.deepcopy(test_metadata))
+                for pbench_obj in process_CBT_Pbench_data_generator:
+                    yield pbench_obj
+                
                 test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
                 for file in test_files:
                     if "json_" in file:
@@ -146,6 +158,24 @@ def process_CBT_fiologs(tdir, test_metadata):
             yield fiolog_evaluator_generator
 
 ###############################CLASS DEF##################################
+
+class cbt_config_evaluator:
+    
+    def __init__(self, test_id, cbt_yaml_config):
+        self.test_id = test_id 
+        self.config = yaml.load(open(cbt_yaml_config))
+    
+    def emit_actions(self):
+        
+        importdoc = {}
+        importdoc["_index"] = "cbt_config-test1"
+        importdoc["_type"] = "cbt_config_data"
+        importdoc["_op_type"] = "create"
+        importdoc["_source"] = self.config
+        importdoc["_source"]['test_id'] = self.test_id
+        
+        yield importdoc
+
 class import_fiojson:
 
     def __init__(self, json_file, metadata):
@@ -242,7 +272,7 @@ class fiojson_evaluator:
         importdoc["_type"] = "librbdfiosummarydata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = {}
-        importdoc['test_id'] = self.test_id
+        importdoc["_source"]['test_id'] = self.test_id
         
         self.calculate_iops_sum()
         
@@ -315,7 +345,6 @@ class fiolog_evaluator:
         importdoc["_source"]['file'] = os.path.basename(self.csv_file)
         
         thread_n_metric = importdoc['_source']['file'].split('.')[1]
-        print "**********************************************%s" % thread_n_metric
         thread, metric_name = thread_n_metric.split('_', 1)
                 
         
