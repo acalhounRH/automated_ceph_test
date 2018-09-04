@@ -98,7 +98,7 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
                     pb_evaluator_generator = pbench_evaluator(pfname, metadata)
                     yield pb_evaluator_generator
 
-def process_CBT_fio_results(tdir, cbt_config_obj test_metadata): # change to process_CBT_fioresults this will call the logs and json processor
+def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata): # change to process_CBT_fioresults this will call the logs and json processor
     
     fiojson_evaluator_generator = fiojson_evaluator(test_metadata['test_id'])
     metadata = {}
