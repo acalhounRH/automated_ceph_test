@@ -33,26 +33,26 @@ def main():
         port=esport,
         ) 
 
-
 #     for i in process_data_generator():
 #         print json.dumps(i, indent=1)
 
-    streaming_bulk(es, process_data_generator())
+    streaming_bulk(es, process_data_generator(test_id))
 
 
 ##############################################################
 
-def process_data_generator():
+def process_data_generator(test_id):
     
-    object_generator = process_data()
+    object_generator = process_data(test_id)
 
     for obj in object_generator:
         for action in obj.emit_actions():
             yield action
 
-def process_data():
+def process_data(test_id):
     test_metadata = {}
-
+    test_metadata['test_id'] = test_id
+    test_metadata['test_config'] = {}
     #parse CBT achive dir and call process method
     for dirpath, dirs, files in os.walk("."):
         for filename in files:
@@ -67,7 +67,7 @@ def process_data():
                 for line in open(fname, 'r'):
                     config_parameter = line.split(':')[0]
                     config_value = line.split(':')[1]
-                    test_metadata[config_parameter.strip()] = config_value.strip() 
+                    test_metadata['test_config'][config_parameter.strip()] = config_value.strip() 
 
                 if test_metadata['op_size']: test_metadata['op_size'] = int(test_metadata['op_size']) / 1024
                 process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, copy.deepcopy(test_metadata))
@@ -90,7 +90,7 @@ def process_CBT_Pbench_data(tdir, test_metadata):
                 pfname = os.path.join(pdirpath, pfilename)
                 if ".csv" in pfname:
                     metadata = {}
-                    metadata['test_config'] = test_metadata
+                    metadata = test_metadata
                     metadata['host'] = pfname.split("/")[5]
                     metadata['tool'] = pfname.split("/")[6]
                     metadata['file_name'] = pfname.split("/")[8]
@@ -110,7 +110,7 @@ def process_CBT_fiojson(tdir, test_metadata):
                 for line in open(fname, 'r'):
                     config_parameter = line.split(':')[0]
                     config_value = line.split(':')[1]
-                    metadata[config_parameter.strip()] = config_value.strip()
+                    metadata['test_config'][config_parameter.strip()] = config_value.strip()
                 
                 if metadata['op_size']: metadata['op_size'] = int(metadata['op_size']) / 1024
                 test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
@@ -138,7 +138,7 @@ def process_CBT_fiologs(tdir, test_metadata):
         #if ("_bw" in file) or ("_clat" in file) or ("_iops" in file) or ("_lat" in file) or ("_slat" in file):
             metadata = {}
             #fiologdoc = copy.deepcopy(headerdoc)
-            metadata['test_config'] = test_metadata
+            metadata = test_metadata
             jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
             metadata['host'] = os.path.basename(file).split('log.', 1)[1]
 
