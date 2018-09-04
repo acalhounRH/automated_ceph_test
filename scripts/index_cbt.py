@@ -174,6 +174,7 @@ class cbt_config_evaluator:
         importdoc["_source"] = self.config
         importdoc["_source"]['test_id'] = self.test_id
         
+        importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
         yield importdoc
 
 class import_fiojson:
