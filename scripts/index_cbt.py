@@ -171,7 +171,9 @@ class cbt_config_evaluator:
     
     def get_host_type(self, hostname_or_ip):
         
-        for k,v in self.config.item():
+        #config = {}
+        #config = self.confg
+        for k,v in self.config.items():
             print(k,v)
     
     def emit_actions(self):
