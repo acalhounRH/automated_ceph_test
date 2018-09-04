@@ -313,6 +313,7 @@ class fiolog_evaluator:
         importdoc["_source"]['file'] = os.path.basename(self.csv_file)
         
         thread_n_metric = self.csv_file.split('.')[1]
+        print "**********************************************%s" % thread_n_metric
         thread, metric_name = thread_n_metric.split('_', 1)
                 
         
