@@ -65,10 +65,10 @@ def process_data(test_id):
                 
                 global cbt_config_gen
                 cbt_config_gen = cbt_config_evaluator(test_id, fname)             
-                yield cbt_config_gen
+
             
                 #if rbd test, process json data 
-                if "librbdfio" in cbt_config_gen.config:
+                if "librbdfio" in cbt_config_gen.config['benchmark']:
                     process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, copy.deepcopy(test_metadata))
                     for fiojson_obj in process_CBT_fio_results_generator:
                         yield fiojson_obj
@@ -80,6 +80,8 @@ def process_data(test_id):
                 #.
                 
                 #romve for more cbt benchmark test
+                
+                yield cbt_config_gen                
 
 def process_CBT_Pbench_data(tdir, test_metadata):
 
