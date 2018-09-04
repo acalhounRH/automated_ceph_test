@@ -194,9 +194,9 @@ class fiojson_evaluator:
     def calculate_iops_sum(self):
         
         for cjson_data in self.json_data_list:
-            iteration = cjson_data['metadata']['iteration']
-            op_size = cjson_data['metadata']['op_size']
-            mode = cjson_data['metadata']['mode']
+            iteration = cjson_data['metadata']['test_config']['iteration']
+            op_size = cjson_data['metadata']['test_config']['op_size']
+            mode = cjson_data['metadata']['test_config']['mode']
             
             if iteration not in self.iteration_list: self.iteration_list.append(iteration) 
             if mode not in self.operation_list: self.operation_list.append(mode)
@@ -213,9 +213,9 @@ class fiojson_evaluator:
         for json_data in self.json_data_list:
             json_doc = json.load(open(json_data['jfile']))
             
-            iteration = json_data['metadata']['iteration']
-            op_size = json_data['metadata']['op_size']
-            mode = json_data['metadata']['mode']
+            iteration = json_data['metadata']['test_config']['iteration']
+            op_size = json_data['metadata']['test_config']['op_size']
+            mode = json_data['metadata']['test_config']['mode']
             
             if not self.sumdoc[iteration][mode][op_size]:
                 self.sumdoc[iteration][mode][op_size]['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
