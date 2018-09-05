@@ -88,7 +88,7 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
                         metadata = test_metadata
                         metadata['hostname'] = pfname.split("/")[5]
                         metadata['ipaddress'] = socket.gethostbyname(metadata['hostname'])
-                        metadata['ceph_node-type'] = cbt_config_obj.get_host_type(metadata['ipaddress'])
+                        metadata['ceph_node_type'] = cbt_config_obj.get_host_type(metadata['ipaddress'])
                         metadata['tool'] = pfname.split("/")[6]
                         metadata['file_name'] = pfname.split("/")[8]
                     
