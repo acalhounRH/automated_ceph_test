@@ -14,7 +14,7 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(process)d %(threadName)s: %(levelname)s - %(message)s ')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s ')
     
     #check for test id, if not, set generic test id
     if len(sys.argv) > 3:
@@ -73,23 +73,28 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
 
     #For each host in tools default create pbench scribe object for each csv file
     hosts_dir = "%s/tools-default" % tdir
+    
+    
+    
     for host in os.listdir(hosts_dir):
         host_dir_fullpath = "%s/%s" % (hosts_dir, host) 
-
-        for pdirpath, pdirs, pfiles in os.walk(host_dir_fullpath.strip()):
-            for pfilename in pfiles:
-                pfname = os.path.join(pdirpath, pfilename)
-                if ".csv" in pfname:
-                    metadata = {}
-                    metadata = test_metadata
-                    metadata['hostname'] = pfname.split("/")[5]
-                    metadata['ipaddress'] = socket.gethostbyname(metadata['hostname'])
-                    metadata['ceph_node-type'] = cbt_config_obj.get_host_type(metadata['ipaddress'])
-                    metadata['tool'] = pfname.split("/")[6]
-                    metadata['file_name'] = pfname.split("/")[8]
-                
-                    pb_evaluator_generator = pbench_evaluator(pfname, metadata)
-                    yield pb_evaluator_generator
+        if os.path.isdir(host_dir_fullpath):
+            for pdirpath, pdirs, pfiles in os.walk(host_dir_fullpath.strip()):
+                for pfilename in pfiles:
+                    pfname = os.path.join(pdirpath, pfilename)
+                    if ".csv" in pfname:
+                        metadata = {}
+                        metadata = test_metadata
+                        metadata['hostname'] = pfname.split("/")[5]
+                        metadata['ipaddress'] = socket.gethostbyname(metadata['hostname'])
+                        metadata['ceph_node-type'] = cbt_config_obj.get_host_type(metadata['ipaddress'])
+                        metadata['tool'] = pfname.split("/")[6]
+                        metadata['file_name'] = pfname.split("/")[8]
+                    
+                        pb_evaluator_generator = pbench_evaluator(pfname, metadata)
+                        yield pb_evaluator_generator
+        else:
+            logging.warn("Pbench directory not Found, %s does not exist." % host_dir_fullpath)
 
 def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
     
@@ -123,7 +128,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                         if os.path.getsize(json_file) > 0: 
                             fiojson_evaluator_generator.add_json_file(json_file, copy.deepcopy(metadata))
                         else:
-                            logging.warn("Found Corrupted JSON file, %s," % json_file)
+                            logging.warn("Found Corrupted JSON file, %s." % json_file)
                             
                 
     for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
@@ -278,8 +283,6 @@ class fiojson_evaluator:
         for json_file in self.json_data_list: 
             json_metadata = {}
             json_metadata["test_config"] = json_file['metadata']
-            print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            print json.dumps(json_file)
             fiojson_import_generator = import_fiojson(json_file['jfile'], json_metadata)
             yield fiojson_import_generator
             
