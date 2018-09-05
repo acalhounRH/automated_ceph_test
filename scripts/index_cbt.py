@@ -32,7 +32,7 @@ def main():
 
 #    for i in process_data_generator(test_id):
 #        print json.dumps(i, indent=1)
-
+    print "test"
     streaming_bulk(es, process_data_generator(test_id))
 
 
