@@ -30,10 +30,10 @@ def main():
         port=esport,
         ) 
 
-#    for i in process_data_generator(test_id):
-#        print json.dumps(i, indent=1)
+    for i in process_data_generator(test_id):
+        print json.dumps(i, indent=1)
 
-    streaming_bulk(es, process_data_generator(test_id))
+#    streaming_bulk(es, process_data_generator(test_id))
 
 
 #########################################################################
@@ -183,7 +183,7 @@ class cbt_config_evaluator:
         
         file_time = os.path.getmtime(self.config_file)
         file_time = datetime.datetime.fromtimestamp(file_time)
-        importdoc['date'] = file_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        importdoc['_source']['date'] = file_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         
         importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
         yield importdoc 
