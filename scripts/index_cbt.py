@@ -275,7 +275,7 @@ class fiojson_evaluator:
             json_metadata = {}
             json_metadata["test_config"] = json_file['metadata']
             print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-            print json.dumps(self.json_file)
+            print json.dumps(json_file)
             fiojson_import_generator = import_fiojson(json_file['jfile'], json_metadata)
             yield fiojson_import_generator
             
