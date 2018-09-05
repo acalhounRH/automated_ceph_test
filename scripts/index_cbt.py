@@ -88,7 +88,7 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
                         metadata = test_metadata
                         metadata['hostname'] = pfname.split("/")[5]
                         metadata['ipaddress'] = socket.gethostbyname(metadata['hostname'])
-                        metadata['ceph_node_type'] = cbt_config_obj.get_host_type(metadata['ipaddress'])
+                        metadata['ceph_node_type'] = cbt_config_obj.get_host_type(metadata['hostname'])
                         metadata['tool'] = pfname.split("/")[6]
                         metadata['file_name'] = pfname.split("/")[8]
                     
@@ -172,10 +172,22 @@ class cbt_config_evaluator:
         self.config = yaml.load(open(cbt_yaml_config))
         self.config_file = cbt_yaml_config
         self.cluster_host_to_type_map = {}
-        self.cluster_host_to_type_map['osds'] = self.config['cluster']['osds']
-        self.cluster_host_to_type_map['mons'] = self.config['cluster']['mons']
-        self.cluster_host_to_type_map['clients'] = self.config['cluster']['clients']
-        
+        self.get_hostnames()
+
+    def get_hostnames(self):
+        host_type_list = ["osds", "mons", "clients"]
+        self.cluster_host_to_type_map['osds'] = []
+        self.cluster_host_to_type_map['mons'] = []
+        self.cluster_host_to_type_map['clients'] = []
+
+        for host_type in host_type_list:
+                for name in self.config['cluster'][host_type]:
+                    try:
+                        socket.inet_aton(name)
+                        self.cluster_host_to_type_map[host_type] = socket.gethostbyaddr(name)
+                    except:
+                        self.cluster_host_to_type_map[host_type] = name
+
     
     def get_host_type(self, hostname_or_ip):
                    
