@@ -128,7 +128,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                         if os.path.getsize(json_file) > 0: 
                             fiojson_evaluator_generator.add_json_file(json_file, copy.deepcopy(metadata))
                         else:
-                            logging.warn("Found Corrupted JSON file, %s." % json_file)
+                            logging.warn("Found corrupted JSON file, %s." % json_file)
                             
                 
     for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
