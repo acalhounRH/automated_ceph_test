@@ -14,7 +14,7 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s ')
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
     
     #check for test id, if not, set generic test id
     if len(sys.argv) > 3:
@@ -71,6 +71,7 @@ def process_data(test_id):
   
 def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
 
+    logging.info("Processing pbench data...")
     #For each host in tools default create pbench scribe object for each csv file
     hosts_dir = "%s/tools-default" % tdir
     
@@ -98,6 +99,7 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
 
 def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
     
+    logging.info("Processing RBD fio benchmark results.")
     fiojson_evaluator_generator = fiojson_evaluator(test_metadata['test_id'])
     metadata = {}
     metadata = test_metadata
@@ -112,17 +114,18 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                 
                 if metadata['test_config']['op_size']: metadata['test_config']['op_size'] = int(metadata['test_config']['op_size']) / 1024
                 
-                #process fio logs 
-#                 process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-#                 for fiolog_obj in process_CBT_fiologs_generator:
-#                     yield fiolog_obj
-#                 
-#                 #process pbench logs
-#                 process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(test_metadata))
-#                 for pbench_obj in process_CBT_Pbench_data_generator:
-#                     yield pbench_obj
+                #process fio logs
+                process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+                for fiolog_obj in process_CBT_fiologs_generator:
+                    yield fiolog_obj
+                 
+                #process pbench logs
+                process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(test_metadata))
+                for pbench_obj in process_CBT_Pbench_data_generator:
+                    yield pbench_obj
                 
                 test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
+                logging.info("Processing fio json files...")
                 for json_file in test_files:
                     if "json_" in json_file:
                         if os.path.getsize(json_file) > 0: 
@@ -141,7 +144,7 @@ def listdir_fullpath(d):
 
 def process_CBT_fiologs(tdir, cbt_config_obj, test_metadata):
 
-
+    logging.info("Processing fio logs...")
         # get all samples from current test dir in time order
     test_files = sorted(listdir_fullpath(tdir), key=os.path.getctime)
 
