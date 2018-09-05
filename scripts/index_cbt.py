@@ -381,7 +381,7 @@ class fiolog_evaluator:
                 importdoc["_source"]['date'] = newtime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                 importdoc["_source"]["test_data"][metric_name] = int(row[1])
                 importdoc["_source"]["test_data"]['data direction'] = row[2]
-                importdoc['_source']['test_data']['fio_thread'] = metric_name 
+                importdoc['_source']['test_data']['fio_thread'] = thread 
                 
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc  # XXX: TODO change to yield a
