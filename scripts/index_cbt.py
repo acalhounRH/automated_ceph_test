@@ -186,7 +186,10 @@ class cbt_config_evaluator:
                         socket.inet_aton(name)
                         self.cluster_host_to_type_map[host_type].append(socket.gethostbyaddr(name))
                     except:
+                        print "failed to find hostname from ip"
                         self.cluster_host_to_type_map[host_type].append(name)
+        
+        print json.dump(self.cluster_host_to_type_map, indent=1)
     
     def get_host_type(self, hostname_or_ip):
                    
