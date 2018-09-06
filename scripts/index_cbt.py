@@ -184,6 +184,7 @@ class cbt_config_evaluator:
                 for name in self.config['cluster'][host_type]:
                     try:
                         #socket.inet_aton(name)
+                        print "found the hostname for this IP"
                         self.cluster_host_to_type_map[host_type].append(socket.gethostbyaddr(name))
                     except:
                         print "failed to find hostname from ip"
