@@ -179,22 +179,24 @@ class cbt_config_evaluator:
         self.cluster_host_to_type_map['osds'] = []
         self.cluster_host_to_type_map['mons'] = []
         self.cluster_host_to_type_map['clients'] = []
-
+        
         for host_type in host_type_list:
                 for name in self.config['cluster'][host_type]:
                     try:
                         socket.inet_aton(name)
-                        self.cluster_host_to_type_map[host_type] = socket.gethostbyaddr(name)
+                        self.cluster_host_to_type_map[host_type].append(socket.gethostbyaddr(name))
                     except:
-                        self.cluster_host_to_type_map[host_type] = name
-
+                        self.cluster_host_to_type_map[host_type].append(name)
     
     def get_host_type(self, hostname_or_ip):
                    
+        node_type = "UNKNOWN"
         for k,v in self.cluster_host_to_type_map.items():
             
             if hostname_or_ip in v:
-                return k
+                node_type = k
+        
+        return node_type
     
     def emit_actions(self):
         
