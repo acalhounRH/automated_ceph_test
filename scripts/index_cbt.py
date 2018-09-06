@@ -443,30 +443,21 @@ class pbench_evaluator:
                                 for node_type in node_type_list:
                                     if  node_type in pname:    
                                         pid = col_ary[col].split('-', 1)[0]
-                                        importdoc['_source']['test_data'][tool][file_name]['process_name'] = pname
+                                        importdoc['_source']['test_data'][tool][file_name]['process_name'] = node_type
                                         importdoc['_source']['test_data'][tool][file_name]['process_pid'] = pid
-                                        importdoc['_source']['test_data'][tool][file_name]['process_value'] = float(row[col])
+                                        importdoc['_source']['test_data'][tool][file_name]['metric_value'] = float(row[col])
                                         a = importdoc
                             elif 'sar' in tool:
-                                if "network_" in file_name:
-                                    importdoc['_source']['test_data'][tool][file_name]['network_interface'] = col_ary[col]
-                                    importdoc['_source']['test_data'][tool][file_name]['network_value'] = float(row[col])
-                                    a = importdoc
-                                elif "memory_" in file_name:
-                                    importdoc['_source']['test_data'][tool][file_name]['memory_stat'] = col_ary[col]
-                                    importdoc['_source']['test_data'][tool][file_name]['memory_value'] = float(row[col])
-                                    a = importdoc
-                                elif "per_cpu_" in file_name:
-                                    importdoc['_source']['test_data'][tool][file_name]['sarcpu_stat'] = col_ary[col]
-                                    importdoc['_source']['test_data'][tool][file_name]['sarcpu_value'] = float(row[col])
-                                    a = importdoc
-                            elif 'iostat' in tool:
-                                importdoc['_source']['test_data'][tool][file_name]['device'] = col_ary[col]
-                                importdoc['_source']['test_data'][tool][file_name]['iostat_value'] = float(row[col])
+                                importdoc['_source']['test_data'][tool][file_name]['metric_stat'] = col_ary[col]
+                                importdoc['_source']['test_data'][tool][file_name]['metric_value'] = float(row[col])
                                 a = importdoc
-                            elif 'mpstat' in tool and "cpuall_cpuall.csv" in file_name:
-                                importdoc['_source']['test_data'][tool][file_name]['cpu_stat'] = col_ary[col]
-                                importdoc['_source']['test_data'][tool][file_name]['cpu_value'] = float(row[col])
+                            elif 'iostat' in tool:
+                                importdoc['_source']['test_data'][tool][file_name]['metric_stat'] = col_ary[col]
+                                importdoc['_source']['test_data'][tool][file_name]['metric_value'] = float(row[col])
+                                a = importdoc
+                            elif 'mpstat' in tool:
+                                importdoc['_source']['test_data'][tool][file_name]['metric_stat'] = col_ary[col]
+                                importdoc['_source']['test_data'][tool][file_name]['metric_value'] = float(row[col])
                                 a = importdoc
                         if a:
                                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
