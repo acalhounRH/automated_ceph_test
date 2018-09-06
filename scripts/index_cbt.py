@@ -457,9 +457,9 @@ class pbench_evaluator:
                                     importdoc['_source']['test_data'][tool][file_name]['memory_value'] = float(row[col])
                                     a = importdoc
                                 elif "per_cpu_" in file_name:
-                                    sardoc['_source'][tool][file_name]['sarcpu_stat'] = col_ary[col]
-                                    sardoc['_source'][tool][file_name]['sarcpu_value'] = float(row[col])
-                                    a = copy.deepcopy(sardoc)
+                                    importdoc['_source'][tool][file_name]['sarcpu_stat'] = col_ary[col]
+                                    importdoc['_source'][tool][file_name]['sarcpu_value'] = float(row[col])
+                                    a = importdoc
                             elif 'iostat' in tool:
                                 importdoc['_source']['test_data'][tool][file_name]['device'] = col_ary[col]
                                 importdoc['_source']['test_data'][tool][file_name]['iostat_value'] = float(row[col])
