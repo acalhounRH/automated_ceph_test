@@ -56,7 +56,7 @@ def process_data(test_id):
             fname = os.path.join(dirpath,filename)
             #capture cbt configuration 
             if 'cbt_config.yaml' in fname:
-
+                logging.info("Gathering CBT configuration settings...")
                 cbt_config_gen = cbt_config_evaluator(test_id, fname)             
                 yield cbt_config_gen
             
