@@ -447,15 +447,7 @@ class pbench_evaluator:
                                         importdoc['_source']['test_data'][tool][file_name]['process_pid'] = pid
                                         importdoc['_source']['test_data'][tool][file_name]['metric_value'] = float(row[col])
                                         a = importdoc
-                            elif 'sar' in tool:
-                                importdoc['_source']['test_data'][tool][file_name]['metric_stat'] = col_ary[col]
-                                importdoc['_source']['test_data'][tool][file_name]['metric_value'] = float(row[col])
-                                a = importdoc
-                            elif 'iostat' in tool:
-                                importdoc['_source']['test_data'][tool][file_name]['metric_stat'] = col_ary[col]
-                                importdoc['_source']['test_data'][tool][file_name]['metric_value'] = float(row[col])
-                                a = importdoc
-                            elif 'mpstat' in tool:
+                            else:
                                 importdoc['_source']['test_data'][tool][file_name]['metric_stat'] = col_ary[col]
                                 importdoc['_source']['test_data'][tool][file_name]['metric_value'] = float(row[col])
                                 a = importdoc
