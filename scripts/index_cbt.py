@@ -187,8 +187,7 @@ class cbt_config_evaluator:
         
         if os.path.exists(ansible_facts_file):
             ansible_facts_data = json.load(open(ansible_facts_file)) 
-        
-        print ansible_facts_data
+            print ansible_facts_data
         
 #         for host_type in host_type_list:
 #                 for name in self.config['cluster'][host_type]:
