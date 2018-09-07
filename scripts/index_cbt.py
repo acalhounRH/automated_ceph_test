@@ -183,7 +183,7 @@ class cbt_config_evaluator:
         self.cluster_host_to_type_map['mons'] = []
         self.cluster_host_to_type_map['clients'] = []
         
-        ansible_facts_file = "%s/ansible_facts" & self.test_directory
+        ansible_facts_file = "%s/ansible_facts" % self.test_directory
         
         if os.path.exists(ansible_facts_file):
             ansible_facts_data = json.load(open(ansible_facts_file)) 
