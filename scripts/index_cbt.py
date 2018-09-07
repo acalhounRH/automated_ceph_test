@@ -135,8 +135,8 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
 #                             logging.warn("Found corrupted JSON file, %s." % json_file)
                             
                 
-    for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
-        yield import_obj
+#     for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
+#         yield import_obj
         
     yield fiojson_evaluator_generator
 
