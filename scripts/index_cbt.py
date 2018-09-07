@@ -30,10 +30,10 @@ def main():
         port=esport,
         ) 
 
-#    for i in process_data_generator(test_id):
+    for i in process_data_generator(test_id):
 #        print json.dumps(i, indent=1)
     print "test"
-    streaming_bulk(es, process_data_generator(test_id))
+#     streaming_bulk(es, process_data_generator(test_id))
 
 
 #########################################################################
@@ -115,23 +115,23 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                 if metadata['test_config']['op_size']: metadata['test_config']['op_size'] = int(metadata['test_config']['op_size']) / 1024
                 
                 #process fio logs
-                process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-                for fiolog_obj in process_CBT_fiologs_generator:
-                    yield fiolog_obj
+#                 process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+#                 for fiolog_obj in process_CBT_fiologs_generator:
+#                     yield fiolog_obj
                  
                 #process pbench logs
-                process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(test_metadata))
-                for pbench_obj in process_CBT_Pbench_data_generator:
-                    yield pbench_obj
+#                 process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(test_metadata))
+#                 for pbench_obj in process_CBT_Pbench_data_generator:
+#                     yield pbench_obj
                 
                 test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
                 logging.info("Processing fio json files...")
-                for json_file in test_files:
-                    if "json_" in json_file:
-                        if os.path.getsize(json_file) > 0: 
-                            fiojson_evaluator_generator.add_json_file(json_file, copy.deepcopy(metadata))
-                        else:
-                            logging.warn("Found corrupted JSON file, %s." % json_file)
+#                 for json_file in test_files:
+#                     if "json_" in json_file:
+#                         if os.path.getsize(json_file) > 0: 
+#                             fiojson_evaluator_generator.add_json_file(json_file, copy.deepcopy(metadata))
+#                         else:
+#                             logging.warn("Found corrupted JSON file, %s." % json_file)
                             
                 
     for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
@@ -170,27 +170,36 @@ class cbt_config_evaluator:
     def __init__(self, test_id, cbt_yaml_config):
         self.test_id = test_id 
         self.config = yaml.load(open(cbt_yaml_config))
+        self.test_directory = os.path.dirname(cbt_yaml_config)
+        
         self.config_file = cbt_yaml_config
         self.cluster_host_to_type_map = {}
-        self.get_hostnames()
+        self.map_node_types_hostnames()
 
-    def get_hostnames(self):
+    def map_node_types_hostnames(self):
         host_type_list = ["osds", "mons", "clients"]
         self.cluster_host_to_type_map['osds'] = []
         self.cluster_host_to_type_map['mons'] = []
         self.cluster_host_to_type_map['clients'] = []
         
-        for host_type in host_type_list:
-                for name in self.config['cluster'][host_type]:
-                    try:
-                        #socket.inet_aton(name)
-                        print "found the hostname for this IP"
-                        self.cluster_host_to_type_map[host_type].append(socket.gethostbyaddr(name))
-                    except:
-                        print "failed to find hostname from ip"
-                        self.cluster_host_to_type_map[host_type].append(name)
+        ansible_facts_file = "%s/ansible_facts" & self.test_directory
         
-        print json.dumps(self.cluster_host_to_type_map, indent=1)
+        if os.path.exists(ansible_facts_file):
+            ansible_facts_data = json.load(open(ansible_facts_file)) 
+        
+        print ansible_facts_data
+        
+#         for host_type in host_type_list:
+#                 for name in self.config['cluster'][host_type]:
+#                     try:
+#                         #socket.inet_aton(name)
+#                         print "found the hostname for this IP"
+#                         self.cluster_host_to_type_map[host_type].append(socket.gethostbyaddr(name))
+#                     except:
+#                         print "failed to find hostname from ip"
+#                         self.cluster_host_to_type_map[host_type].append(name)
+#         
+#         print json.dumps(self.cluster_host_to_type_map, indent=1)
     
     def get_host_type(self, hostname_or_ip):
                    
