@@ -30,11 +30,11 @@ def main():
         port=esport,
         ) 
 
-    for i in process_data_generator(test_id):
-        print json.dumps(i, indent=1)
+#     for i in process_data_generator(test_id):
+#         print json.dumps(i, indent=1)
         
-#     print "test"
-#     streaming_bulk(es, process_data_generator(test_id))
+    print "test"
+    streaming_bulk(es, process_data_generator(test_id))
 
 
 #########################################################################
@@ -171,7 +171,6 @@ class cbt_config_evaluator:
     def __init__(self, test_id, cbt_yaml_config):
         self.test_id = test_id 
         self.config = yaml.load(open(cbt_yaml_config))
-        self.test_directory = os.path.dirname(cbt_yaml_config)
         
         self.config_file = cbt_yaml_config
         self.cluster_host_to_type_map = {}
@@ -182,24 +181,18 @@ class cbt_config_evaluator:
         self.cluster_host_to_type_map['osds'] = []
         self.cluster_host_to_type_map['mons'] = []
         self.cluster_host_to_type_map['clients'] = []
-        
-        ansible_facts_file = "%s/ansible_facts.json" % self.test_directory
-        
-        if os.path.exists(ansible_facts_file):
-            ansible_facts_data = json.load(open(ansible_facts_file)) 
-            print ansible_facts_data
-        
-#         for host_type in host_type_list:
-#                 for name in self.config['cluster'][host_type]:
-#                     try:
-#                         #socket.inet_aton(name)
-#                         print "found the hostname for this IP"
-#                         self.cluster_host_to_type_map[host_type].append(socket.gethostbyaddr(name))
-#                     except:
-#                         print "failed to find hostname from ip"
-#                         self.cluster_host_to_type_map[host_type].append(name)
-#         
-#         print json.dumps(self.cluster_host_to_type_map, indent=1)
+                        
+        for host_type in host_type_list:
+                for name in self.config['cluster'][host_type]:
+                    try:
+                        #socket.inet_aton(name)
+                        print "found the hostname for this IP"
+                        self.cluster_host_to_type_map[host_type].append(socket.gethostbyaddr(name))
+                    except:
+                        print "failed to find hostname from ip"
+                        self.cluster_host_to_type_map[host_type].append(name)
+         
+        print json.dumps(self.cluster_host_to_type_map, indent=1)
     
     def get_host_type(self, hostname_or_ip):
                    
