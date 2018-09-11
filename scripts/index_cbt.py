@@ -33,9 +33,11 @@ def main():
 #     for i in process_data_generator(test_id):
 #         print json.dumps(i, indent=1)
         
-    results = streaming_bulk(es, process_data_generator(test_id))
+    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = streaming_bulk(es, process_data_generator(test_id))
     
-    print results
+    #(beg, end, successes, duplicates, failures, retries_tracker['retries'])
+    
+    print res_beg, res_end, res_suc, res_dup, res_fail, res_retry
 
 
 #########################################################################
