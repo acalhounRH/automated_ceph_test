@@ -43,7 +43,8 @@ def main():
     start_t = datetime.datetime.strptime(start_t, FMT)
     end_t = datetime.datetime.strptime(end_t, FMT)
     tdelta = end_t - start_t
-    logging.info("Indexing took %s hours, %s minutes, and %s seconds." % (tdelta.tm_hour, tdelta.tm_min, tdelta.tm_sec)) 
+    logging.info("Duration of indexing - %s" % tdelta)
+    logging.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries" % (res_suc, res_dup, res_fail, res_retry)) 
     #tdelta, res_suc, res_dup, res_fail, res_retry
 
 
