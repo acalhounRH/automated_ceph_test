@@ -68,7 +68,7 @@ def process_data(test_id):
                         yield fiojson_obj
                 #if radons bench test, process data 
                 elif "radosbench" in cbt_config_gen.config['benchmarks']:
-                    print "underdevelopment"
+                    logging.warn("rados bench is under development")
   
 def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
 
