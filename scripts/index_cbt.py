@@ -189,13 +189,13 @@ class cbt_config_evaluator:
                 for name in self.config['cluster'][host_type]:
                     try:
                         #socket.inet_aton(name)
-                        print "found the hostname for this IP"
+                    #    print "found the hostname for this IP"
                         self.cluster_host_to_type_map[host_type].append(socket.gethostbyaddr(name))
                     except:
-                        print "failed to find hostname from ip"
+                    #   print "failed to find hostname from ip"
                         self.cluster_host_to_type_map[host_type].append(name)
          
-        print json.dumps(self.cluster_host_to_type_map, indent=1)
+        #print json.dumps(self.cluster_host_to_type_map, indent=1)
     
     def get_host_type(self, hostname_or_ip):
                    

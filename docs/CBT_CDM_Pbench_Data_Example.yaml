@@ -1,7 +1,7 @@
 # max field names 1k 
 
 ceph_benchmark_test:
-	data: %Y-%m-%dT%H:%M:%S.%fZ
+	data: "%Y-%m-%dT%H:%M:%S.%fZ"
 	common:
 		hardware:                   #this is under development, 
 			hostname: 
