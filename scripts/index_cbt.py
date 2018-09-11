@@ -36,6 +36,7 @@ def main():
     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = streaming_bulk(es, process_data_generator(test_id))
     
     #(beg, end, successes, duplicates, failures, retries_tracker['retries'])
+    FMT = '%H:%M:%S'
     tdelta = datetime.strptime(gmtime(res_end), FMT) - datetime.strptime(gmtime(res_beg), FMT)
     print tdelta, res_suc, res_dup, res_fail, res_retry
 
