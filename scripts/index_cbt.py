@@ -66,8 +66,9 @@ def process_data(test_id):
                     process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
                     for fiojson_obj in process_CBT_fio_results_generator:
                         yield fiojson_obj
-                #if radons bench test, process data 
-                elif "radosbench" in cbt_config_gen.config['benchmarks']:
+                #if radons bench test, process data
+                 
+                if "radosbench" in cbt_config_gen.config['benchmarks']:
                     logging.warn("rados bench is under development")
   
 def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
