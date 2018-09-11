@@ -37,7 +37,7 @@ def main():
     
     #(beg, end, successes, duplicates, failures, retries_tracker['retries'])
     FMT = '%Y-%m-%dT%H:%M:%SGMT'
-     
+    tdelta = gmtime(res_end) - gmtime(res_beg) 
     print gmtime(res_beg), gmtime(res_end), res_suc, res_dup, res_fail, res_retry
 
 
