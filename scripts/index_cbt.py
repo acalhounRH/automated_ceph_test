@@ -6,7 +6,6 @@ import datetime, socket
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 from collections import deque, defaultdict, Counter
-from matplotlib.dates import minutes
 
 
 es_log = logging.getLogger("elasticsearch")
