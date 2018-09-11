@@ -113,7 +113,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                     #config_parameter = line.split(':')[0]
                     #config_value = line.split(':')[1]
                     #metadata['test_config'][config_parameter.strip()] = config_value.strip()
-                    metadata['test_config'] = benchmark['cluster']
+                    metadata['test_config'] = benchmark_data['cluster']
                 
                 if metadata['test_config']['op_size']: metadata['test_config']['op_size'] = int(metadata['test_config']['op_size']) / 1024
                 
