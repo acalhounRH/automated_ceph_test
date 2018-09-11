@@ -34,7 +34,9 @@ def main():
 #         print json.dumps(i, indent=1)
         
     print "test"
-    streaming_bulk(es, process_data_generator(test_id))
+    results = streaming_bulk(es, process_data_generator(test_id))
+    
+    print results
 
 
 #########################################################################
