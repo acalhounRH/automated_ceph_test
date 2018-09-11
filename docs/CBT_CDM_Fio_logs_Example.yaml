@@ -1,0 +1,47 @@
+ceph_benchmark_test:
+	data: %Y-%m-%dT%H:%M:%S.%fZ
+	common:                             #this is under development, some of it is derived from stockpile data
+		hostname: 
+		ipv4_address: 
+		test_id: 
+		file:
+	ceph_config:					    #derived from stockpile data
+		ceph_config_UUID:		
+		ceph_node_type:		
+	test_config:					    #Created from benchmark_config.yaml, usually static between records
+		"time_based": "true",
+		"op_size": 64,
+	        "vol_size": "4096",
+            "numjobs": "1",
+	        "volumes_per_client": "3",
+	        "iteration": "2",
+	        "cluster": "",
+	        "use_existing_volumes": "false",
+	        "concurrent_procs": "1",
+	        "time": "120",
+	        "benchmark": "librbdfio",
+	        "pool_profile": "rbd3rep",
+	        "cmd_path": "/usr/local/bin/fio",
+	        "iodepth": "32",
+	        "log_avg_msec": "1000",
+	        "mode": "randwrite"
+	test_data:							#from actual data file (csv/json) 
+		fio:							#tool 
+			fio_logs:
+				<metric>:					#iops, lat, clat, etc. 
+					metric_value>: (csv data cell for specific line/column intersect)
+				data_direction: <1|0> ( 0 = read or 1 = write)
+				fio_thread: <int> 
+
+			#or
+		fio:
+			fio_json:
+				global_options:
+				job:
+					read:
+					write:
+					trim:
+				total_iops:
+				.
+				.
+				.
