@@ -1,5 +1,5 @@
 ceph_benchmark_test:
-	data: %Y-%m-%dT%H:%M:%S.%fZ
+  data: "%Y-%m-%dT%H:%M:%S.%fZ"
 	common:                             #this is under development, some of it is derived from stockpile data
 		hostname: 
 		ipv4_address: 
@@ -34,6 +34,3 @@ ceph_benchmark_test:
 					write:
 					trim:
 				total_iops:
-				.
-				.
-				.

@@ -109,30 +109,33 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
             fname = os.path.join(dirpath, filename)
             if 'benchmark_config.yaml' in fname:
                 for line in open(fname, 'r'):
-                    config_parameter = line.split(':')[0]
-                    config_value = line.split(':')[1]
-                    metadata['test_config'][config_parameter.strip()] = config_value.strip()
+                    benchmark_data = yaml.load(open(fname))
+                    #config_parameter = line.split(':')[0]
+                    #config_value = line.split(':')[1]
+                    #metadata['test_config'][config_parameter.strip()] = config_value.strip()
+                    metadata['test_config'] = benchmark['cluster']
                 
                 if metadata['test_config']['op_size']: metadata['test_config']['op_size'] = int(metadata['test_config']['op_size']) / 1024
                 
-                #process fio logs
-                process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-                for fiolog_obj in process_CBT_fiologs_generator:
-                    yield fiolog_obj
+                if "librbdfio" in metadata['test_config']['benchmark']:
+                    #process fio logs
+                    process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+                    for fiolog_obj in process_CBT_fiologs_generator:
+                        yield fiolog_obj
                  
-                #process pbench logs
-                process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(test_metadata))
-                for pbench_obj in process_CBT_Pbench_data_generator:
-                    yield pbench_obj
+                    #process pbench logs
+                    process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(test_metadata))
+                    for pbench_obj in process_CBT_Pbench_data_generator:
+                        yield pbench_obj
                 
-                test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
-                logging.info("Processing fio json files...")
-                for json_file in test_files:
-                    if "json_" in json_file:
-                        if os.path.getsize(json_file) > 0: 
-                            fiojson_evaluator_generator.add_json_file(json_file, copy.deepcopy(metadata))
-                        else:
-                            logging.warn("Found corrupted JSON file, %s." % json_file)
+                    test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
+                    logging.info("Processing fio json files...")
+                    for json_file in test_files:
+                        if "json_" in json_file:
+                            if os.path.getsize(json_file) > 0: 
+                                fiojson_evaluator_generator.add_json_file(json_file, copy.deepcopy(metadata))
+                            else:
+                                logging.warn("Found corrupted JSON file, %s." % json_file)
                             
                 
     for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
