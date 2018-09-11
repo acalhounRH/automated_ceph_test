@@ -1,39 +1,39 @@
 # max field names 1k 
 
 ceph_benchmark_test:
-	data: "%Y-%m-%dT%H:%M:%S.%fZ"
-	common:
-		hardware:                   #this is under development, 
-			hostname: 
-			ipv4_address: 
-		test:
-			test_id: 				#UUID 
-			file:
-			notes:					# notes about run
-	application_config:					#application config
-		application_config_UUID:		#shared UUID for all applications under test (AUT) configurations 
-		ceph_config:
-			ceph_node_type:	
-	test_config:					  #Created from benchmark_config.yaml, usually static between records
-		"time_based": "true",
-		"op_size": 64,
-	        "vol_size": "4096",
-            "numjobs": "1",
-	        "volumes_per_client": "3",
-	        "iteration": "2",
-	        "cluster": "",
-	        "use_existing_volumes": "false",
-	        "concurrent_procs": "1",
-	        "time": "120",
-	        "benchmark": "librbdfio",
-	        "pool_profile": "rbd3rep",
-	        "cmd_path": "/usr/local/bin/fio",
-	        "iodepth": "32",
-	        "log_avg_msec": "1000",
-	        "mode": "randwrite"
-	test_data:						#from actual data file (csv/json)
-		pbench: 
-			<tool>:
-				<file_name|metric_type>:
-					metric_stat: #(csv header for column, allows user to break down data to specific device or metric status)
-					metric_value: #(csv data cell for specific line/column intersect
+  data: "%Y-%m-%dT%H:%M:%S.%fZ"
+  common:
+    hardware:                   #this is under development, 
+      hostname: 
+      ipv4_address: 
+    test:
+      test_id:                  #UUID 
+      file:
+      notes:                    # notes about run
+  application_config:           #application config
+    application_config_UUID:    #shared UUID for all applications under test (AUT) configurations 
+    ceph_config:
+      ceph_node_type:
+  test_config:                  #Created from benchmark_config.yaml, usually static between records
+    "time_based": "true"
+    "op_size": 64
+    "vol_size": "4096"
+    "numjobs": "1"
+    "volumes_per_client": "3"
+    "iteration": "2"
+    "cluster": ""
+    "use_existing_volumes": "false"
+    "concurrent_procs": "1"
+    "time": "120"
+    "benchmark": "librbdfio"
+    "pool_profile": "rbd3rep"
+    "cmd_path": "/usr/local/bin/fio"
+    "iodepth": "32"
+    "log_avg_msec": "1000"
+    "mode": "randwrite"
+  test_data:                   #from actual data file (csv/json)
+    pbench: 
+      <tool>:
+        <file_name|metric_type>:
+          metric_stat: #(csv header for column, allows user to break down data to specific device or metric status)
+          metric_value: #(csv data cell for specific line/column intersect
