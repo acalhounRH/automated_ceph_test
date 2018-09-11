@@ -6,6 +6,7 @@ import datetime, socket
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 from collections import deque, defaultdict, Counter
+from matplotlib.dates import minutes
 
 
 es_log = logging.getLogger("elasticsearch")
@@ -43,7 +44,8 @@ def main():
     start_t = datetime.datetime.strptime(start_t, FMT)
     end_t = datetime.datetime.strptime(end_t, FMT)
     tdelta = end_t - start_t
-    print tdelta, res_suc, res_dup, res_fail, res_retry
+    logging.info("Indexing took %s hours, %s minutes, and %s seconds." % (tdelta.hour, tdelta.min, tdelta.sec)) 
+    #tdelta, res_suc, res_dup, res_fail, res_retry
 
 
 #########################################################################
