@@ -35,7 +35,6 @@ def main():
         
     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = streaming_bulk(es, process_data_generator(test_id))
     
-    #(beg, end, successes, duplicates, failures, retries_tracker['retries'])
     FMT = '%Y-%m-%dT%H:%M:%SGMT'
     start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
     end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
@@ -44,8 +43,7 @@ def main():
     end_t = datetime.datetime.strptime(end_t, FMT)
     tdelta = end_t - start_t
     logging.info("Duration of indexing - %s" % tdelta)
-    logging.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries" % (res_suc, res_dup, res_fail, res_retry)) 
-    #tdelta, res_suc, res_dup, res_fail, res_retry
+    logging.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
 
 
 #########################################################################
@@ -546,8 +544,8 @@ def streaming_bulk(es, actions):
     failures = 0
      # Create the generator that closes over the external generator, "actions"
     generator = actions_tracking_closure(actions)
-    streaming_bulk_generator = helpers.streaming_bulk(
-           es, generator, raise_on_error=False,
+    streaming_bulk_generator = helpers.parallel_bulk(
+           es, generator, thread_count=3, raise_on_error=False,
            raise_on_exception=False, request_timeout=_request_timeout)
     logging.info("Starting Bulk Indexing")
     for ok, resp_payload in streaming_bulk_generator:
