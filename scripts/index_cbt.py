@@ -6,6 +6,7 @@ import datetime, socket
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 from collections import deque, defaultdict, Counter
+from test.support import start_threads
 
 
 es_log = logging.getLogger("elasticsearch")
@@ -37,7 +38,12 @@ def main():
     
     #(beg, end, successes, duplicates, failures, retries_tracker['retries'])
     FMT = '%Y-%m-%dT%H:%M:%SGMT'
-    tdelta = gmtime(res_end) - gmtime(res_beg) 
+    start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
+    end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
+    
+    start_t = datetime.datetime.strptime(start_t, FMT)
+    end_t = datetime.datetime.strptime(end_t, FMT)
+    tdelta = end_t - start_t
     print gmtime(res_beg), gmtime(res_end), res_suc, res_dup, res_fail, res_retry
 
 
