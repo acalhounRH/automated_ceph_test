@@ -37,7 +37,7 @@ def main():
     
     #(beg, end, successes, duplicates, failures, retries_tracker['retries'])
     
-    print time.strftime('%Y-%m-%dT%H:%M:%SGMT', res_beg), time.strftime('%Y-%m-%dT%H:%M:%SGMT', res_end), res_suc, res_dup, res_fail, res_retry
+    print time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg)), time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end)), res_suc, res_dup, res_fail, res_retry
 
 
 #########################################################################
