@@ -6,7 +6,6 @@ import datetime, socket
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 from collections import deque, defaultdict, Counter
-from test.support import start_threads
 
 
 es_log = logging.getLogger("elasticsearch")
