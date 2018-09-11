@@ -43,7 +43,7 @@ def main():
     start_t = datetime.datetime.strptime(start_t, FMT)
     end_t = datetime.datetime.strptime(end_t, FMT)
     tdelta = end_t - start_t
-    print gmtime(res_beg), gmtime(res_end), res_suc, res_dup, res_fail, res_retry
+    print tdelta, res_suc, res_dup, res_fail, res_retry
 
 
 #########################################################################
