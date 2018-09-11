@@ -26,6 +26,14 @@ ceph_benchmark_test:
 	        "log_avg_msec": "1000",
 	        "mode": "randwrite"
 	test_data:							#from actual data file (csv/json) 
+		fio:							#tool 
+			fio_logs:
+				<metric>:					#iops, lat, clat, etc. 
+					metric_value>: (csv data cell for specific line/column intersect)
+				data_direction: <1|0> ( 0 = read or 1 = write)
+				fio_thread: <int> 
+
+			#or
 		fio:
 			fio_json:
 				global_options:

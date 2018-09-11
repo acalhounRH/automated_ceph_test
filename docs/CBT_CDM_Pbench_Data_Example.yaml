@@ -35,5 +35,5 @@ ceph_benchmark_test:
 		pbench: 
 			<tool>:
 				<file_name|metric_type>:
-					metric_stat: (csv header for column, allows user to break down data to specific device or metric status)
-					metric_value: (csv data cell for specific line/column intersect
+					metric_stat: #(csv header for column, allows user to break down data to specific device or metric status)
+					metric_value: #(csv data cell for specific line/column intersect
