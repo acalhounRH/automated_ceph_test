@@ -107,11 +107,13 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
         for filename in files:
             fname = os.path.join(dirpath, filename)
             if 'benchmark_config.yaml' in fname:
-                for line in open(fname, 'r'):
-                    benchmark_data = yaml.load(open(fname))
-                    metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
+                benchmark_data = yaml.load(open(fname))
+                metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
                 
-                if metadata['ceph_benchmark_test']['test_config']['op_size']: metadata['ceph_benchmark_test']['test_config']['op_size'] = int(metadata['ceph_benchmark_test']['test_config']['op_size']) / 1024
+                op_size_bytes = metadata['ceph_benchmark_test']['test_config']['op_size']
+                if op_size_bytes: 
+                     op_size_kb = int(op_size_bytes) / 1024
+                     metadata['ceph_benchmark_test']['test_config']['op_size'] = op_size_kb
                 
                 if "librbdfio" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     #process fio logs
