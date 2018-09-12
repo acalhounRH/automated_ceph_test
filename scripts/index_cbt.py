@@ -82,10 +82,10 @@ def process_data(test_id):
                 yield cbt_config_gen
             
                 #if rbd test, process json data 
-#                 if "librbdfio" in cbt_config_gen.config['benchmarks']:
-#                     process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
-#                     for fiojson_obj in process_CBT_fio_results_generator:
-#                         yield fiojson_obj
+                if "librbdfio" in cbt_config_gen.config['benchmarks']:
+                    process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
+                    for fiojson_obj in process_CBT_fio_results_generator:
+                        yield fiojson_obj
                 #if radons bench test, process data
                  
                 if "radosbench" in cbt_config_gen.config['benchmarks']:
