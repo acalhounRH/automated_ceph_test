@@ -1,1 +1,1 @@
-from proto_py_es_bulk import proto_py_es_bulk
+from proto_py_es_bulk.proto_py_es_bulk import proto_py_es_bulk
