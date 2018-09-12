@@ -61,14 +61,14 @@ def process_data_generator(test_id):
 def process_data(test_id):
     test_metadata = {}
     test_metadata['ceph_benchmark_test'] = {
-        application_config: {
-            ceph_config: {}
+        "application_config": {
+            "ceph_config": {}
             },
-        common: {
-            hardware: {},
-            test_info: {}
+        "common": {
+            "hardware": {},
+            "test_info": {}
             },
-        test_config: {}
+        "test_config": {}
         }
     test_metadata['ceph_benchmark_test']['test_info']['test_id'] = test_id 
     #parse CBT achive dir and call process method
@@ -288,8 +288,8 @@ class import_fiojson:
         importdoc['_source'] = self.metadata
 
         tmp_doc = {
-            fio: {
-                fio_json: {
+            "fio": {
+                "fio_json": {
                     }
                   }
             }
