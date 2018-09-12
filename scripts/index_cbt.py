@@ -167,6 +167,7 @@ def process_CBT_rados_results(tdir, cbt_config_obj, test_metadata):
 #                     for pbench_obj in process_CBT_Pbench_data_generator:
 #                         yield pbench_obj
                     
+                    print metadata['ceph_benchmark_test']['test_config']['write_only']
                     if False in metadata['ceph_benchmark_test']['test_config']['write_only']:
                         read_path = "%s/seq" % dirpath
                         metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
