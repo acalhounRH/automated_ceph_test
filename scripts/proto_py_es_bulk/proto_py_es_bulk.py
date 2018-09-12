@@ -1,6 +1,7 @@
 #! /usr/bin/python
 
-from collections import Counter
+from collections import deque, Counter
+from elasticsearch import Elasticsearch, helpers
 
 _request_timeout = 100000000*60
 _MAX_SLEEP_TIME = 120
