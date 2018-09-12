@@ -367,6 +367,7 @@ class fiojson_evaluator:
         for json_data in self.json_data_list:
             json_doc = json.load(open(json_data['jfile']))
             
+            print json.dumps('jsondata', indent=1)
             iteration = json_data['metadata']['ceph_benchmark_test']['test_config']['iteration']
             op_size = json_data['metadata']['ceph_benchmark_test']['test_config']['op_size']
             mode = json_data['metadata']['ceph_benchmark_test']['test_config']['mode']
