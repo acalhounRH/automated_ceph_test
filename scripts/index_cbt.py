@@ -99,7 +99,8 @@ def process_data(test_id):
 def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
     
     logging.info("Processing RBD fio benchmark results.")
-    fiojson_evaluator_generator = fiojson_evaluator(test_metadata['test_id'])
+    test_id =  test_metadata['ceph_benchmark_test']['common']['test_info']['test_id']
+    fiojson_evaluator_generator = fiojson_evaluator(test_id)
     metadata = {}
     metadata = test_metadata
     for dirpath, dirs, files in os.walk(tdir):
