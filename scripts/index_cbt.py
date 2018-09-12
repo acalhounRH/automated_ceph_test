@@ -5,8 +5,7 @@ import logging, statistics, yaml
 import datetime, socket
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
-from collections import deque, defaultdict
-from ansible.parsing import metadata
+from collections import deque
 from proto_py_es_bulk import *
 
 
@@ -34,6 +33,8 @@ def main():
 
 #     for i in process_data_generator(test_id):
 #         print json.dumps(i, indent=1)
+
+
     logging.info("Starting Bulk Indexing")
     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, process_data_generator(test_id))
      
@@ -73,7 +74,6 @@ def process_data(test_id):
         }
     test_metadata['ceph_benchmark_test']['common']['test_info']['test_id'] = test_id
     
-    print json.dumps(test_metadata, indent=1) 
     #parse CBT achive dir and call process method
     for dirpath, dirs, files in os.walk("."):
         for filename in files:
@@ -81,7 +81,7 @@ def process_data(test_id):
             #capture cbt configuration 
             if 'cbt_config.yaml' in fname:
                 logging.info("Gathering CBT configuration settings...")
-                cbt_config_gen = cbt_config_evaluator(test_id, fname)             
+                cbt_config_gen = cbt_config_transcriber(test_id, fname)             
                 yield cbt_config_gen
             
                 #if rbd test, process json data 
@@ -101,7 +101,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
     
     logging.info("Processing RBD fio benchmark results.")
     test_id =  test_metadata['ceph_benchmark_test']['common']['test_info']['test_id']
-    fiojson_evaluator_generator = fiojson_evaluator(copy.deepcopy(test_metadata))
+    fiojson_results_transcriber_generator = fiojson_results_transcriber(copy.deepcopy(test_metadata))
     metadata = {}
     metadata = test_metadata
     for dirpath, dirs, files in os.walk(tdir):
@@ -128,7 +128,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                     for json_file in test_files:
                         if "json_" in json_file:
                             if os.path.getsize(json_file) > 0: 
-                                fiojson_evaluator_generator.add_json_file(json_file, copy.deepcopy(metadata))
+                                fiojson_results_transcriber_generator.add_json_file(json_file, copy.deepcopy(metadata))
                             else:
                                 logging.warn("Found corrupted JSON file, %s." % json_file)
                                 
@@ -138,10 +138,10 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                         yield pbench_obj
                             
                 
-    for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
+    for import_obj in fiojson_results_transcriber_generator.get_fiojson_importers():
         yield import_obj
         
-    yield fiojson_evaluator_generator
+    yield fiojson_results_transcriber_generator
 
 def process_CBT_rados_results(tdir, cbt_config_obj, test_metadata):
 
@@ -199,8 +199,8 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
                         metadata['ceph_benchmark_test']['common']['test_info']['tool'] = pfname.split("/")[6]
                         metadata['ceph_benchmark_test']['common']['test_info']['file_name'] = pfname.split("/")[8]
                     
-                        pb_evaluator_generator = pbench_evaluator(pfname, metadata)
-                        yield pb_evaluator_generator
+                        pb_transcriber_generator = pbench_transcriber(pfname, metadata)
+                        yield pb_transcriber_generator
         else:
             logging.warn("Pbench directory not Found, %s does not exist." % host_dir_fullpath)
 
@@ -213,7 +213,7 @@ def process_CBT_fiologs(tdir, cbt_config_obj, test_metadata):
         # get all samples from current test dir in time order
     test_files = sorted(listdir_fullpath(tdir), key=os.path.getctime)
 
-        #for each fio log file capture test time in json file then yield evaluator object
+        #for each fio log file capture test time in json file then yield transcriber object
     for file in test_files:
     	if ("_iops" in file) or ("_lat" in file):
         #if ("_bw" in file) or ("_clat" in file) or ("_iops" in file) or ("_lat" in file) or ("_slat" in file):
@@ -227,12 +227,12 @@ def process_CBT_fiologs(tdir, cbt_config_obj, test_metadata):
             metadata['ceph_benchmark_test']['application_config']['ceph_config']['ceph_node-type'] = cbt_config_obj.get_host_type(hostname)
             
 
-            fiolog_evaluator_generator = fiolog_evaluator(file, jsonfile, metadata)
-            yield fiolog_evaluator_generator
+            fiolog_transcriber_generator = fiolog_transcriber(file, jsonfile, metadata)
+            yield fiolog_transcriber_generator
 
 ###############################CLASS DEF##################################
 
-class cbt_config_evaluator:
+class cbt_config_transcriber:
     
     def __init__(self, test_id, cbt_yaml_config):
         self.test_id = test_id 
@@ -252,13 +252,9 @@ class cbt_config_evaluator:
                 for name in self.config['cluster'][host_type]:
                     try:
                         #socket.inet_aton(name)
-                    #    print "found the hostname for this IP"
                         self.cluster_host_to_type_map[host_type].append(socket.gethostbyaddr(name))
                     except:
-                    #   print "failed to find hostname from ip"
                         self.cluster_host_to_type_map[host_type].append(name)
-         
-        #print json.dumps(self.cluster_host_to_type_map, indent=1)
     
     def get_host_type(self, hostname_or_ip):
                    
@@ -286,7 +282,7 @@ class cbt_config_evaluator:
         importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
         yield importdoc 
 
-class import_fiojson:
+class fiojson_file_transcriber:
 
     def __init__(self, json_file, metadata):
         self.metadata = metadata
@@ -298,8 +294,6 @@ class import_fiojson:
         importdoc["_type"] = "librbdfiojsondata"
         importdoc["_op_type"] = "create"
         importdoc['_source'] = self.metadata
-        
-        print json.dumps(importdoc, indent=1)
 
         tmp_doc = {
             "fio": {
@@ -330,7 +324,7 @@ class import_fiojson:
             importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
             yield importdoc
     
-class fiojson_evaluator:
+class fiojson_results_transcriber:
     
     def __init__(self, metadata):
         self.json_data_list = []
@@ -386,7 +380,7 @@ class fiojson_evaluator:
         for json_file in self.json_data_list: 
             #json_metadata = {}
             json_metadata = json_file['metadata']
-            fiojson_import_generator = import_fiojson(json_file['jfile'], json_metadata)
+            fiojson_import_generator = fiojson_file_transcriber(json_file['jfile'], json_metadata)
             yield fiojson_import_generator
             
     def emit_actions(self):
@@ -448,7 +442,7 @@ class fiojson_evaluator:
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc     
             
-class fiolog_evaluator:
+class fiolog_transcriber:
     
     def __init__(self, csv_file, json_file, metadata):
         self.csv_file = csv_file
@@ -502,7 +496,7 @@ class fiolog_evaluator:
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc  # XXX: TODO change to yield a
 
-class pbench_evaluator:
+class pbench_transcriber:
 
     def __init__(self, csv_file, metadata):
         self.csv_file = csv_file
@@ -566,9 +560,6 @@ class pbench_evaluator:
                                 importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
                                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                                 yield a 
-
-###############################PY_ES_BULK##################################
-
 
  
 if __name__ == '__main__':
