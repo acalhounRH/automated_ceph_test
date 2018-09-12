@@ -325,7 +325,7 @@ class import_fiojson:
             #XXX: TODO need to add total_iops for all jons in current record
             tmp_doc['fio']['fio_json']['total_iops'] = int(tmp_doc['fio']['fio_json']['job']['write']['iops']) + int(tmp_doc['fio']['fio_json']['job']['read']['iops'])
             
-            importdoc['_source']['ceph_benchmark_test']['test_config'] = tmp_doc
+            importdoc['_source']['ceph_benchmark_test']['test_data'] = tmp_doc
             importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
             yield importdoc
     
@@ -434,7 +434,7 @@ class fiojson_evaluator:
                 else:
                     tmp_doc['write-iops'] = 0
         
-                importdoc["_source"]['ceph_benchmark_test']['total-iops'] = (tmp_doc['write-iops'] + tmp_doc['read-iops'])
+                tmp_doc['total-iops'] = (tmp_doc['write-iops'] + tmp_doc['read-iops'])
                 
                 if calcuate_percent_std_dev:
                     if "read" in oper:
