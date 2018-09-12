@@ -1,1 +1,1 @@
-from .proto_py_es_bulk.proto_py_es_bulk import proto_py_es_bulk
+__all__ = ["proto_py_es_bulk"]
