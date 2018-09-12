@@ -186,8 +186,10 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
                     if ".csv" in pfname:
                         metadata = {}
                         metadata = test_metadata
-                        metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = pfname.split("/")[5]
-                        metadata['ceph_benchmark_test']['common']['hardware']['ipaddress'] = socket.gethostbyname(metadata['hostname'])
+                        
+                        hostname = pfname.split("/")[5]
+                        metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = hostname
+                        metadata['ceph_benchmark_test']['common']['hardware']['ipaddress'] = socket.gethostbyname(hostname)
                         metadata['ceph_benchmark_test']['appication_config']['ceph_config']['ceph_node_type'] = cbt_config_obj.get_host_type(metadata['hostname'])
                         metadata['ceph_benchmark_test']['test_info']['tool'] = pfname.split("/")[6]
                         metadata['ceph_benchmark_test']['test_info']['file_name'] = pfname.split("/")[8]
