@@ -161,13 +161,13 @@ def process_CBT_rados_results(tdir, cbt_config_obj, test_metadata):
                 if "radosbench" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     
                     #process pbench logs
-                    write_path = "%s/write" % dirpath
-                    metadata['ceph_benchmark_test']['test_config']['mode'] = "write"
-                    process_CBT_Pbench_data_generator = process_CBT_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
-                    for pbench_obj in process_CBT_Pbench_data_generator:
-                        yield pbench_obj
+#                     write_path = "%s/write" % dirpath
+#                     metadata['ceph_benchmark_test']['test_config']['mode'] = "write"
+#                     process_CBT_Pbench_data_generator = process_CBT_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
+#                     for pbench_obj in process_CBT_Pbench_data_generator:
+#                         yield pbench_obj
                     
-                    if "false" in metadata['ceph_benchmark_test']['test_config']['wirte_only']:
+                    if "false" in metadata['ceph_benchmark_test']['test_config']['write_only']:
                         read_path = "%s/seq" % dirpath
                         metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
                         process_CBT_Pbench_data_generator = process_CBT_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
