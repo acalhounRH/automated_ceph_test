@@ -457,23 +457,37 @@ class fiolog_evaluator:
         test_duration_ms = long(jsondoc['global options']['runtime']) * 1000
         start_time = test_time_ms - test_duration_ms
     
-        importdoc["_source"]['file'] = os.path.basename(self.csv_file)
+        file_name = os.path.basename(self.csv_file)
+        importdoc["_source"]['ceph_benchmark_test']['common']['test_info']['file'] = file_name 
         
-        thread_n_metric = importdoc['_source']['file'].split('.')[1]
+        thread_n_metric = file_name.split('.')[1]
         thread, metric_name = thread_n_metric.split('_', 1)
-                
+        
+        tmp_doc = {
+            'fio': {
+                'fio_logs': {
+                    metric_name: {}
+                    }
+                }
+            }
         
         with open(self.csv_file) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             for row in (readCSV):
-                importdoc["_source"]["test_data"] = {}
+
                 ms = float(row[0]) + float(start_time)
                 newtime = datetime.datetime.fromtimestamp(ms / 1000.0)
                 importdoc["_source"]['date'] = newtime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                importdoc["_source"]["test_data"][metric_name] = int(row[1])
-                importdoc["_source"]["test_data"]['data direction'] = row[2]
-                importdoc['_source']['test_data']['fio_thread'] = thread 
                 
+                tmp_doc['fio']['fio_logs'][metric_name]['metic_value'] = int(row[1])
+                tmp_doc['fio']['fio_logs']['data direction'] = row[2]
+                tmp_doc['fio']['fio_logs']['fio_thread'] = thread
+                  
+                #importdoc["_source"]["test_data"][metric_name] = int(row[1])
+                #importdoc["_source"]["test_data"]['data direction'] = row[2]
+                #importdoc['_source']['test_data']['fio_thread'] = thread 
+                
+                importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc  # XXX: TODO change to yield a
 
