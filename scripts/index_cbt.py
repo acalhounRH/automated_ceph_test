@@ -531,6 +531,7 @@ class pbench_evaluator:
                         tmp_doc = {
                             tool: {
                                 file_name: {}
+                                }
                             }
                         
                         if 'timestamp_ms' in col_ary[col]:
