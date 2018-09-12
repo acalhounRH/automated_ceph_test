@@ -17,7 +17,7 @@ urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
-    
+
     #check for test id, if not, set generic test id
     if len(sys.argv) > 3:
         test_id = sys.argv[1]
@@ -35,7 +35,7 @@ def main():
 #     for i in process_data_generator(test_id):
 #         print json.dumps(i, indent=1)
         
-    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = streaming_bulk(es, process_data_generator(test_id))
+    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, process_data_generator(test_id))
      
     FMT = '%Y-%m-%dT%H:%M:%SGMT'
     start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
