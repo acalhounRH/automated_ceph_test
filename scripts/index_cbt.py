@@ -7,7 +7,7 @@ from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 from collections import deque, defaultdict
 from ansible.parsing import metadata
-from proto_py_es_bulk import streaming_bulk
+from proto_py_es_bulk import *
 
 
 es_log = logging.getLogger("elasticsearch")
