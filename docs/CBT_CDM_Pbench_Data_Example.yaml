@@ -6,10 +6,12 @@ ceph_benchmark_test:
     hardware:                   #this is under development, 
       hostname: 
       ipv4_address: 
-    test:
+    test_info:
       test_id:                  #UUID 
       file:
       notes:                    # notes about run
+      tool:
+      file:
   application_config:           #application config
     application_config_UUID:    #shared UUID for all applications under test (AUT) configurations 
     ceph_config:

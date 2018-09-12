@@ -31,20 +31,20 @@ def main():
         port=esport,
         ) 
 
-#     for i in process_data_generator(test_id):
-#         print json.dumps(i, indent=1)
+    for i in process_data_generator(test_id):
+        print json.dumps(i, indent=1)
         
-    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = streaming_bulk(es, process_data_generator(test_id))
-    
-    FMT = '%Y-%m-%dT%H:%M:%SGMT'
-    start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
-    end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
-    
-    start_t = datetime.datetime.strptime(start_t, FMT)
-    end_t = datetime.datetime.strptime(end_t, FMT)
-    tdelta = end_t - start_t
-    logging.info("Duration of indexing - %s" % tdelta)
-    logging.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
+#     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = streaming_bulk(es, process_data_generator(test_id))
+#     
+#     FMT = '%Y-%m-%dT%H:%M:%SGMT'
+#     start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
+#     end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
+#     
+#     start_t = datetime.datetime.strptime(start_t, FMT)
+#     end_t = datetime.datetime.strptime(end_t, FMT)
+#     tdelta = end_t - start_t
+#     logging.info("Duration of indexing - %s" % tdelta)
+#     logging.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
 
 
 #########################################################################
@@ -149,28 +149,25 @@ def process_CBT_rados_results(tdir, cbt_config_obj, test_metadta):
             if 'benchmark_config.yaml' in fname:
                 for line in open(fname, 'r'):
                     benchmark_data = yaml.load(open(fname))
-                    metadata['test_config'] = benchmark_data['cluster']
+                    metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
                 
-                if metadata['test_config']['op_size']: metadata['test_config']['op_size'] = int(metadata['test_config']['op_size']) / 1024
+                if metadata['ceph_benchmark_test']['test_config']['op_size']: metadata['ceph_benchmark_test']['test_config']['op_size'] = int(metadata['ceph_benchmark_test']['test_config']['op_size']) / 1024
                 
-                if "radosbench" in metadata['test_config']['benchmark']:
+                if "radosbench" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     
                     #process pbench logs
                     write_path = "%s/write" % dirpath
-                    metadata['test_config']['mode'] = "write"
+                    metadata['ceph_benchmark_test']['test_config']['mode'] = "write"
                     process_CBT_Pbench_data_generator = process_CBT_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
                     for pbench_obj in process_CBT_Pbench_data_generator:
                         yield pbench_obj
                     
-                    if "false" in metadata['test_config']['wirte_only']:
+                    if "false" in metadata['ceph_benchmark_test']['test_config']['wirte_only']:
                         read_path = "%s/seq" % dirpath
-                        metadata['test_config']['mode'] = "read"
+                        metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
                         process_CBT_Pbench_data_generator = process_CBT_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
                         for pbench_obj in process_CBT_Pbench_data_generator:
-                            yield pbench_obj
-                    
-                        
-                    
+                            yield pbench_obj           
   
 def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
 
@@ -187,11 +184,11 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
                     if ".csv" in pfname:
                         metadata = {}
                         metadata = test_metadata
-                        metadata['hostname'] = pfname.split("/")[5]
-                        metadata['ipaddress'] = socket.gethostbyname(metadata['hostname'])
-                        metadata['ceph_node_type'] = cbt_config_obj.get_host_type(metadata['hostname'])
-                        metadata['tool'] = pfname.split("/")[6]
-                        metadata['file_name'] = pfname.split("/")[8]
+                        metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = pfname.split("/")[5]
+                        metadata['ceph_benchmark_test']['common']['hardware']['ipaddress'] = socket.gethostbyname(metadata['hostname'])
+                        metadata['ceph_benchmark_test']['appication_config']['ceph_config']['ceph_node_type'] = cbt_config_obj.get_host_type(metadata['hostname'])
+                        metadata['ceph_benchmark_test']['test_info']['tool'] = pfname.split("/")[6]
+                        metadata['ceph_benchmark_test']['test_info']['file_name'] = pfname.split("/")[8]
                     
                         pb_evaluator_generator = pbench_evaluator(pfname, metadata)
                         yield pb_evaluator_generator
@@ -215,8 +212,8 @@ def process_CBT_fiologs(tdir, cbt_config_obj, test_metadata):
             #fiologdoc = copy.deepcopy(headerdoc)
             metadata = test_metadata
             jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
-            metadata['host'] = os.path.basename(file).split('log.', 1)[1]
-            metadata['ceph_node-type'] = cbt_config_obj.get_host_type(metadata['host'])
+            metadata['ceph_benchmark_test']['common']['hardwared']['hostname'] = os.path.basename(file).split('log.', 1)[1]
+            metadata['ceph_benchmark_test']['appication_config']['ceph_config']['ceph_node-type'] = cbt_config_obj.get_host_type(metadata['host'])
             
 
             fiolog_evaluator_generator = fiolog_evaluator(file, jsonfile, metadata)
@@ -291,20 +288,32 @@ class import_fiojson:
         importdoc["_op_type"] = "create"
         importdoc['_source'] = self.metadata
 
+        tmp_doc = {
+            fio: {
+                fio_json: {
+                    }
+                  }
+            }
+        
         json_doc = json.load(open(self.json_file))
         #create header dict based on top level objects
         importdoc['_source']['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
-        importdoc['_source']['global_options'] = json_doc['global options']
-        importdoc['_source']['global_options']['bs'] = ( int(importdoc['_source']['global_options']['bs'].strip('B')) / 1024)
-        importdoc['_source']['timestamp_ms'] = json_doc['timestamp_ms']
-        importdoc['_source']['timestamp'] = json_doc['timestamp']
-        importdoc['_source']['fio_version'] = json_doc['fio version']
-        importdoc['_source']['time'] = json_doc['time']
+        
+        tmp_doc['fio']['fio_json']['global_options'] = json_doc['global options']
+        tmp_doc['fio']['fio_json']['global_options']['bs'] = ( int(importdoc['_source']['global_options']['bs'].strip('B')) / 1024)
+        tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
+        tmp_doc['fio']['fio_json']['timestamp'] = json_doc['timestamp']
+        tmp_doc['fio']['fio_json']['fio_version'] = json_doc['fio version']
+        tmp_doc['fio']['fio_json']['time'] = json_doc['time']
 
+        
+        
         for job in json_doc['jobs']:
-            importdoc['_source']['job'] = job
+            tmp_doc['fio']['fio_json']['job'] = job
             #XXX: TODO need to add total_iops for all jons in current record
-            importdoc['_source']['total_iops'] = int(importdoc['_source']['job']['write']['iops']) + int(importdoc['_source']['job']['read']['iops'])
+            tmp_doc['fio']['fio_json']['total_iops'] = int(tmp_doc['fio']['fio_json']['job']['write']['iops']) + int(tmp_doc['fio']['fio_json']['job']['read']['iops'])
+            
+            importdoc['_source']['ceph_benchmark_test']['test_config'] = tmp_doc
             importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
             yield importdoc
     
