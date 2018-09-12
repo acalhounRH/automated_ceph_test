@@ -111,6 +111,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                 metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
                 
                 op_size_bytes = metadata['ceph_benchmark_test']['test_config']['op_size']
+                
                 if op_size_bytes: 
                      op_size_kb = int(op_size_bytes) / 1024
                      metadata['ceph_benchmark_test']['test_config']['op_size'] = op_size_kb
@@ -309,7 +310,7 @@ class import_fiojson:
         importdoc['_source']['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
         
         tmp_doc['fio']['fio_json']['global_options'] = json_doc['global options']
-        tmp_doc['fio']['fio_json']['global_options']['bs'] = ( int(importdoc['_source']['global_options']['bs'].strip('B')) / 1024)
+        tmp_doc['fio']['fio_json']['global_options']['bs'] = ( int(tmp_doc['fio']['fio_json']['global_options']['bs'].strip('B')) / 1024)
         tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
         tmp_doc['fio']['fio_json']['timestamp'] = json_doc['timestamp']
         tmp_doc['fio']['fio_json']['fio_version'] = json_doc['fio version']
