@@ -1,4 +1,6 @@
-#! /usr/bin/python
+#!/usr/bin/env python3
+# -*- mode: python -*-
+
 
 import os, sys, json, time, types, csv, copy, hashlib
 import logging, statistics, yaml 
