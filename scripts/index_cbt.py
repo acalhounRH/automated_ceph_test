@@ -62,9 +62,8 @@ def process_data(test_id):
     test_metadata = {}
     test_metadata['ceph_benchmark_test'] = {
         application_config: {
-            ceph_config: {
-                }
-        },
+            ceph_config: {}
+            },
         common: {
             hardware: {},
             test_info: {}
