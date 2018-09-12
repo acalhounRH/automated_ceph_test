@@ -183,6 +183,7 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
             for pdirpath, pdirs, pfiles in os.walk(host_dir_fullpath.strip()):
                 for pfilename in pfiles:
                     pfname = os.path.join(pdirpath, pfilename)
+                    #for ever tool collect csvs and...  tool name, tool dir and metadata 
                     if ".csv" in pfname:
                         metadata = {}
                         metadata = test_metadata
@@ -519,12 +520,18 @@ class pbench_evaluator:
                 else:
                     for col in range(col_num):
                         a = {}
-                        importdoc['_source']['test_data'] = {}
-                        tool = importdoc['_source']['tool']
-                        file_name = importdoc['_source']['file_name']
+                        #importdoc['_source']['test_data'] = {}      #remove
+                        tool = importdoc['_source']['ceph_benchmark_test']['common']['test_info']['tool']         
+                        file_name = importdoc['_source']['ceph_benchmark_test']['common']['test_info']['file_name']
                         file_name = file_name.split('.',1)[0]
-                        importdoc['_source']['test_data'][tool] = {}
-                        importdoc['_source']['test_data'][tool][file_name] = {}
+                        
+                        #importdoc['_source']['test_data'][tool] = {}
+                        #importdoc['_source']['test_data'][tool][file_name] = {}
+                        
+                        tmp_doc = {
+                            tool: {
+                                file_name: {}
+                            }
                         
                         if 'timestamp_ms' in col_ary[col]:
                             ms = float(row[col])
@@ -538,15 +545,16 @@ class pbench_evaluator:
                                 for node_type in node_type_list:
                                     if  node_type in pname:    
                                         pid = col_ary[col].split('-', 1)[0]
-                                        importdoc['_source']['test_data'][tool][file_name]['process_name'] = node_type
-                                        importdoc['_source']['test_data'][tool][file_name]['process_pid'] = pid
-                                        importdoc['_source']['test_data'][tool][file_name]['metric_value'] = float(row[col])
+                                        tmp_doc[tool][file_name]['process_name'] = node_type
+                                        tmp_doc[tool][file_name]['process_pid'] = pid
+                                        tmp_doc[tool][file_name]['metric_value'] = float(row[col])
                                         a = importdoc
                             else:
-                                importdoc['_source']['test_data'][tool][file_name]['metric_stat'] = col_ary[col]
-                                importdoc['_source']['test_data'][tool][file_name]['metric_value'] = float(row[col])
+                                tmp_doc[tool][file_name]['metric_stat'] = col_ary[col]
+                                tmp_doc[tool][file_name]['metric_value'] = float(row[col])
                                 a = importdoc
                         if a:
+                                importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
                                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                                 yield a 
 
