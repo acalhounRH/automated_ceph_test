@@ -34,7 +34,7 @@ def main():
 
 #     for i in process_data_generator(test_id):
 #         print json.dumps(i, indent=1)
-        
+    logging.info("Starting Bulk Indexing")
     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, process_data_generator(test_id))
      
     FMT = '%Y-%m-%dT%H:%M:%SGMT'

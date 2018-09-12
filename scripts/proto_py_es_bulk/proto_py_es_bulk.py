@@ -73,7 +73,7 @@ def streaming_bulk(es, actions):
     streaming_bulk_generator = helpers.parallel_bulk(
            es, generator, thread_count=3, raise_on_error=False,
            raise_on_exception=False, request_timeout=_request_timeout)
-    logging.info("Starting Bulk Indexing")
+
     for ok, resp_payload in streaming_bulk_generator:
        retry_count, action = actions_deque.popleft()
        try:
