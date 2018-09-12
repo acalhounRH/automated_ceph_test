@@ -118,9 +118,9 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                 
                 if "librbdfio" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     #process fio logs
-#                     process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-#                     for fiolog_obj in process_CBT_fiologs_generator:
-#                         yield fiolog_obj
+                    process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+                    for fiolog_obj in process_CBT_fiologs_generator:
+                        yield fiolog_obj
                 
                     test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
                     logging.info("Processing fio json files...")
@@ -132,9 +132,9 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                                 logging.warn("Found corrupted JSON file, %s." % json_file)
                                 
                     #process pbench logs
-#                     process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-#                     for pbench_obj in process_CBT_Pbench_data_generator:
-#                         yield pbench_obj
+                    process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+                    for pbench_obj in process_CBT_Pbench_data_generator:
+                        yield pbench_obj
                             
                 
     for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
@@ -142,7 +142,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
         
     yield fiojson_evaluator_generator
 
-def process_CBT_rados_results(tdir, cbt_config_obj, test_metadta):
+def process_CBT_rados_results(tdir, cbt_config_obj, test_metadata):
 
     logging.info("Processing Rados benchmark results.")
     
