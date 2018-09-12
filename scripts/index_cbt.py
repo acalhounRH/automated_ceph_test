@@ -115,9 +115,9 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                 
                 if "librbdfio" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     #process fio logs
-                    process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-                    for fiolog_obj in process_CBT_fiologs_generator:
-                        yield fiolog_obj
+#                     process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+#                     for fiolog_obj in process_CBT_fiologs_generator:
+#                         yield fiolog_obj
                 
                     test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
                     logging.info("Processing fio json files...")
