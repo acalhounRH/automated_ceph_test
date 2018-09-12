@@ -297,6 +297,8 @@ class import_fiojson:
         importdoc["_type"] = "librbdfiojsondata"
         importdoc["_op_type"] = "create"
         importdoc['_source'] = self.metadata
+        
+        print json.dumps(importdoc, indent=1)
 
         tmp_doc = {
             "fio": {
