@@ -129,9 +129,9 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                                 logging.warn("Found corrupted JSON file, %s." % json_file)
                                 
                     #process pbench logs
-                    process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-                    for pbench_obj in process_CBT_Pbench_data_generator:
-                        yield pbench_obj
+#                     process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+#                     for pbench_obj in process_CBT_Pbench_data_generator:
+#                         yield pbench_obj
                             
                 
     for import_obj in fiojson_evaluator_generator.get_fiojson_importers():
