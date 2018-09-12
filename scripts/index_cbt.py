@@ -70,7 +70,9 @@ def process_data(test_id):
             },
         "test_config": {}
         }
-    test_metadata['ceph_benchmark_test']['test_info']['test_id'] = test_id 
+    test_metadata['ceph_benchmark_test']['common']['test_info']['test_id'] = test_id
+    
+    print json.dumps(test_metadata, indent=1) 
     #parse CBT achive dir and call process method
     for dirpath, dirs, files in os.walk("."):
         for filename in files:
