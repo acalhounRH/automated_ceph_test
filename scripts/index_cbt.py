@@ -100,7 +100,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
     
     logging.info("Processing RBD fio benchmark results.")
     test_id =  test_metadata['ceph_benchmark_test']['common']['test_info']['test_id']
-    fiojson_evaluator_generator = fiojson_evaluator(test_id)
+    fiojson_evaluator_generator = fiojson_evaluator(copy.deepcopy(test_metadata))
     metadata = {}
     metadata = test_metadata
     for dirpath, dirs, files in os.walk(tdir):
@@ -331,13 +331,13 @@ class import_fiojson:
     
 class fiojson_evaluator:
     
-    def __init__(self, test_id):
+    def __init__(self, metadata):
         self.json_data_list = []
         self.iteration_list = []
         self.operation_list = []
         self.block_size_list = []
         self.sumdoc = defaultdict(dict)    
-        self.test_id = test_id
+        self.test_id = metadata
         
     def add_json_file(self, json_file, metadata):
         json_data = {}
@@ -348,9 +348,9 @@ class fiojson_evaluator:
     def calculate_iops_sum(self):
         
         for cjson_data in self.json_data_list:
-            iteration = cjson_data['metadata']['test_config']['iteration']
-            op_size = cjson_data['metadata']['test_config']['op_size']
-            mode = cjson_data['metadata']['test_config']['mode']
+            iteration = cjson_data['metadata']['ceph_benchmark_test']['test_config']['iteration']
+            op_size = cjson_data['metadata']['ceph_benchmark_test']['test_config']['op_size']
+            mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['mode']
             
             if iteration not in self.iteration_list: self.iteration_list.append(iteration) 
             if mode not in self.operation_list: self.operation_list.append(mode)
@@ -367,9 +367,9 @@ class fiojson_evaluator:
         for json_data in self.json_data_list:
             json_doc = json.load(open(json_data['jfile']))
             
-            iteration = json_data['metadata']['test_config']['iteration']
-            op_size = json_data['metadata']['test_config']['op_size']
-            mode = json_data['metadata']['test_config']['mode']
+            iteration = json_data['metadata']['ceph_benchmark_test']['test_config']['iteration']
+            op_size = json_data['metadata']['ceph_benchmark_test']['test_config']['op_size']
+            mode = json_data['metadata']['ceph_benchmark_test']['test_config']['mode']
             
             if not self.sumdoc[iteration][mode][op_size]:
                 self.sumdoc[iteration][mode][op_size]['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
@@ -394,8 +394,9 @@ class fiojson_evaluator:
         importdoc["_index"] = "cbt_librbdfio-summary-indextest1"
         importdoc["_type"] = "librbdfiosummarydata"
         importdoc["_op_type"] = "create"
-        importdoc["_source"] = {}
-        importdoc["_source"]['test_id'] = self.test_id
+        importdoc["_source"] = self.metadata
+        
+        tmp_doc = {}
         
         self.calculate_iops_sum()
         
@@ -404,8 +405,8 @@ class fiojson_evaluator:
                 waver_ary = []
                 raver_ary = []
                 total_ary = []
-                importdoc["_source"]['object_size'] = obj_size # set document's object size
-                importdoc["_source"]['operation'] = oper # set documents operation
+                tmp_doc['object_size'] = obj_size # set document's object size
+                tmp_doc['operation'] = oper # set documents operation
                 firstrecord = True
                 calcuate_percent_std_dev = False
                 for itera in self.iteration_list: # 
@@ -418,29 +419,29 @@ class fiojson_evaluator:
 
                 read_average = (sum(raver_ary)/len(raver_ary))
                 if read_average > 0.0:
-                    importdoc["_source"]['read-iops'] = read_average
+                    tmp_doc['read-iops'] = read_average
                     if len(raver_ary) > 1:
                         calcuate_percent_std_dev = True
                 else:
-                    importdoc["_source"]['read-iops'] = 0
+                    tmp_doc['read-iops'] = 0
         
                 write_average = (sum(waver_ary)/len(waver_ary))
                 if write_average > 0.0:
-                    importdoc["_source"]['write-iops'] = write_average
+                    tmp_doc['write-iops'] = write_average
                     if len(waver_ary) > 1:
                         calcuate_percent_std_dev = True 
                 else:
-                        importdoc["_source"]['write-iops'] = 0
+                    tmp_doc['write-iops'] = 0
         
-                importdoc["_source"]['total-iops'] = (importdoc["_source"]['write-iops'] + importdoc["_source"]['read-iops'])
+                importdoc["_source"]['ceph_benchmark_test']['total-iops'] = (tmp_doc['write-iops'] + tmp_doc['read-iops'])
                 
                 if calcuate_percent_std_dev:
                     if "read" in oper:
-                        importdoc["_source"]['std-dev-%s' % obj_size] = round(((statistics.stdev(raver_ary) / read_average) * 100), 3)
+                        tmp_doc['std-dev-%s' % obj_size] = round(((statistics.stdev(raver_ary) / read_average) * 100), 3)
                     elif "write" in oper: 
-                        importdoc["_source"]['std-dev-%s' % obj_size] = round(((statistics.stdev(waver_ary) / write_average) * 100), 3)
+                        tmp_doc['std-dev-%s' % obj_size] = round(((statistics.stdev(waver_ary) / write_average) * 100), 3)
                     elif "randrw" in oper:
-                        importdoc["_source"]['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / importdoc['_source']['total-iops'])* 100), 3)
+                        tmp_doc['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / tmp_doc['total-iops'])* 100), 3)
 
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc     
