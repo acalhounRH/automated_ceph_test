@@ -217,7 +217,7 @@ def process_CBT_fiologs(tdir, cbt_config_obj, test_metadata):
             hostname = os.path.basename(file).split('log.', 1)[1]
             
             metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = hostname
-            metadata['ceph_benchmark_test']['appication_config']['ceph_config']['ceph_node-type'] = cbt_config_obj.get_host_type(hostname)
+            metadata['ceph_benchmark_test']['application_config']['ceph_config']['ceph_node-type'] = cbt_config_obj.get_host_type(hostname)
             
 
             fiolog_evaluator_generator = fiolog_evaluator(file, jsonfile, metadata)
