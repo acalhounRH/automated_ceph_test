@@ -442,7 +442,8 @@ class fiojson_evaluator:
                         tmp_doc['std-dev-%s' % obj_size] = round(((statistics.stdev(waver_ary) / write_average) * 100), 3)
                     elif "randrw" in oper:
                         tmp_doc['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / tmp_doc['total-iops'])* 100), 3)
-
+                
+                importdoc["_source"]['ceph_benchmark_test']
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc     
             
