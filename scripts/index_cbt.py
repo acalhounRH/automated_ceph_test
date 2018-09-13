@@ -9,7 +9,7 @@ from proto_py_es_bulk import *
 from scribes import *
 from util.common_logging import setup_loggers
 
-
+logger = logging.getLogger("index_cbt")
 
 es_log = logging.getLogger("elasticsearch")
 es_log.setLevel(logging.CRITICAL)
