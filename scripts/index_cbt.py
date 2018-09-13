@@ -17,7 +17,7 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    
+    setup_loggers(logging.INFO)
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
     test_id = ""
     host = ""
@@ -47,9 +47,9 @@ def main():
             esport = arg
 
     if host and test_id and esport and  workload_list:
-        logging.info("Test ID: %s, Host: %s, Port: %s " % (test_id, host, esport))
+        logger.info("Test ID: %s, Host: %s, Port: %s " % (test_id, host, esport))
     else:
-        logging.info(usage)
+        logger.error(usage)
 #        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
         exit ()
 
@@ -66,7 +66,7 @@ def main():
 
 
 
-    setup_loggers(logging.INFO)
+    
     
     globals()['es'] = Elasticsearch(
         [host],
