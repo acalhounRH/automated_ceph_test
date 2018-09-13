@@ -17,7 +17,6 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    setup_loggers(logging.INFO)
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
     test_id = ""
     host = ""
@@ -60,7 +59,7 @@ def main():
             
             
             
-    setup_loggers(logging.INFO)    
+    setup_loggers(log_level)    
             
             
     if host and test_id and esport:
