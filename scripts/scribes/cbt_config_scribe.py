@@ -1,3 +1,6 @@
+
+import yaml 
+
 class cbt_config_transcriber:
     
     def __init__(self, test_id, cbt_yaml_config):
