@@ -1,7 +1,7 @@
 
 import yaml, os, time, json, hashlib
 import socket, datetime, statistics
-import defaultdict
+from collections import defaultdict
 
 class fiojson_file_transcriber:
 
