@@ -45,7 +45,7 @@ def main():
         if opt in ('-p', '--port'):
             esport = arg
 
-    if host and test_id and esport and  workload_list:
+    if host and test_id and esport:
         logger.info("Test ID: %s, Host: %s, Port: %s " % (test_id, host, esport))
     else:
         logger.error(usage)
