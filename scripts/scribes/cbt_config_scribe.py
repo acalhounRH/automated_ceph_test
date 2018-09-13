@@ -1,5 +1,5 @@
 
-import yaml 
+import yaml, os 
 
 class cbt_config_transcriber:
     
