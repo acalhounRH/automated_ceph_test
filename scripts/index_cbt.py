@@ -61,8 +61,8 @@ def main():
     start_t = datetime.datetime.strptime(start_t, FMT)
     end_t = datetime.datetime.strptime(end_t, FMT)
     tdelta = end_t - start_t
-    logging.info("Duration of indexing - %s" % tdelta)
-    logging.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
+    logger.info("Duration of indexing - %s" % tdelta)
+    logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
 
 
 #########################################################################
@@ -95,7 +95,7 @@ def process_data(test_id):
             fname = os.path.join(dirpath,filename)
             #capture cbt configuration 
             if 'cbt_config.yaml' in fname:
-                logging.info("Gathering CBT configuration settings...")
+                logger.info("Gathering CBT configuration settings...")
                 cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)             
                 yield cbt_config_gen
             
@@ -107,14 +107,14 @@ def process_data(test_id):
                 #if radons bench test, process data
                  
                 if "radosbench" in cbt_config_gen.config['benchmarks']:
-                    logging.warn("rados bench is under development")
+                    logger.warn("rados bench is under development")
                     process_CBT_rados_results_generator = process_CBT_rados_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
                     for rados_obj in process_CBT_rados_results_generator:
                         yield rados_obj
   
 def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
     
-    logging.info("Processing RBD fio benchmark results.")
+    logger.info("Processing RBD fio benchmark results.")
     test_id =  test_metadata['ceph_benchmark_test']['common']['test_info']['test_id']
     fiojson_results_transcriber_generator = cbt_fiojson_scribe.fiojson_results_transcriber(copy.deepcopy(test_metadata))
     metadata = {}
@@ -145,7 +145,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                             if os.path.getsize(json_file) > 0: 
                                 fiojson_results_transcriber_generator.add_json_file(json_file, copy.deepcopy(metadata))
                             else:
-                                logging.warn("Found corrupted JSON file, %s." % json_file)
+                                logger.warn("Found corrupted JSON file, %s." % json_file)
                                 
                     #process pbench logs
                     process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
@@ -160,7 +160,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
 
 def process_CBT_rados_results(tdir, cbt_config_obj, test_metadata):
 
-    logging.info("Processing Rados benchmark results.")
+    logger.info("Processing Rados benchmark results.")
     
     metadata = {}
     metadata = test_metadata
@@ -192,7 +192,7 @@ def process_CBT_rados_results(tdir, cbt_config_obj, test_metadata):
   
 def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
 
-    logging.info("Processing pbench data...")
+    logger.info("Processing pbench data...")
     #For each host in tools default create pbench scribe object for each csv file
     hosts_dir = "%s/tools-default" % tdir
         
@@ -217,14 +217,14 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
                         pb_transcriber_generator = cbt_pbench_scribe.pbench_transcriber(pfname, metadata)
                         yield pb_transcriber_generator
         else:
-            logging.warn("Pbench directory not Found, %s does not exist." % host_dir_fullpath)
+            logger.warn("Pbench directory not Found, %s does not exist." % host_dir_fullpath)
 
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
 
 def process_CBT_fiologs(tdir, cbt_config_obj, test_metadata):
 
-    logging.info("Processing fio logs...")
+    logger.info("Processing fio logs...")
         # get all samples from current test dir in time order
     test_files = sorted(listdir_fullpath(tdir), key=os.path.getctime)
 
