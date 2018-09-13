@@ -1,6 +1,7 @@
 import logging
 import os
 
+has_a_tty = os.isatty(1) # test stdout
 
 def color_me(color):
     RESET_SEQ = "\033[0m"
