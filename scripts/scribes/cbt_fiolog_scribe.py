@@ -1,6 +1,6 @@
 
 import yaml, os, time, json, hashlib
-import socket, datetime
+import socket, datetime, csv
 
 class fiolog_transcriber:
     
