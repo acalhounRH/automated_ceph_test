@@ -82,7 +82,7 @@ def process_data(test_id):
             #capture cbt configuration 
             if 'cbt_config.yaml' in fname:
                 logging.info("Gathering CBT configuration settings...")
-                cbt_config_gen = scribes.cbt_config_transcriber(test_id, fname)             
+                cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)             
                 yield cbt_config_gen
             
                 #if rbd test, process json data 
