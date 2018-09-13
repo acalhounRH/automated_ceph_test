@@ -1,6 +1,6 @@
 
 import yaml, os, time, json, hashlib
-import socket, 
+import socket 
 
 class cbt_config_transcriber:
     
