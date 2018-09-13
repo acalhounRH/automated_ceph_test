@@ -7,6 +7,8 @@ from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 from proto_py_es_bulk import *
 from scribes import *
+from util.common_logging import setup_loggers
+
 
 
 es_log = logging.getLogger("elasticsearch")
@@ -15,6 +17,7 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
+    setup_loggers()
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
 
     #check for test id, if not, set generic test id
