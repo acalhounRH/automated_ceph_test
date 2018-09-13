@@ -18,7 +18,7 @@ urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
     setup_loggers()
-    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
+    #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
 
     #check for test id, if not, set generic test id
     if len(sys.argv) > 3:
