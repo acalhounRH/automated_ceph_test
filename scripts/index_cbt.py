@@ -2,7 +2,7 @@
 
 import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
-import datetime, socket
+import datetime, socket, getopt
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 from proto_py_es_bulk import *
