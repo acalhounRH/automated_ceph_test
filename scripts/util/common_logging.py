@@ -57,7 +57,7 @@ def setup_loggers(def_level=logging.DEBUG, log_fname=None):
 
     FMT = "%Y-%m-%dT%H:%M:%SZ"
     
-    log_format = '%(asctime)s - %(levelname)s - %(name)-8s - %(message)s'
+    log_format = '%(asctime)s - %(levelname)s - %(name)-8s: %(message)s'
     colored_formatter = ColoredFormatter(log_format, datefmt=FMT)
 
     sh.setFormatter(colored_formatter)
@@ -67,7 +67,7 @@ def setup_loggers(def_level=logging.DEBUG, log_fname=None):
         fh = logging.FileHandler(log_fname)
         formatter = logging.Formatter(log_format, datefmt=FMT)
         fh.setFormatter(formatter)
-        fh.setLevel(logging.DEBUG)
+        fh.setLevel(def_level)
         logger.addHandler(fh)
     else:
         fh = None
