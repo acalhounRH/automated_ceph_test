@@ -44,7 +44,7 @@ def main():
             host = arg
         if opt in ('-p', '--port'):
             esport = arg
-        if opt in ('-l', '--log_level')
+        if opt in ('-l', '--log_level'):
             if arg = 0:
                 log_level = "logging.INFO"
             elif arg = 1:
