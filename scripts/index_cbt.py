@@ -29,12 +29,12 @@ def main():
                 -t or --test_id - test identifier
                 -h or --host - Elasticsearch host ip or hostname
                 -p or --port - Elasticsearch port (elasticsearch default is 9200)
+                -l or --log_level 0 - debug, 1 - info, 2 - warning, 3 - error, 4 - critical
             """
-
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:w:', ['test_id=', 'host=', 'port=', 'workloads'])
+        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:l', ['test_id=', 'host=', 'port=', 'log_level'])
     except getopt.GetoptError:
-        logger(usage)
+        print usage 
         exit(1)
 
     for opt, arg in opts:
@@ -44,29 +44,32 @@ def main():
             host = arg
         if opt in ('-p', '--port'):
             esport = arg
-
+        if opt in ('-l', '--log_level')
+            if arg = 0:
+                log_level = "logging.INFO"
+            elif arg = 1:
+                log_level = "logging.DEBUG"
+            elif arg = 2:
+                log_level = "logging.WARNING"
+            elif arg = 3:
+                log_level = "logging.ERROR"
+            elif arg = 4: 
+                log_level = "logging.CRITICAL"
+        else:
+            log_level = "logging.INFO"
+            
+            
+            
+    setup_loggers(logging.INFO)    
+            
+            
     if host and test_id and esport:
-        logger.info("Test ID: %s, Host: %s, Port: %s " % (test_id, host, esport))
+        logger.info("Test ID: %s, Elasticsearch host and port: %s:%s " % (test_id, host, esport))
     else:
         logger.error(usage)
 #        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
         exit ()
 
-    
-    
-    
-    
-#     if len(sys.argv) > 3:
-#         test_id = sys.argv[1]
-#         host = sys.argv[2]
-#         esport = sys.argv[3]
-#     else: 
-#         test_id = "librbdfio-" +  time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
-
-
-
-    
-    
     globals()['es'] = Elasticsearch(
         [host],
         scheme="http",
@@ -76,12 +79,11 @@ def main():
 #     for i in process_data_generator(test_id):
 #         print json.dumps(i, indent=1)
 
-    logger.critical("TEST TEST TEST TEST")
-    logger.fatal("TEST TEST TEST TEST")
-    logger.error("TEST TEST TEST TEST")
-    logger.warning("TEST TEST TEST TEST")
-    logger.info("Starting Bulk Indexing")
-    logger.debug("TEST TEST TEST TEST")
+    logger.critical("TEST TEST TEST TEST")  #5
+    logger.error("TEST TEST TEST TEST")     #4
+    logger.warning("TEST TEST TEST TEST")   #3
+    logger.info("Starting Bulk Indexing")   #2
+    logger.debug("TEST TEST TEST TEST")     #1
     
     #not set
 
