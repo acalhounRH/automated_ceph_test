@@ -40,12 +40,12 @@ def main():
 #     for i in process_data_generator(test_id):
 #         print json.dumps(i, indent=1)
 
-    logging.critical("TEST TEST TEST TEST")
-    logging.fatal("TEST TEST TEST TEST")
-    logging.error("TEST TEST TEST TEST")
-    logging.warning("TEST TEST TEST TEST")
-    logging.info("Starting Bulk Indexing")
-    logging.debug("TEST TEST TEST TEST")
+    logger.critical("TEST TEST TEST TEST")
+    logger.fatal("TEST TEST TEST TEST")
+    logger.error("TEST TEST TEST TEST")
+    logger.warning("TEST TEST TEST TEST")
+    logger.info("Starting Bulk Indexing")
+    logger.debug("TEST TEST TEST TEST")
     
     #not set
 
