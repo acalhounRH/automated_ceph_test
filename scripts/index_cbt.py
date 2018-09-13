@@ -19,14 +19,48 @@ urllib3_log.setLevel(logging.CRITICAL)
 def main():
     
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
+    
+    usage = """ 
+            Usage:
+                evaluatecosbench_pushes.py -t <test id> -h <host> -p <port>
+                
+                -t or --test_id - test identifier
+                -h or --host - Elasticsearch host ip or hostname
+                -p or --port - Elasticsearch port (elasticsearch default is 9200)
+            """
 
-    #check for test id, if not, set generic test id
-    if len(sys.argv) > 3:
-        test_id = sys.argv[1]
-        host = sys.argv[2]
-        esport = sys.argv[3]
-    else: 
-        test_id = "librbdfio-" +  time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
+    try:
+        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:w:', ['test_id=', 'host=', 'port=', 'workloads'])
+    except getopt.GetoptError:
+        logger(usage)
+        exit(1)
+
+    for opt, arg in opts:
+        if opt in ('-t', '--test_id'):
+            test_id = arg
+            maindoc["_source"]['test_id'] = arg
+        if opt in ('-h', '--host'):
+            host = arg
+        if opt in ('-p', '--port'):
+            esport = arg
+
+    if host and test_id and esport and  workload_list:
+        logging.info("Test ID: %s, Host: %s, Port: %s " % (test_id, host, esport))
+    else:
+        logging.info(usage)
+#        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
+        exit ()
+
+    
+    
+    
+    
+#     if len(sys.argv) > 3:
+#         test_id = sys.argv[1]
+#         host = sys.argv[2]
+#         esport = sys.argv[3]
+#     else: 
+#         test_id = "librbdfio-" +  time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
 
 
 
