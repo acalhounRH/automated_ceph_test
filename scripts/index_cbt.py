@@ -30,7 +30,7 @@ def main():
 
 
 
-    setup_loggers()
+    setup_loggers(logging.NOTSET)
     globals()['es'] = Elasticsearch(
         [host],
         scheme="http",
@@ -46,6 +46,7 @@ def main():
     logging.warning("TEST TEST TEST TEST")
     logging.info("Starting Bulk Indexing")
     logging.debug("TEST TEST TEST TEST")
+    
     #not set
 
 
