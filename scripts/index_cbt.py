@@ -19,7 +19,9 @@ urllib3_log.setLevel(logging.CRITICAL)
 def main():
     
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
-    
+    test_id = ""
+    host = ""
+    port = ""
     usage = """ 
             Usage:
                 evaluatecosbench_pushes.py -t <test id> -h <host> -p <port>
