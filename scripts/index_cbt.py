@@ -17,7 +17,7 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    setup_loggers()
+    
     #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
 
     #check for test id, if not, set generic test id
@@ -28,6 +28,9 @@ def main():
     else: 
         test_id = "librbdfio-" +  time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
 
+
+
+    setup_loggers(info, none)
     globals()['es'] = Elasticsearch(
         [host],
         scheme="http",
