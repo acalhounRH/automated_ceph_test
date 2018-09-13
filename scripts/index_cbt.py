@@ -30,7 +30,7 @@ def main():
 
 
 
-    setup_loggers("info", None)
+    setup_loggers(logging.INFO, None)
     globals()['es'] = Elasticsearch(
         [host],
         scheme="http",
