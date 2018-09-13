@@ -40,7 +40,6 @@ def main():
     for opt, arg in opts:
         if opt in ('-t', '--test_id'):
             test_id = arg
-            maindoc["_source"]['test_id'] = arg
         if opt in ('-h', '--host'):
             host = arg
         if opt in ('-p', '--port'):
