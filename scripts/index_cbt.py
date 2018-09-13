@@ -45,17 +45,17 @@ def main():
             esport = arg
         if opt in ('-l', '--log_level'):
             if arg == 0:
-                log_level = "logging.INFO"
+                log_level = logging.INFO
             elif arg == 1:
-                log_level = "logging.DEBUG"
+                log_level = logging.DEBUG
             elif arg == 2:
-                log_level = "logging.WARNING"
+                log_level = logging.WARNING
             elif arg == 3:
-                log_level = "logging.ERROR"
+                log_level = logging.ERROR
             elif arg == 4: 
-                log_level = "logging.CRITICAL"
+                log_level = logging.CRITICAL
         else:
-            log_level = "logging.INFO"
+            log_level = logging.INFO
             
             
             
