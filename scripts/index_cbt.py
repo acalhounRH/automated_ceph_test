@@ -45,15 +45,15 @@ def main():
         if opt in ('-p', '--port'):
             esport = arg
         if opt in ('-l', '--log_level'):
-            if arg = 0:
+            if arg == 0:
                 log_level = "logging.INFO"
-            elif arg = 1:
+            elif arg == 1:
                 log_level = "logging.DEBUG"
-            elif arg = 2:
+            elif arg == 2:
                 log_level = "logging.WARNING"
-            elif arg = 3:
+            elif arg == 3:
                 log_level = "logging.ERROR"
-            elif arg = 4: 
+            elif arg == 4: 
                 log_level = "logging.CRITICAL"
         else:
             log_level = "logging.INFO"
