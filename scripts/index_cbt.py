@@ -118,7 +118,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                 
                 if "librbdfio" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     #process fio logs
-                    process_CBT_fiologs_generator = cbt_fiojson_scribe.process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+                    process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
                     for fiolog_obj in process_CBT_fiologs_generator:
                         yield fiolog_obj
                 
