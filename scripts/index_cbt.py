@@ -140,7 +140,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                         yield fiolog_obj
                 
                     test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
-                    logging.info("Processing fio json files...")
+                    logger.info("Processing fio json files...")
                     for json_file in test_files:
                         if "json_" in json_file:
                             if os.path.getsize(json_file) > 0: 

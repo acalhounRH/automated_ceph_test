@@ -1,6 +1,8 @@
 
 import yaml, os, time, json, hashlib
-import socket, datetime, csv
+import socket, datetime, csv, logging
+
+logger = logging.getLogger("index_cbt")
 
 class fiolog_transcriber:
     

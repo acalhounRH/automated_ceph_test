@@ -1,6 +1,8 @@
 
 import yaml, os, time, json, hashlib
-import socket, datetime
+import socket, datetime, logging
+
+logger = logging.getLogger("index_cbt")
 
 class cbt_config_transcriber:
     

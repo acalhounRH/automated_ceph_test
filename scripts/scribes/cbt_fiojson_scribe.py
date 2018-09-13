@@ -1,7 +1,9 @@
 
 import yaml, os, time, json, hashlib
-import socket, datetime, statistics
+import socket, datetime, statistics, logging
 from collections import defaultdict
+
+logger = logging.getLogger("index_cbt")
 
 class fiojson_file_transcriber:
 
