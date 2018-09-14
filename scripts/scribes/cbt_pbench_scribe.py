@@ -86,8 +86,8 @@ class pbench_transcriber:
                                 importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
                                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                                 yield a
-#                     current_progress = ((file_progress - total_progress) / total_progress) * 100 
-#                     debug_progress_logger("indexing... %s" % current_progress)
-#                     file_progress += 1
+                    current_progress = ((file_progress - total_progress) / total_progress) * 100 
+                    debug_progress_logger("indexing... %s" % current_progress)
+                    file_progress += 1
                     
                     
