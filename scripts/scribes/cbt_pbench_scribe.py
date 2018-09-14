@@ -10,7 +10,7 @@ class pbench_transcriber:
         self.csv_file = csv_file
         self.metadata = metadata
         
-    def debug_progress_logger(text):
+    def debug_progress_logger(self, text):
         current_log_level = logger.level
         print current_log_level
         if "debug" in current_log_level:
