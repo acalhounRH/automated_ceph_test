@@ -40,6 +40,8 @@ class pbench_transcriber:
             col_ary = []
             
             for row in readCSV:
+                current_progress = ((total_progress - file_progress) / total_progress) * 100 
+                self.debug_progress_logger("indexing... %s" % current_progress)
                 if first_row:
                     col_num = len(row)
                     for col in range(col_num):
@@ -86,8 +88,6 @@ class pbench_transcriber:
                                 importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
                                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                                 yield a
-                    current_progress = ((file_progress - total_progress) / total_progress) * 100 
-                    self.debug_progress_logger("indexing... %s" % current_progress)
                     file_progress += 1
                     
                     
