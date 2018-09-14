@@ -55,12 +55,9 @@ def main():
             elif arg == 4: 
                 log_level = logging.CRITICAL
         else:
-            log_level = logging.INFO
-            
-            
+            log_level = logging.INFO            
             
     setup_loggers(log_level)    
-            
             
     if host and test_id and esport:
         logger.info("Test ID: %s, Elasticsearch host and port: %s:%s " % (test_id, host, esport))
@@ -75,20 +72,10 @@ def main():
         port=esport,
         ) 
 
+    ###: TODO need to add test mode and turn this on and the real streaming bulk call off. 
 #     for i in process_data_generator(test_id):
 #         print json.dumps(i, indent=1)
-
-    logger.critical("TEST TEST TEST TEST")  #5
-    logger.error("TEST TEST TEST TEST")     #4
-    logger.warning("TEST TEST TEST TEST")   #3
-    logger.info("Starting Bulk Indexing")   #2
-    logger.debug("TEST TEST TEST TEST")     #1
-    
-    #not set
-
-
-
-    
+  
     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, process_data_generator(test_id))
      
     FMT = '%Y-%m-%dT%H:%M:%SGMT'
