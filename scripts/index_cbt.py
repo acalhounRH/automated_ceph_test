@@ -21,6 +21,7 @@ def main():
     test_id = ""
     host = ""
     port = ""
+    log_level = logging.INFO
     usage = """ 
             Usage:
                 evaluatecosbench_pushes.py -t <test id> -h <host> -p <port>
@@ -31,7 +32,7 @@ def main():
                 -l or --log_level 0 - debug, 1 - info, 2 - warning, 3 - error, 4 - critical
             """
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:l:', ['test_id=', 'host=', 'port=', 'log_level'])
+        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:d', ['test_id=', 'host=', 'port=', 'debug'])
     except getopt.GetoptError:
         print usage 
         exit(1)
@@ -43,20 +44,9 @@ def main():
             host = arg
         if opt in ('-p', '--port'):
             esport = arg
-        if opt in ('-l', '--log_level'):
-            if arg == 0:
-                log_level = logging.INFO
-            elif arg == 1:
-                log_level = logging.DEBUG
-            elif arg == 2:
-                log_level = logging.WARNING
-            elif arg == 3:
-                log_level = logging.ERROR
-            elif arg == 4: 
-                log_level = logging.CRITICAL
-        else:
-            log_level = logging.INFO            
-            
+        if opt in ('-d', '--debug'):
+            log_level = logging.DEBUG
+                       
     setup_loggers(log_level)    
             
     if host and test_id and esport:
