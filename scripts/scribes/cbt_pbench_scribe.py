@@ -87,7 +87,7 @@ class pbench_transcriber:
                                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                                 yield a
                     current_progress = ((file_progress - total_progress) / total_progress) * 100 
-                    debug_progress_logger("indexing... %s" % current_progress)
+                    self.debug_progress_logger("indexing... %s" % current_progress)
                     file_progress += 1
                     
                     
