@@ -2,7 +2,9 @@
 
 from collections import deque, Counter
 from elasticsearch import Elasticsearch, helpers
-import time
+import time, logging
+
+logger = logging.getLogger("index_cbt")
 
 _request_timeout = 100000000*60
 _MAX_SLEEP_TIME = 120
@@ -92,6 +94,8 @@ def streaming_bulk(es, actions):
            if status == 409:
                if retry_count == 0:
                    # Only count duplicates if the retry count is 0 ...
+                   logger.warning("Duplicate record detected.")
+                   logger.warning(json.dumps(action))
                    duplicates += 1
                else:
                    # ... otherwise consider it successful.
