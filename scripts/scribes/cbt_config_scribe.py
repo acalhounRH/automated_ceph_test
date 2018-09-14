@@ -40,6 +40,7 @@ class cbt_config_transcriber:
     
     def emit_actions(self):
         
+        logger.debug("Indexing %s" % self.config_file)
         importdoc = {}
         importdoc["_index"] = "cbt_config-test1"
         importdoc["_type"] = "cbt_config_data"

@@ -26,22 +26,12 @@ class pbench_transcriber:
         importdoc['_source'] = self.metadata
         
         logger.debug("Indexing %s" % self.csv_file)
-        file_progress = 0
-        total_progress = 0
-        
-        with open(self.csv_file) as csvfile:
-            readCSV = csv.reader(csvfile, delimiter=',')
-            for line in readCSV:
-                total_progress += 1
-                
         with open(self.csv_file) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             first_row = True
             col_ary = []
             
             for row in readCSV:
-                current_progress = ((total_progress - file_progress) / total_progress) * 100 
-                self.debug_progress_logger("indexing... %s" % current_progress)
                 if first_row:
                     col_num = len(row)
                     for col in range(col_num):
@@ -88,6 +78,5 @@ class pbench_transcriber:
                                 importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
                                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                                 yield a
-                    file_progress += 1
                     
                     

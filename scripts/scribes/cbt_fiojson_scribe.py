@@ -18,6 +18,7 @@ class fiojson_file_transcriber:
         importdoc["_op_type"] = "create"
         importdoc['_source'] = self.metadata
 
+        logger.debug("Indexing %s" % self.json_file)
         tmp_doc = {
             "fio": {
                 "fio_json": {

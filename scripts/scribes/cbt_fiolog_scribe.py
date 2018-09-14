@@ -19,6 +19,7 @@ class fiolog_transcriber:
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
         
+        logger.debug("Indexing %s" % self.csv_file)
         jsondoc = json.load(open(self.json_file))
         test_time_ms = long(jsondoc['timestamp_ms'])
         test_duration_ms = long(jsondoc['global options']['runtime']) * 1000
