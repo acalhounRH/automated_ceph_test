@@ -11,10 +11,10 @@ class pbench_transcriber:
         self.metadata = metadata
         
     def debug_progress_logger(text):
-        if logger.level = DEBUG:
-        logging.debug(text)
-        print '\x1b[80D' + '\x1b[K'+ text,
-        sys.stdout.flush()
+        if logger.level = "DEBUG":
+            logger.debug(text)
+            print '\x1b[80D' + '\x1b[K'+ text,
+            sys.stdout.flush()
 
     def emit_actions(self):
         importdoc = {}
