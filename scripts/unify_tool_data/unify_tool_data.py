@@ -14,6 +14,7 @@ from urllib3 import Timeout
 from datetime import datetime, timedelta
 from collections import Counter
 from optparse import OptionParser, make_option
+
 try:
     from configparser import SafeConfigParser, Error as ConfigParserError, NoSectionError, NoOptionError
 except ImportError:
@@ -23,7 +24,7 @@ try:
 except ImportError:
     from elasticsearch import VERSION as es_VERSION, Elasticsearch
 
-from pbench import tstos, es_index, es_put_template
+#from pbench import tstos, es_index, es_put_template
 
 
 _VERSION_ = "0.2.0.0"
