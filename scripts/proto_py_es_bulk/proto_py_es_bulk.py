@@ -2,7 +2,7 @@
 
 from collections import deque, Counter
 from elasticsearch import Elasticsearch, helpers
-import time, logging
+import time, logging, json
 
 logger = logging.getLogger("index_cbt")
 
