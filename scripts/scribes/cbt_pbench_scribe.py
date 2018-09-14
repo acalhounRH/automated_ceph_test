@@ -29,13 +29,13 @@ class pbench_transcriber:
         file_progress = 0
         total_progress = 0 
         with open(self.csv_file) as csvfile:
+            
+            for lineinfile in csvfile:
+                total_progress += 1 
+            
             readCSV = csv.reader(csvfile, delimiter=',')
             first_row = True
             col_ary = []
-            
-            for row in readCSV:
-                total_progress += 1 
-            
             
             for row in readCSV:
                 if first_row:
@@ -87,3 +87,5 @@ class pbench_transcriber:
                     current_progress = ((file_progress - total_progress) / total_progress) * 100 
                     debug_progress_logger("indexing... %s" % current_progress)
                     file_progress += 1
+                    
+                    
