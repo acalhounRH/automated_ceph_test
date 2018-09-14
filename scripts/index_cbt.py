@@ -222,10 +222,12 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
                         metadata = test_metadata
                         
                         hostname = host
+                        tool = pfname.split("/")[-2]
                         metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = hostname
                         metadata['ceph_benchmark_test']['common']['hardware']['ipaddress'] = socket.gethostbyname(hostname)
                         metadata['ceph_benchmark_test']['application_config']['ceph_config']['ceph_node_type'] = cbt_config_obj.get_host_type(hostname)
-                        metadata['ceph_benchmark_test']['common']['test_info']['tool'] = pfname.split("/")[-2]
+                        metadata['ceph_benchmark_test']['common']['test_info']['tool'] = tool
+                        logger.debug(tool)
                         metadata['ceph_benchmark_test']['common']['test_info']['file_name'] = os.path.basename(pfname)
                     
                         pb_transcriber_generator = cbt_pbench_scribe.pbench_transcriber(pfname, metadata)
