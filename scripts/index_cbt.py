@@ -8,6 +8,7 @@ from elasticsearch import Elasticsearch, helpers
 from proto_py_es_bulk import *
 from scribes import *
 from util.common_logging import setup_loggers
+from unify_tool_data import  *
 
 logger = logging.getLogger("index_cbt")
 
@@ -29,7 +30,7 @@ def main():
                 -t or --test_id - test identifier
                 -h or --host - Elasticsearch host ip or hostname
                 -p or --port - Elasticsearch port (elasticsearch default is 9200)
-                -l or --log_level 0 - debug, 1 - info, 2 - warning, 3 - error, 4 - critical
+                -d or --debug - enables debug (verbose) logging output
             """
     try:
         opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:d', ['test_id=', 'host=', 'port=', 'debug'])
