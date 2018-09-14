@@ -1,5 +1,5 @@
 
-import yaml, os, time, json, hashlib
+import yaml, os, time, json, hashlib, sys
 import socket, datetime, csv, logging
 
 logger = logging.getLogger("index_cbt")
@@ -11,7 +11,9 @@ class pbench_transcriber:
         self.metadata = metadata
         
     def debug_progress_logger(text):
-        if logger.level = "DEBUG":
+        current_log_level = logger.level
+        print current_log_level
+        if "debug" in current_log_level:
             logger.debug(text)
             print '\x1b[80D' + '\x1b[K'+ text,
             sys.stdout.flush()
