@@ -25,6 +25,16 @@ class pbench_transcriber:
         importdoc["_op_type"] = "create"
         importdoc['_source'] = self.metadata
         
+        tool = importdoc['_source']['ceph_benchmark_test']['common']['test_info']['tool']         
+        file_name = importdoc['_source']['ceph_benchmark_test']['common']['test_info']['file_name']
+        file_name = file_name.split('.',1)[0]
+        
+        tmp_doc = {
+            tool: {
+                file_name: {}
+                }
+            }
+        
         logger.debug("Indexing %s" % self.csv_file)
         with open(self.csv_file) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
@@ -40,19 +50,9 @@ class pbench_transcriber:
                 else:
                     for col in range(col_num):
                         a = {}
-                        #importdoc['_source']['test_data'] = {}      #remove
-                        tool = importdoc['_source']['ceph_benchmark_test']['common']['test_info']['tool']         
-                        file_name = importdoc['_source']['ceph_benchmark_test']['common']['test_info']['file_name']
-                        file_name = file_name.split('.',1)[0]
-                        
+                        #importdoc['_source']['test_data'] = {}      #remove           
                         #importdoc['_source']['test_data'][tool] = {}
                         #importdoc['_source']['test_data'][tool][file_name] = {}
-                        
-                        tmp_doc = {
-                            tool: {
-                                file_name: {}
-                                }
-                            }
                         
                         if 'timestamp_ms' in col_ary[col]:
                             ms = float(row[col])
