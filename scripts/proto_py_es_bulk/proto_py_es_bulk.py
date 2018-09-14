@@ -94,7 +94,7 @@ def streaming_bulk(es, actions):
            if status == 409:
                if retry_count == 0:
                    # Only count duplicates if the retry count is 0 ...
-                   logger.warning("Duplicate record detected.")
+                   logger.debug("Duplicate record detected.")
                    logger.debug(json.dumps(action, indent=1))
                    duplicates += 1
                else:
