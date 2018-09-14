@@ -30,8 +30,8 @@ class pbench_transcriber:
         total_progress = 0 
         with open(self.csv_file) as csvfile:
             
-            for lineinfile in csvfile:
-                total_progress += 1 
+#             for lineinfile in csvfile:
+#                 total_progress += 1 
             
             readCSV = csv.reader(csvfile, delimiter=',')
             first_row = True
