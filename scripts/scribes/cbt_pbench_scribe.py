@@ -27,12 +27,14 @@ class pbench_transcriber:
         
         logger.debug("Indexing %s" % self.csv_file)
         file_progress = 0
-        total_progress = 0 
+        total_progress = 0
+        
         with open(self.csv_file) as csvfile:
-            
-#             for lineinfile in csvfile:
-#                 total_progress += 1 
-            
+            readCSV = csv.reader(csvfile, delimiter=',')
+            for line in readCSV:
+                total_progress += 1
+                
+        with open(self.csv_file) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             first_row = True
             col_ary = []
