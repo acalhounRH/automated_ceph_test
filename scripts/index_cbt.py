@@ -31,7 +31,7 @@ def main():
                 -l or --log_level 0 - debug, 1 - info, 2 - warning, 3 - error, 4 - critical
             """
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:l', ['test_id=', 'host=', 'port=', 'log_level'])
+        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:l:', ['test_id=', 'host=', 'port=', 'log_level'])
     except getopt.GetoptError:
         print usage 
         exit(1)
