@@ -48,7 +48,7 @@ def main():
             log_level = logging.DEBUG
                        
     setup_loggers(log_level)    
-            
+    logger.debug("TEST TEST TEST TEST")
     if host and test_id and esport:
         logger.info("Test ID: %s, Elasticsearch host and port: %s:%s " % (test_id, host, esport))
     else:
