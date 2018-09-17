@@ -1,6 +1,6 @@
 import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
-import datetime, socket, intertools
+import datetime, socket, itertools
 from scribes import *
 import cbt_pbench_analyzer
 
