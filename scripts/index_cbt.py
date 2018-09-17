@@ -117,14 +117,14 @@ def process_data(test_id):
             
                 #if rbd test, process json data 
                 if "librbdfio" in cbt_config_gen.config['benchmarks']:
-                    analyze_cbt_fio_results_generator = analyze_cbt_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
+                    analyze_cbt_fio_results_generator = cbt_fio_analyzer.analyze_cbt_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
                     for fiojson_obj in analyze_cbt_fio_results_generator:
                         yield fiojson_obj
                 #if radons bench test, process data
                  
                 if "radosbench" in cbt_config_gen.config['benchmarks']:
                     logger.warn("rados bench is under development")
-                    analyze_cbt_rados_results_generator = analyze_cbt_rados_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
+                    analyze_cbt_rados_results_generator = cbt_rados_analyzer.analyze_cbt_rados_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
                     for rados_obj in analyze_cbt_rados_results_generator:
                         yield rados_obj
   
