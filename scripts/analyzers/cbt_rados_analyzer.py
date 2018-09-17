@@ -3,6 +3,7 @@ import logging, statistics, yaml
 import datetime, socket, itertools
 from scribes import *
 import cbt_pbench_analyzer
+from datetime import timedelta
 
 logger = logging.getLogger("index_cbt")
 
@@ -87,9 +88,11 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                             if not time_set:
                                 mdate, mtime = i.split()[:2]
                                 time_mark = "%sT%s" % (mdate, mtime)
-                                mtimestruct = datetime.datetime.fromtimestamp(time_mark)
+                                mtimestruct = datetime.datetime.strptime(time_mark, '%Y-%m-%dT%H:%M:%S.%fZ')
+                                start_time = mtimestruct + timedelta(seconds=20)
                                 sometime = mtimestruct.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                                 print sometime
+                                print start_time
                                 time_set = True 
                     
                 
