@@ -19,7 +19,7 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    es = argument_hander()
+    es = argument_handler()
     
     ###: TODO need to add test mode and turn this on and the real streaming bulk call off. 
 #     for i in process_data_generator(test_id):
