@@ -46,7 +46,8 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
     for dirpath, dirs, files in os.walk(tdir):
         for filename in files:
             fname = os.path.join(dirpath, filename)
-            if "output" in fname and "json" not in fname: 
+            if "output" in fname and "json" not in fname:
+                #get raw output file and seperated json file and pass them to a transcriber object
                 with open(fname) as f:
                     header_list = ["Seconds since start", "current Operations", "started", "finished", "avg MB/s",  "cur MB/s", "last lat(s)",  "avg lat(s)"] 
                     time_set = False
@@ -68,7 +69,7 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                                 if "-" in value: value = ""
                                 tmp_doc[metric] = value 
                                     
-                            print json.dumps(tmp_doc, indent=1)
+                            #print json.dumps(tmp_doc, indent=1)
                             print i  
                             line_count += 1
                         else:
@@ -77,7 +78,8 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                             else:
                                 line_count += 1 
                             if not time_set:
-                                time_mark = i.split()[:2]
+                                mdate, mtime = i.split()[:2]
+                                time_mark = "%sT%s" % (mdate, mtime)
                                 print time_mark
                                 time_set = True 
                     
