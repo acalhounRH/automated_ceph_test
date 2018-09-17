@@ -65,9 +65,7 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                                 line_count += 1 
                             if not time_set:
                                 print "set_time"
-                                time_set = True
-                            else:
-                                print "skipping the line, time set" 
+                                time_set = True 
                          
 #                 line_count = 0
 #                 for line in open(fname, 'r'):
