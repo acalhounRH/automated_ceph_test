@@ -52,7 +52,7 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                     line_count = 0
                     result = itertools.islice(f, 4, None)
                     for i in result:
-                        if "Total time run:" in line:
+                        if "Total time run:" in i:
                             break
                         
                         if line_count <=19:
