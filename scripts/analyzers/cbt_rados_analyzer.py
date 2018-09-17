@@ -73,6 +73,10 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                             if time_set:
                                 #set time
                                 print "need to calculate time" #" = start_time + tmp_doc["Seconds since start"]
+                                current_seconds_since_start = int(tmp_doc["Seconds since start"])
+                                cur_time = start_time + timedelta(seconds=current_seconds_since_start)
+                                tmp_doc["date"] = cur_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                                print json.dumps(current_item, indent=1)
                             else:
                                 #save record in list for postprocess after time has been found.
                                 placeholder_list.append(tmp_doc)          
