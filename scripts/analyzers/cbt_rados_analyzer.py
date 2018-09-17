@@ -16,9 +16,8 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
         for filename in files:
             fname = os.path.join(dirpath, filename)
             if 'benchmark_config.yaml' in fname:
-                for line in open(fname, 'r'):
-                    benchmark_data = yaml.load(open(fname))
-                    metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
+                benchmark_data = yaml.load(open(fname))
+                metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
                 
                 if metadata['ceph_benchmark_test']['test_config']['op_size']: metadata['ceph_benchmark_test']['test_config']['op_size'] = int(metadata['ceph_benchmark_test']['test_config']['op_size']) / 1024
                 
@@ -27,6 +26,8 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                     write_path = "%s/write" % dirpath
                     metadata['ceph_benchmark_test']['test_config']['mode'] = "write"
                     #analyze rados output files
+                    
+                    analyze_cbt_rados_json_files(write_path, cbt_config_obj, copy.deepcopy(metadata)
                     
                     #analyze rados wrtie pbench logs
                     analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
@@ -38,4 +39,16 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                         metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
                         analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
                         for pbench_obj in analyze_cbt_Pbench_data_generator:
-                            yield pbench_obj 
+                            yield pbench_obj
+                            
+def analyze_cbt_rados_json_files(tdir, cbt_config_obj metadata):
+    logger.info("Processing rados json files...")
+    for dirpath, dirs, files in os.walk(tdir):
+        for filename in files:
+            fname = os.path.join(dirpath, filename)
+            if "output" in fname and "json" not in fname:
+                for line in open(fname, 'r'):
+                    print line
+                    
+                
+     
