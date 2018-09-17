@@ -19,7 +19,28 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    #logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s: %(message)s')
+    es = argument_hander()
+    
+    ###: TODO need to add test mode and turn this on and the real streaming bulk call off. 
+#     for i in process_data_generator(test_id):
+#         print json.dumps(i, indent=1)
+  
+    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, process_data_generator(test_id))
+     
+    FMT = '%Y-%m-%dT%H:%M:%SGMT'
+    start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
+    end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
+     
+    start_t = datetime.datetime.strptime(start_t, FMT)
+    end_t = datetime.datetime.strptime(end_t, FMT)
+    tdelta = end_t - start_t
+    logger.info("Duration of indexing - %s" % tdelta)
+    logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
+
+
+#########################################################################
+
+def argument_handler():
     test_id = ""
     host = ""
     port = ""
@@ -58,30 +79,13 @@ def main():
 #        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
         exit ()
 
-    globals()['es'] = Elasticsearch(
+    es = Elasticsearch(
         [host],
         scheme="http",
         port=esport,
-        ) 
-
-    ###: TODO need to add test mode and turn this on and the real streaming bulk call off. 
-#     for i in process_data_generator(test_id):
-#         print json.dumps(i, indent=1)
-  
-    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, process_data_generator(test_id))
-     
-    FMT = '%Y-%m-%dT%H:%M:%SGMT'
-    start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
-    end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
-     
-    start_t = datetime.datetime.strptime(start_t, FMT)
-    end_t = datetime.datetime.strptime(end_t, FMT)
-    tdelta = end_t - start_t
-    logger.info("Duration of indexing - %s" % tdelta)
-    logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
-
-
-#########################################################################
+        )
+    
+    return es 
 
 def process_data_generator(test_id):
     
