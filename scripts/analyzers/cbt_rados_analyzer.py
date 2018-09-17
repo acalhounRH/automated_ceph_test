@@ -96,7 +96,8 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                                 
                                 for i in placeholder_list:
                                     current_item = placeholder_list.pop()
-                                    current_item["date"] = start_time + timedelta(seconds=int(current_item["Seconds since start"])
+                                    current_seconds_since_start = int(current_item["Seconds since start"])
+                                    current_item["date"] = start_time + timedelta(seconds=current_seconds_since_start)
                                     print json.dumps(current_item)
                                     
                                 time_set = True 
