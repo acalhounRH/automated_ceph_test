@@ -48,6 +48,8 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
             fname = os.path.join(dirpath, filename)
             if "output" in fname and "json" not in fname: 
                 with open(fname) as f:
+                    header_list = ["Seconds since start", "current Operations", "started", "finished", "avg MB/s",  "cur MB/s", "last lat(s)",  "avg lat(s)"]
+                    tmp_doc = {} 
                     time_set = False
                     line_count = 0
                     result = itertools.islice(f, 4, None)
@@ -56,7 +58,15 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                             break
                         
                         if line_count <=19:
-                            print i.strip()
+                            i = i.strip()
+                            value_list = i.split()
+                            
+                            for cur_item in value_list:
+                                index = value_list.index(cur_item]
+                                metric = header_list[index]
+                                tmp_doc[metric] = cur_item
+                                
+                            print json.dumps(tmp_doc, indent=1) 
                             line_count += 1
                         else:
                             if line_count >20:
