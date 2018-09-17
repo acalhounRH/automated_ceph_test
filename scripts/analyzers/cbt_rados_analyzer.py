@@ -69,6 +69,12 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                                 if "-" in value: value = ""
                                 tmp_doc[metric] = value 
                                     
+                            if time_set:
+                                #set time
+                            else:
+                                #save record in list for postprocess after time has been found.
+                                placeholder.append(tmp_doc)          
+                            
                             #print json.dumps(tmp_doc, indent=1)
                             print i  
                             line_count += 1
@@ -80,7 +86,9 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                             if not time_set:
                                 mdate, mtime = i.split()[:2]
                                 time_mark = "%sT%s" % (mdate, mtime)
-                                print time_mark
+                                mtimestruct = datetime.datetime.fromtimestamp(time_mark)
+                                sometime = mtimestruct.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                                print sometime
                                 time_set = True 
                     
                 
