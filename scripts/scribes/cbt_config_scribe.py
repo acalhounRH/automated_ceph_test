@@ -54,3 +54,6 @@ class cbt_config_transcriber:
         
         importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
         yield importdoc    
+        
+
+

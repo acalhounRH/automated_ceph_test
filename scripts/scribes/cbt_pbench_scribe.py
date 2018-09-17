@@ -35,7 +35,7 @@ class pbench_transcriber:
                 }
             }
         
-        logger.debug("Indexing %s" % self.csv_file)
+        #logger.debug("Indexing %s" % self.csv_file)
         with open(self.csv_file) as csvfile:
             readCSV = csv.reader(csvfile, delimiter=',')
             first_row = True

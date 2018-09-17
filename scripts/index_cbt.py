@@ -104,30 +104,30 @@ def process_data(test_id):
         }
     test_metadata['ceph_benchmark_test']['common']['test_info']['test_id'] = test_id
     
-    #parse CBT achive dir and call process method
+    #parse cbt achive dir and call process method
     for dirpath, dirs, files in os.walk("."):
         for filename in files:
             fname = os.path.join(dirpath,filename)
             #capture cbt configuration 
             if 'cbt_config.yaml' in fname:
-                logger.info("Gathering CBT configuration settings...")
+                logger.info("Gathering cbt configuration settings...")
                 cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)             
                 yield cbt_config_gen
             
                 #if rbd test, process json data 
                 if "librbdfio" in cbt_config_gen.config['benchmarks']:
-                    process_CBT_fio_results_generator = process_CBT_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
-                    for fiojson_obj in process_CBT_fio_results_generator:
+                    analyze_cbt_fio_results_generator = analyze_cbt_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
+                    for fiojson_obj in analyze_cbt_fio_results_generator:
                         yield fiojson_obj
                 #if radons bench test, process data
                  
                 if "radosbench" in cbt_config_gen.config['benchmarks']:
                     logger.warn("rados bench is under development")
-                    process_CBT_rados_results_generator = process_CBT_rados_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
-                    for rados_obj in process_CBT_rados_results_generator:
+                    analyze_cbt_rados_results_generator = analyze_cbt_rados_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
+                    for rados_obj in analyze_cbt_rados_results_generator:
                         yield rados_obj
   
-def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
+def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
     
     logger.info("Processing RBD fio benchmark results.")
     test_id =  test_metadata['ceph_benchmark_test']['common']['test_info']['test_id']
@@ -149,8 +149,8 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                 
                 if "librbdfio" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     #process fio logs
-                    process_CBT_fiologs_generator = process_CBT_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-                    for fiolog_obj in process_CBT_fiologs_generator:
+                    analyze_cbt_fiologs_generator = analyze_cbt_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+                    for fiolog_obj in analyze_cbt_fiologs_generator:
                         yield fiolog_obj
                 
                     test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
@@ -163,8 +163,8 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
                                 logger.warn("Found corrupted JSON file, %s." % json_file)
                                 
                     #process pbench logs
-                    process_CBT_Pbench_data_generator = process_CBT_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-                    for pbench_obj in process_CBT_Pbench_data_generator:
+                    analyze_cbt_Pbench_data_generator = analyze_cbt_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+                    for pbench_obj in analyze_cbt_Pbench_data_generator:
                         yield pbench_obj
                             
                 
@@ -173,7 +173,7 @@ def process_CBT_fio_results(tdir, cbt_config_obj, test_metadata):
         
     yield fiojson_results_transcriber_generator
 
-def process_CBT_rados_results(tdir, cbt_config_obj, test_metadata):
+def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
 
     logger.info("Processing Rados benchmark results.")
     
@@ -194,18 +194,18 @@ def process_CBT_rados_results(tdir, cbt_config_obj, test_metadata):
                     #process pbench logs
 #                     write_path = "%s/write" % dirpath
 #                     metadata['ceph_benchmark_test']['test_config']['mode'] = "write"
-#                     process_CBT_Pbench_data_generator = process_CBT_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
-#                     for pbench_obj in process_CBT_Pbench_data_generator:
+#                     analyze_cbt_Pbench_data_generator = analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
+#                     for pbench_obj in analyze_cbt_Pbench_data_generator:
 #                         yield pbench_obj
                     
                     if not metadata['ceph_benchmark_test']['test_config']['write_only']:
                         read_path = "%s/seq" % dirpath
                         metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
-                        process_CBT_Pbench_data_generator = process_CBT_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
-                        for pbench_obj in process_CBT_Pbench_data_generator:
+                        analyze_cbt_Pbench_data_generator = analyze_cbt_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
+                        for pbench_obj in analyze_cbt_Pbench_data_generator:
                             yield pbench_obj           
   
-def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
+def analyze_cbt_Pbench_data(tdir, cbt_config_obj, test_metadata):
 
     logger.info("Processing pbench data...")
     #For each host in tools default create pbench scribe object for each csv file
@@ -238,7 +238,7 @@ def process_CBT_Pbench_data(tdir, cbt_config_obj, test_metadata):
 def listdir_fullpath(d):
     return [os.path.join(d, f) for f in os.listdir(d)]
 
-def process_CBT_fiologs(tdir, cbt_config_obj, test_metadata):
+def analyze_cbt_fiologs(tdir, cbt_config_obj, test_metadata):
 
     logger.info("Processing fio logs...")
         # get all samples from current test dir in time order
