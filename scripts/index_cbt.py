@@ -19,7 +19,7 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    es = argument_handler()
+    es, test_id = argument_handler()
     
     ###: TODO need to add test mode and turn this on and the real streaming bulk call off. 
 #     for i in process_data_generator(test_id):
@@ -85,7 +85,7 @@ def argument_handler():
         port=esport,
         )
     
-    return es 
+    return es, test_id
 
 def process_data_generator(test_id):
     
