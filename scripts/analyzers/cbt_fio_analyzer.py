@@ -3,6 +3,7 @@ import logging, statistics, yaml
 import datetime, socket
 from scribes import *
 
+logger = logging.getLogger("index_cbt")
 
 def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
     

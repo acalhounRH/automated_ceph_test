@@ -3,6 +3,8 @@ import logging, statistics, yaml
 import datetime, socket
 from scribes import *
 
+logger = logging.getLogger("index_cbt")
+
 def analyze_cbt_Pbench_data(tdir, cbt_config_obj, test_metadata):
 
     logger.info("Processing pbench data...")
