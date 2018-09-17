@@ -1,6 +1,6 @@
 import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
-import datetime, socket
+import datetime, socket, intertools
 from scribes import *
 import cbt_pbench_analyzer
 
@@ -29,6 +29,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                     
                     analyze_cbt_rados_json_files(write_path, cbt_config_obj, copy.deepcopy(metadata))
                     
+                    exit()
                     #analyze rados wrtie pbench logs
                     analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
                     for pbench_obj in analyze_cbt_Pbench_data_generator:
@@ -46,9 +47,28 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
     for dirpath, dirs, files in os.walk(tdir):
         for filename in files:
             fname = os.path.join(dirpath, filename)
-            if "output" in fname and "json" not in fname:
-                for line in open(fname, 'r'):
-                    print line
+            if "output" in fname and "json" not in fname: 
+                with open(fname) as f:
+                    time_set = False
+                    line_count = 0
+                    result = itertools.islice(f, 3, None)
+                    for i in result:
+                        if line_count <=19:
+                            print i 
+                            line_count += 1
+                    else:
+                        line_count = 0 
+                        if not time_set:
+                            print "set_time"
+                            time_set = True
+                        else:
+                            print "skipping the line, time set" 
+#                 line_count = 0
+#                 for line in open(fname, 'r'):
+#                     if line_count > 5:
+#                         
+#                     print line
+#                     line_count += 1
                     
                 
      
