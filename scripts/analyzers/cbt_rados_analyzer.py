@@ -2,7 +2,6 @@ import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
 import datetime, socket
 from scribes import *
-from analyzers import *
 
 logger = logging.getLogger("index_cbt")
 
