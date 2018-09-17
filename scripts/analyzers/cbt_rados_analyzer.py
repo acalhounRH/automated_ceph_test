@@ -69,11 +69,12 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                                 if "-" in value: value = ""
                                 tmp_doc[metric] = value 
                                     
-                            if time_set:
-                                #set time
-                            else:
-                                #save record in list for postprocess after time has been found.
-                                placeholder.append(tmp_doc)          
+#                             if time_set:
+#                                 #set time
+#                                 time = start_time + tmp_doc["Seconds since start"]
+#                             else:
+#                                 #save record in list for postprocess after time has been found.
+#                                 placeholder.append(tmp_doc)          
                             
                             #print json.dumps(tmp_doc, indent=1)
                             print i  
