@@ -66,7 +66,8 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                                 metric = header_list[index]
                                 tmp_doc[metric] = cur_item
                                 
-                            print json.dumps(tmp_doc, indent=1) 
+                            print json.dumps(tmp_doc, indent=1)
+                            print i  
                             line_count += 1
                         else:
                             if line_count >20:
