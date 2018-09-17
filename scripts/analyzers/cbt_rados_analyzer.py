@@ -29,7 +29,6 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                     
                     analyze_cbt_rados_json_files(write_path, cbt_config_obj, copy.deepcopy(metadata))
                     
-                    exit()
                     #analyze rados wrtie pbench logs
                     analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
                     for pbench_obj in analyze_cbt_Pbench_data_generator:
