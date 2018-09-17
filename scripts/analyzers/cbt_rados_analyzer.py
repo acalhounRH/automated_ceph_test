@@ -52,16 +52,17 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                     line_count = 0
                     result = itertools.islice(f, 4, None)
                     for i in result:
-                        if line_count <=19:
-                            print i 
-                            line_count += 1
-                    else:
-                        line_count = 0 
-                        if not time_set:
-                            print "set_time"
-                            time_set = True
-                        else:
-                            print "skipping the line, time set" 
+                        print i
+#                         if line_count <=19:
+#                             print i 
+#                             line_count += 1
+#                     else:
+#                         line_count = 0 
+#                         if not time_set:
+#                             print "set_time"
+#                             time_set = True
+#                         else:
+#                             print "skipping the line, time set" 
 #                 line_count = 0
 #                 for line in open(fname, 'r'):
 #                     if line_count > 5:
