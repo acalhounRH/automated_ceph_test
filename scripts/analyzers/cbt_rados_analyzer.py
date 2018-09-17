@@ -41,7 +41,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                         for pbench_obj in analyze_cbt_Pbench_data_generator:
                             yield pbench_obj
                             
-def analyze_cbt_rados_json_files(tdir, cbt_config_obj metadata):
+def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
     logger.info("Processing rados json files...")
     for dirpath, dirs, files in os.walk(tdir):
         for filename in files:
