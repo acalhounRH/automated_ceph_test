@@ -88,7 +88,7 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                             if not time_set:
                                 mdate, mtime = i.split()[:2]
                                 time_mark = "%sT%s" % (mdate, mtime)
-                                mtimestruct = datetime.datetime.strptime(time_mark, '%Y-%m-%dT%H:%M:%S.%fZ')
+                                mtimestruct = datetime.datetime.strptime(time_mark, '%Y-%m-%dT%H:%M:%S.%f')
                                 start_time = mtimestruct + timedelta(seconds=20)
                                 sometime = mtimestruct.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                                 print sometime
