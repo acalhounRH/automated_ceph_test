@@ -27,7 +27,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                     metadata['ceph_benchmark_test']['test_config']['mode'] = "write"
                     #analyze rados output files
                     
-                    analyze_cbt_rados_json_files(write_path, cbt_config_obj, copy.deepcopy(metadata)
+                    analyze_cbt_rados_json_files(write_path, cbt_config_obj, copy.deepcopy(metadata))
                     
                     #analyze rados wrtie pbench logs
                     analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
