@@ -48,26 +48,26 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
             fname = os.path.join(dirpath, filename)
             if "output" in fname and "json" not in fname: 
                 with open(fname) as f:
-                    header_list = ["Seconds since start", "current Operations", "started", "finished", "avg MB/s",  "cur MB/s", "last lat(s)",  "avg lat(s)"]
-                     
+                    header_list = ["Seconds since start", "current Operations", "started", "finished", "avg MB/s",  "cur MB/s", "last lat(s)",  "avg lat(s)"] 
                     time_set = False
+                    placeholder_list = []
                     line_count = 0
                     result = itertools.islice(f, 4, None)
                     for i in result:
                         tmp_doc = {}
+                        i = i.strip()
                         if "Total time run:" in i:
                             break
                         
                         if line_count <=19:
-                            i = i.strip()
                             value_list = i.split()
                             
                             for index in range(7):
                                 value = value_list[index]
                                 metric = header_list[index]
                                 if "-" in value: value = ""
-                                tmp_doc[metric] = value
-                                
+                                tmp_doc[metric] = value 
+                                    
                             print json.dumps(tmp_doc, indent=1)
                             print i  
                             line_count += 1
@@ -77,15 +77,9 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                             else:
                                 line_count += 1 
                             if not time_set:
-                                print "set_time"
+                                time_mark = i.split()[:2]
+                                print time_mark
                                 time_set = True 
-                         
-#                 line_count = 0
-#                 for line in open(fname, 'r'):
-#                     if line_count > 5:
-#                         
-#                     print line
-#                     line_count += 1
                     
                 
      
