@@ -62,7 +62,7 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                             value_list = i.split()
                             
                             for cur_item in value_list:
-                                index = value_list.index(cur_item]
+                                index = value_list.index(cur_item)
                                 metric = header_list[index]
                                 tmp_doc[metric] = cur_item
                                 
