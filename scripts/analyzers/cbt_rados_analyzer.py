@@ -62,7 +62,7 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
                             i = i.strip()
                             value_list = i.split()
                             
-                            for i in rang(7):
+                            for i in range(7):
                                 value = value_list[i]
                                 metric = header_list[i]
                                 if "-" in value: value = ""
