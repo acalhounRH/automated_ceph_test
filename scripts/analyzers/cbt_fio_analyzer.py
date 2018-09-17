@@ -41,7 +41,7 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                                 logger.warn("Found corrupted JSON file, %s." % json_file)
                                 
                     #process pbench logs
-                    analyze_cbt_Pbench_data_generator = analyze_cbt_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+                    analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
                     for pbench_obj in analyze_cbt_Pbench_data_generator:
                         yield pbench_obj
                             

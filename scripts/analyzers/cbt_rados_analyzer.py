@@ -28,13 +28,13 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                     #analyze rados output files
                     
                     #analyze rados wrtie pbench logs
-                    analyze_cbt_Pbench_data_generator = analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
+                    analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
                     for pbench_obj in analyze_cbt_Pbench_data_generator:
                         yield pbench_obj
                     
                     if not metadata['ceph_benchmark_test']['test_config']['write_only']:
                         read_path = "%s/seq" % dirpath
                         metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
-                        analyze_cbt_Pbench_data_generator = analyze_cbt_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
+                        analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
                         for pbench_obj in analyze_cbt_Pbench_data_generator:
                             yield pbench_obj 
