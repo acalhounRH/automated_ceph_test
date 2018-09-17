@@ -49,11 +49,12 @@ def analyze_cbt_rados_json_files(tdir, cbt_config_obj, metadata):
             if "output" in fname and "json" not in fname: 
                 with open(fname) as f:
                     header_list = ["Seconds since start", "current Operations", "started", "finished", "avg MB/s",  "cur MB/s", "last lat(s)",  "avg lat(s)"]
-                    tmp_doc = {} 
+                     
                     time_set = False
                     line_count = 0
                     result = itertools.islice(f, 4, None)
                     for i in result:
+                        tmp_doc = {}
                         if "Total time run:" in i:
                             break
                         
