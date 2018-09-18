@@ -54,7 +54,7 @@ class rados_transcriber():
                         importdoc["_source"]['ceph_benchmark_test']['test_data']['rados'] = tmp_doc
                         importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                         yield importdoc 
-                    else:model
+                    else:
                         placeholder_list.append(tmp_doc)
                                   
                     line_count += 1
