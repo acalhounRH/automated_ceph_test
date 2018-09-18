@@ -60,6 +60,7 @@ def analyze_cbt_rados_files(tdir, cbt_config_obj, metadata):
                 json_file = "json_%s" % fname
                 #strip out hostname or ipaddress
                 file_name = os.path.basename(fname)
+                print file_name
                 rados_instance, hostname = file_name.split(".", 2)[2:]
                 
                 metadata['ceph_benchmark_test']['common']['hardware'] = hostname
