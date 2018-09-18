@@ -65,7 +65,7 @@ def analyze_cbt_rados_files(tdir, cbt_config_obj, metadata):
                 
                 metadata['ceph_benchmark_test']['common']['hardware'] = {"host": hostname}
                 metadata['ceph_benchmark_test']["test_data"] = {"rados": {}}
-                metadata['ceph_benchmark_test']["test_data"]['rados']['rados_instance'] = rados_instance
+                metadata['ceph_benchmark_test']["test_data"]['rados_instance'] = rados_instance
                 rados_transcriber_obj = cbt_rados_scribe.rados_transcriber(fname, json_file, metadata)
                 yield rados_transcriber_obj              
                 
