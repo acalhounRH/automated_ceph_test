@@ -57,7 +57,7 @@ def analyze_cbt_rados_files(tdir, cbt_config_obj, metadata):
             fname = os.path.join(dirpath, filename)
             if "output" in fname and "json" not in fname:
                 #get raw output file and seperated json file and pass them to a transcriber object
-                rados_transcriber_obj = cbt_rados_scribe.rados_transcriber(fname, json_file, copy.deepcopy(metadata))
+                rados_transcriber_obj = cbt_rados_scribe.rados_transcriber(fname, copy.deepcopy(metadata))
                 yield rados_transcriber_obj              
                 
      
