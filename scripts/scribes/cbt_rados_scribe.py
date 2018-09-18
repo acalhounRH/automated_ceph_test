@@ -44,7 +44,7 @@ class rados_transcriber():
                         value = value_list[index]
                         metric = header_list[index]
                         if "-" in value: value = 0
-                        tmp_doc[metric] = int(value) 
+                        tmp_doc[metric] = float(value) 
                             
                     if time_set:                       
                         current_seconds_since_start = int(tmp_doc["Seconds since start"])
