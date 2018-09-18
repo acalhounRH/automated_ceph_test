@@ -30,7 +30,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                     
                     analyze_cbt_rados_files_generator = analyze_cbt_rados_files(write_path, cbt_config_obj, copy.deepcopy(metadata))
                     for cbt_rados_obj in analyze_cbt_rados_files_generator:
-                        yield cbt_raods_obj
+                        yield cbt_rados_obj
                     
                     #analyze rados wrtie pbench logs
                     analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
