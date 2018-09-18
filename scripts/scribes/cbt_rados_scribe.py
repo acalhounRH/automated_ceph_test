@@ -102,7 +102,7 @@ class rados_json_transcriber():
         with open(self.json_file, 'r') as myfile:
             data=myfile.read()
         print data
-        importdoc["_source"]['ceph_benchmark_test']['test_data']['rados'] = json.loads(self.json_file)
+        importdoc["_source"]['ceph_benchmark_test']['test_data']['rados'] = json.loads(data)
         
         return importdoc 
         
