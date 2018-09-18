@@ -58,3 +58,6 @@ class fiolog_transcriber:
                 importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                 yield importdoc  # XXX: TODO change to yield a
+                
+                
+                
