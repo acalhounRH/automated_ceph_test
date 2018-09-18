@@ -6,11 +6,17 @@ import itertools
 logger = logging.getLogger("index_cbt")
 
 class rados_transcriber():
-    def __init__(self, raw_log, json_log, metadata):
+    def __init__(self, raw_log, metadata):
         self.raw_log = raw_log
         self.json_log = json_log
         self.metadata = metadata
         self.mode = metadata['ceph_benchmark_test']['test_config']['mode']
+        
+        file_name = os.path.basename(fname)
+        dir_name = os.path.dirname(fname)
+        json_file = "json_%s" % file_name 
+        self.json_log = "%s/%s" % (dir_name, json_file)
+        junk, self.rados_instance, self.host = file_name.split(".", 2)
         
     def emit_actions(self):
         
@@ -19,6 +25,10 @@ class rados_transcriber():
         importdoc["_type"] = "radoslogfiledata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
+        
+        importdoc["_source"]['ceph_benchmark_test']['common']['hardware'] = {"host": self.host}
+        #importdoc["_source"]['ceph_benchmark_test']["test_data"] = {}
+        #importdoc["_source"]['ceph_benchmark_test']["test_data"]['rados_instance'] = rados_instance
         
         logger.info("Indexing %s" % self.raw_log)
         with open(self.raw_log) as f:
@@ -32,6 +42,8 @@ class rados_transcriber():
                 result = itertools.islice(f, 2, None)
                 
             for i in result:
+                importdoc["_source"]['ceph_benchmark_test']["test_data"] = {}
+                importdoc["_source"]['ceph_benchmark_test']["test_data"]['rados_instance'] = self.rados_instance
                 tmp_doc = {}
                 i = i.strip()
                 if "Total time run:" in i:
