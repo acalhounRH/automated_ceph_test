@@ -41,9 +41,9 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                         read_path = "%s/seq" % dirpath
                         metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
                         
-                        analyze_cbt_rados_files_generator = analyze_cbt_rados_files(read_path, cbt_config_obj, copy.deepcopy(metadata))
-                        for cbt_rados_obj in analyze_cbt_rados_files_generator:
-                            yield cbt_rados_obj
+#                         analyze_cbt_rados_files_generator = analyze_cbt_rados_files(read_path, cbt_config_obj, copy.deepcopy(metadata))
+#                         for cbt_rados_obj in analyze_cbt_rados_files_generator:
+#                             yield cbt_rados_obj
                         
 #                         analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
 #                         for pbench_obj in analyze_cbt_Pbench_data_generator:
