@@ -63,7 +63,7 @@ def analyze_cbt_rados_files(tdir, cbt_config_obj, metadata):
                 print "################"
                 print file_name
                 dir_name = os.path.dirname(fname)
-                json_file = "json_%s" % file_name, 
+                json_file = "json_%s" % file_name 
                 json_file = "%s/%s" % (dir_name, json_file)
                 print json_file
                 junk, rados_instance, hostname = file_name.split(".", 2)
