@@ -76,7 +76,7 @@ class rados_transcriber():
                             current_seconds_since_start = int(current_item["Seconds since start"])
                             cur_time = start_time + timedelta(seconds=current_seconds_since_start)
                             current_item["date"] = cur_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                            importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
+                            importdoc["_source"]['ceph_benchmark_test']["test_data"]["rados"] = tmp_doc
                             importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                             yield importdoc
                         time_set = True 

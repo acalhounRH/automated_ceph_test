@@ -4,6 +4,7 @@ import datetime, socket, itertools
 from scribes import *
 import cbt_pbench_analyzer
 from datetime import timedelta
+from ansible.modules.system import hostname
 
 logger = logging.getLogger("index_cbt")
 
@@ -58,6 +59,12 @@ def analyze_cbt_rados_files(tdir, cbt_config_obj, metadata):
                 #get raw output file and seperated json file and pass them to a transcriber object
                 json_file = "json_%s" % fname
                 #strip out hostname or ipaddress
+                file_name = os.path.basename(fname)
+                rados_instance, hostname = file_name.split(".", 2)[2:]
+                
+                metadata['ceph_benchmark_test']['common']['hardware'] = hostname
+                importdoc["_source"]['ceph_benchmark_test']["test_data"]['rados'] = {}
+                importdoc["_source"]['ceph_benchmark_test']["test_data"]['rados']['rados_instance'] = rados_instance
                 rados_transcriber_obj = cbt_rados_scribe.rados_transcriber(fname, json_file, metadata)
                 yield rados_transcriber_obj              
                 
