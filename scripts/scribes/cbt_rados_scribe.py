@@ -11,8 +11,8 @@ class rados_transcriber():
         self.metadata = metadata
         self.mode = metadata['ceph_benchmark_test']['test_config']['mode']
         
-        file_name = os.path.basename(fname)
-        dir_name = os.path.dirname(fname)
+        file_name = os.path.basename(self.raw_log)
+        dir_name = os.path.dirname(self.raw_log)
         json_file = "json_%s" % file_name 
         self.json_log = "%s/%s" % (dir_name, json_file)
         junk, self.rados_instance, self.host = file_name.split(".", 2)
