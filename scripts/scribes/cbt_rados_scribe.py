@@ -67,7 +67,7 @@ class rados_transcriber():
                         mdate, mtime = i.split()[:2]
                         time_mark = "%sT%s" % (mdate, mtime)
                         mtimestruct = datetime.datetime.strptime(time_mark, '%Y-%m-%dT%H:%M:%S.%f')
-                        start_time = mtimestruct + timedelta(seconds=20)
+                        start_time = mtimestruct - timedelta(seconds=20)
                         # After finding out the time transcribe the json output data
                         rados_json_transcriber_obj = rados_json_transcriber(self.json_log, start_time, self.metadata)
                         rjt_record = rados_json_transcriber_obj.emit_action()
@@ -103,7 +103,7 @@ class rados_json_transcriber():
             data=myfile.read()
         print data
         importdoc["_source"]['ceph_benchmark_test']['test_data']['rados'] = json.loads(data)
-        print json.dumps(importdoc, indent=1)
+        #print json.dumps(importdoc, indent=1)
         
         return importdoc 
         
