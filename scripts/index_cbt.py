@@ -22,20 +22,20 @@ def main():
     es, test_id = argument_handler()
     
     ###: TODO need to add test mode and turn this on and the real streaming bulk call off. 
-    for i in process_data_generator(test_id):
-        print json.dumps(i, indent=1)
+#     for i in process_data_generator(test_id):
+#         print json.dumps(i, indent=1)
   
-#     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, process_data_generator(test_id))
-#      
-#     FMT = '%Y-%m-%dT%H:%M:%SGMT'
-#     start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
-#     end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
-#      
-#     start_t = datetime.datetime.strptime(start_t, FMT)
-#     end_t = datetime.datetime.strptime(end_t, FMT)
-#     tdelta = end_t - start_t
-#     logger.info("Duration of indexing - %s" % tdelta)
-#     logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
+    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, process_data_generator(test_id))
+      
+    FMT = '%Y-%m-%dT%H:%M:%SGMT'
+    start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
+    end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
+      
+    start_t = datetime.datetime.strptime(start_t, FMT)
+    end_t = datetime.datetime.strptime(end_t, FMT)
+    tdelta = end_t - start_t
+    logger.info("Duration of indexing - %s" % tdelta)
+    logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
 
 
 #########################################################################
@@ -120,10 +120,10 @@ def process_data(test_id):
                 yield cbt_config_gen
             
                 #if rbd test, process json data 
-#                 if "librbdfio" in cbt_config_gen.config['benchmarks']:
-#                     analyze_cbt_fio_results_generator = cbt_fio_analyzer.analyze_cbt_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
-#                     for fiojson_obj in analyze_cbt_fio_results_generator:
-#                         yield fiojson_obj
+                if "librbdfio" in cbt_config_gen.config['benchmarks']:
+                    analyze_cbt_fio_results_generator = cbt_fio_analyzer.analyze_cbt_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
+                    for fiojson_obj in analyze_cbt_fio_results_generator:
+                        yield fiojson_obj
                
                 #if radons bench test, process data 
                 if "radosbench" in cbt_config_gen.config['benchmarks']:
