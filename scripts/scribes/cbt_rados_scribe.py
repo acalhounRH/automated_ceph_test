@@ -99,7 +99,9 @@ class rados_json_transcriber():
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
         importdoc["_source"]['date'] = self.start_time
-        print self.json_file
+        with open(self.json_file, 'r') as myfile:
+            data=myfile.read()
+        print data
         importdoc["_source"]['ceph_benchmark_test']['test_data']['rados'] = json.loads(self.json_file)
         
         return importdoc 
