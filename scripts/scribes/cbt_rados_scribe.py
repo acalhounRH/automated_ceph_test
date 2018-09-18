@@ -10,6 +10,7 @@ class rados_transcriber():
         self.raw_log = raw_log
         self.json_log = json_log
         self.metadata = metadata
+        self.mode = metadata['ceph_benchmark_test']['test_config']['mode']
         
     def emit_actions(self):
         
@@ -25,7 +26,11 @@ class rados_transcriber():
             time_set = False
             placeholder_list = []
             line_count = 0
-            result = itertools.islice(f, 4, None)
+            if "wrtie" in self.mode:
+                result = itertools.islice(f, 4, None)
+            elif "read" in self.mode:
+                result = itertools.islice(f, 2, None)
+                
             for i in result:
                 tmp_doc = {}
                 i = i.strip()
