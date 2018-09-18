@@ -24,7 +24,7 @@ class rados_transcriber():
             time_set = False
             placeholder_list = []
             line_count = 0
-            result = itesrtools.islice(f, 4, None)
+            result = itertools.islice(f, 4, None)
             for i in result:
                 tmp_doc = {}
                 i = i.strip()
