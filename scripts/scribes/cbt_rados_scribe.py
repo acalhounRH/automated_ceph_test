@@ -20,13 +20,12 @@ class rados_transcriber():
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
         
-        
+        logger.info("Indexing %s" % self.raw_log)
         with open(self.raw_log) as f:
             header_list = ["Seconds since start", "current Operations", "started", "finished", "avg MB/s",  "cur MB/s", "last lat(s)",  "avg lat(s)"] 
             time_set = False
             placeholder_list = []
             line_count = 0
-            print self.mode
             if "write" in self.mode:
                 result = itertools.islice(f, 4, None)
             elif "read" in self.mode:
@@ -77,7 +76,6 @@ class rados_transcriber():
                         
                         while len(placeholder_list) > 0:
                             current_item = placeholder_list.pop()
-                            print json.dumps(current_item, indent=1)
                             current_seconds_since_start = int(current_item["Seconds since start"])
                             cur_time = start_time + timedelta(seconds=current_seconds_since_start)
                             current_item["date"] = cur_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
@@ -93,6 +91,9 @@ class rados_json_transcriber():
         self.metadata = metadata
         
     def emit_action(self):
+        
+        logger.info("Indexing %s" % self.json_file)
+        
         importdoc = {}
         importdoc["_index"] = "rados-json-indextest1"
         importdoc["_type"] = "radosjsonfiledata"
