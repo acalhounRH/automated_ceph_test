@@ -9,7 +9,7 @@ class rados_transcriber():
         self.json_log = json_log
         self.metadata = metadata
         
-    def emit_action(self):
+    def emit_actions(self):
         
         importdoc = {}
         importdoc["_index"] = "rados-log-indextest1"
