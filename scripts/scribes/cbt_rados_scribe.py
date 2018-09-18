@@ -29,7 +29,7 @@ class rados_transcriber():
         #importdoc["_source"]['ceph_benchmark_test']["test_data"] = {}
         #importdoc["_source"]['ceph_benchmark_test']["test_data"]['rados_instance'] = rados_instance
         
-        logger.info("Indexing %s" % self.raw_log)
+        logger.debug("Indexing %s" % self.raw_log)
         with open(self.raw_log) as f:
             header_list = ["Seconds since start", "current Operations", "started", "finished", "avg MB/s",  "cur MB/s", "last lat(s)",  "avg lat(s)"] 
             time_set = False
@@ -104,7 +104,7 @@ class rados_json_transcriber():
         
     def emit_action(self):
         
-        logger.info("Indexing %s" % self.json_file)
+        logger.debug("Indexing %s" % self.json_file)
         
         importdoc = {}
         importdoc["_index"] = "rados-json-indextest1"
