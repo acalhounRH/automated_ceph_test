@@ -98,7 +98,7 @@ class rados_json_transcriber():
         importdoc["_type"] = "radosjsonfiledata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
-        importdoc["_source"]['date'] = self.start_time
+        importdoc["_source"]['date'] = self.start_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         with open(self.json_file, 'r') as myfile:
             data=myfile.read()
         print json.dumps(data, indent=1)
