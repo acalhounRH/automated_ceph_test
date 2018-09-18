@@ -68,6 +68,11 @@ class rados_transcriber():
                         time_mark = "%sT%s" % (mdate, mtime)
                         mtimestruct = datetime.datetime.strptime(time_mark, '%Y-%m-%dT%H:%M:%S.%f')
                         start_time = mtimestruct + timedelta(seconds=20)
+                        # After finding out the time transcribe the json output data
+                        rados_json_transcriber_obj = rados_json_transcriber(self.json_log, start_time, self.metadata)
+                        rjt_record = rados_json_transcriber_obj.emit_action()
+                        yield rjt_record
+                        
                         sometime = mtimestruct.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                         
                         while len(placeholder_list) > 0:
@@ -76,7 +81,7 @@ class rados_transcriber():
                             current_seconds_since_start = int(current_item["Seconds since start"])
                             cur_time = start_time + timedelta(seconds=current_seconds_since_start)
                             current_item["date"] = cur_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                            importdoc["_source"]['ceph_benchmark_test']['test_data']['rados'] = tmp_doc
+                            importdoc["_source"]['ceph_benchmark_test']['test_data']['rados_logs'] = tmp_doc
                             importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                             yield importdoc
                         time_set = True 
@@ -87,10 +92,15 @@ class rados_json_transcriber():
         self.start_time = start_time
         self.metadata = metadata
         
-    def emit_actions(self):
+    def emit_action(self):
         importdoc = {}
         importdoc["_index"] = "rados-json-indextest1"
         importdoc["_type"] = "radosjsonfiledata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
+        importdoc["_source"]['date'] = self.start_time
+        importdoc["_source"]['ceph_benchmark_test']['test_data']['rados'] = json.load(self.json_file)
+        
+        return importdoc 
+        
                                 
