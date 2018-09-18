@@ -57,9 +57,12 @@ def analyze_cbt_rados_files(tdir, cbt_config_obj, metadata):
             fname = os.path.join(dirpath, filename)
             if "output" in fname and "json" not in fname:
                 #get raw output file and seperated json file and pass them to a transcriber object
-                json_file = "json_%s" % fname
+                
                 #strip out hostname or ipaddress
                 file_name = os.path.basename(fname)
+                dir_name = os.path.dirname(fname)
+                json_file = "json_%s" % file_name, 
+                json_file = "%s/%s"
                 print file_name
                 junk, rados_instance, hostname = file_name.split(".", 2)
                 
