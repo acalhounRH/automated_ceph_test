@@ -103,6 +103,7 @@ class rados_json_transcriber():
             data=myfile.read()
         print data
         importdoc["_source"]['ceph_benchmark_test']['test_data']['rados'] = json.loads(data)
+        print json.dumps(importdoc, indent=1)
         
         return importdoc 
         
