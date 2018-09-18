@@ -1,5 +1,6 @@
 import yaml, os, time, json, hashlib
 import socket, datetime, csv, logging
+from datetime import timedelta
 import itertools
 
 logger = logging.getLogger("index_cbt")
