@@ -8,7 +8,6 @@ logger = logging.getLogger("index_cbt")
 class rados_transcriber():
     def __init__(self, raw_log, metadata):
         self.raw_log = raw_log
-        self.json_log = json_log
         self.metadata = metadata
         self.mode = metadata['ceph_benchmark_test']['test_config']['mode']
         
