@@ -27,7 +27,7 @@ class rados_transcriber():
             placeholder_list = []
             line_count = 0
             print self.mode
-            if "wrtie" in self.mode:
+            if "write" in self.mode:
                 result = itertools.islice(f, 4, None)
             elif "read" in self.mode:
                 result = itertools.islice(f, 2, None)
