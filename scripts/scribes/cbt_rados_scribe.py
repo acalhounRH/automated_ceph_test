@@ -43,7 +43,7 @@ class rados_transcriber():
                     for index in range(7):
                         value = value_list[index]
                         metric = header_list[index]
-                        if "-" in value: value = ""
+                        if "-" in value: value = 0
                         tmp_doc[metric] = int(value) 
                             
                     if time_set:                       
