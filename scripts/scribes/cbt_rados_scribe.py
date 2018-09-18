@@ -44,13 +44,13 @@ class rados_transcriber():
                         value = value_list[index]
                         metric = header_list[index]
                         if "-" in value: value = ""
-                        tmp_doc[metric] = value 
+                        tmp_doc[metric] = int(value) 
                             
                     if time_set:                       
                         current_seconds_since_start = int(tmp_doc["Seconds since start"])
                         cur_time = start_time + timedelta(seconds=current_seconds_since_start)
-                        tmp_doc["date"] = cur_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                        importdoc["_source"]['ceph_benchmark_test']['test_data']['rados'] = tmp_doc
+                        importdoc["_source"]["date"] = cur_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                        importdoc["_source"]['ceph_benchmark_test']['test_data']['rados_logs'] = tmp_doc
                         importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                         yield importdoc 
                     else:
@@ -78,8 +78,8 @@ class rados_transcriber():
                             current_item = placeholder_list.pop()
                             current_seconds_since_start = int(current_item["Seconds since start"])
                             cur_time = start_time + timedelta(seconds=current_seconds_since_start)
-                            current_item["date"] = cur_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                            importdoc["_source"]['ceph_benchmark_test']['test_data']['rados_logs'] = tmp_doc
+                            importdoc["_source"]["date"] = cur_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                            importdoc["_source"]['ceph_benchmark_test']['test_data']['rados_logs'] = current_item
                             importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                             yield importdoc
                         time_set = True 
