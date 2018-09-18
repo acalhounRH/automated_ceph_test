@@ -34,9 +34,9 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                         yield cbt_rados_obj
                     
                     #analyze rados wrtie pbench logs
-#                     analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
-#                     for pbench_obj in analyze_cbt_Pbench_data_generator:
-#                         yield pbench_obj
+                    analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
+                    for pbench_obj in analyze_cbt_Pbench_data_generator:
+                        yield pbench_obj
                     
                     if not metadata['ceph_benchmark_test']['test_config']['write_only']:
                         read_path = "%s/seq" % dirpath
@@ -46,9 +46,9 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                         for cbt_rados_obj in analyze_cbt_rados_files_generator:
                             yield cbt_rados_obj
                         
-#                         analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
-#                         for pbench_obj in analyze_cbt_Pbench_data_generator:
-#                             yield pbench_obj
+                        analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
+                        for pbench_obj in analyze_cbt_Pbench_data_generator:
+                            yield pbench_obj
                             
 def analyze_cbt_rados_files(tdir, cbt_config_obj, metadata):
     logger.info("Processing rados json files...")
