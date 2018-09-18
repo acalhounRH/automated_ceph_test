@@ -1,5 +1,5 @@
 import yaml, os, time, json, hashlib
-import socket, datetime, csv, logging
+import socket, datetime, csv, logging, copy
 from datetime import timedelta
 import itertools
 
