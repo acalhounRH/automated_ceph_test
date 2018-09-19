@@ -6,6 +6,7 @@ import sys
 import time
 import json
 import datetime
+import hashlib
 from datetime import timedelta
 
 from elasticsearch import Elasticsearch, helpers
