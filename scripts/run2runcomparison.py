@@ -82,7 +82,9 @@ class test_holder():
         
         for i in indices:
             if "run2run" not in i: 
-                print i 
+                index_list = "%s,%s" % (index_list, i)
+        
+        print index_list 
         
         results = self.es.search(
             size=10000,
