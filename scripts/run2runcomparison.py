@@ -107,7 +107,7 @@ def argument_handler():
                        
     setup_loggers(log_level)    
     
-    if host and test_id and esport:
+    if host and comparison_id and esport:
         logger.info("Comparison_id: %s - Comparing %s " % (comparison_id, test_list))
         logger.info("Using Elasticsearch host and port: %s:%s " % (host, esport))
     else:
