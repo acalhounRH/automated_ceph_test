@@ -5,11 +5,12 @@ import getopt
 import sys
 import time
 import json
-
+from datetime import timedelta
 
 from elasticsearch import Elasticsearch, helpers
 from util.common_logging import setup_loggers
 from proto_py_es_bulk import *
+from pandas.core.config_init import doc
 
 
 
@@ -67,17 +68,44 @@ class test_holder():
         self.offset = ""
         self.es = es
         
-    def modify_time(self):
-            print "doing stuff"
+    def reset_offset(self, initial_time):
+            self.offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, '%Y-%m-%dT%H:%M:%S.%f')
     
     def emit_actions(self):
+        
+        importdoc = {}
+        importdoc["_index"] = "run2run-timeskew-comparison"
+        importdoc["_type"] = "run2run-timeskew-comparisondata"
+        importdoc["_op_type"] = "create"
+        
+        previous_time = ""
+        #importdoc["_source"]
+        
         results = self.es.search(size=10000,  body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": self.test_id}}})
         logger.info("Extracting data for %s" % self.test_id)
         logger.info("%d documents found" % results['hits']['total'])
         
-        
         for doc in results['hits']['hits']:
-            yield doc
+            current_index = doc["_index"]
+            
+            if current_index is not previous_index:
+                reset_offset(doc["_source"]["date"])
+                previous_index = current_index
+                
+                
+            record_time = datetime.datetime.strptime(doc["_source"]["date"], '%Y-%m-%dT%H:%M:%S.%f')
+            skew_time = record_time + timedelta(seconds=self.offset)
+            str_skew_time = skew_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                
+            importdoc["_source"] = doc["_source"]
+            importdoc["_source"]["date"] = skew_time
+            
+            index_prefix = doc["_index"]
+            importdoc["_index"] = "%s-run2run-timeskew-comparison" % index_prefix
+            importdoc["_type"] = doc["_type"]
+            importdoc["_op_type"] = "create"
+            importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
+            yield importdoc
 
 def argument_handler():
     comparison_id = ""
