@@ -71,7 +71,7 @@ class test_holder():
             print "doing stuff"
     
     def emit_actions(self):
-        results = self.es.search(index="", doc_type="", size=10000,  body={"query": {"match": {"test_id.keyword": self.test_id}}})
+        results = self.es.search(index="_all", doc_type="_all", size=10000,  body={"query": {"match": {"test_id.keyword": self.test_id}}})
         logger.info("Extracting data for %s" % self.test_id)
         logger.info("%d documents found" % results['hits']['total'])
         
