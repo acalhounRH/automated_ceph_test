@@ -28,22 +28,22 @@ def main():
     es, comparison_id, test_list = argument_handler()
     
     
-    for i in test_data_generator(es, comparison_id, test_list):
-        print json.dumps(i, indent=1)
+#     for i in test_data_generator(es, comparison_id, test_list):
+#         print json.dumps(i, indent=1)
     
     
-#     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(comparison_id, test_list))
-#       
-#     FMT = '%Y-%m-%dT%H:%M:%SGMT'
-#     start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
-#     end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
-#       
-#     start_t = datetime.datetime.strptime(start_t, FMT)
-#     end_t = datetime.datetime.strptime(end_t, FMT)
-#     tdelta = end_t - start_t
-#     logger.info("Duration of indexing - %s" % tdelta)
-#     logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
-#     
+    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(comparison_id, test_list))
+       
+    FMT = '%Y-%m-%dT%H:%M:%SGMT'
+    start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
+    end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
+       
+    start_t = datetime.datetime.strptime(start_t, FMT)
+    end_t = datetime.datetime.strptime(end_t, FMT)
+    tdelta = end_t - start_t
+    logger.info("Duration of indexing - %s" % tdelta)
+    logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
+     
 
 def test_data_generator(es, com_id, test_id_list):
     object_generator = get_test_data(es, com_id, test_id_list)
