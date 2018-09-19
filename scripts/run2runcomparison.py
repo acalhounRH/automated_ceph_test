@@ -25,7 +25,7 @@ def main():
     es, comparison_id, test_list = argument_handler()
     
     
-    for i in test_data_generator(comparison_id, test_list):
+    for i in test_data_generator(es, comparison_id, test_list):
         print json.dumps(i, indent=1)
     
     
@@ -42,19 +42,19 @@ def main():
 #     logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
 #     
 
-def test_data_generator(com_id, test_id_list):
-    object_generator = get_test_data(com_id, test_id_list)
+def test_data_generator(es, com_id, test_id_list):
+    object_generator = get_test_data(es, com_id, test_id_list)
 
     for obj in object_generator:
         for action in obj.emit_actions(): 
             yield action
             
-def get_test_data(comparison_id, test_id_list):
+def get_test_data(es, comparison_id, test_id_list):
     
     start_time = time.time()
     
     for test_id in test_id_list:
-        obj = test_holder(test_id, comparison_id, start_time)
+        obj = test_holder(es, test_id, comparison_id, start_time)
         yield obj 
     
 
@@ -64,12 +64,13 @@ class test_holder():
         self.comparison_id = comparison_id
         self.start_datetime_stamp = start_time
         self.offset = ""
+        self.es = es
         
     def modify_time(self):
             print "doing stuff"
     
     def emit_actions(self):
-        results = es.search(index="*test1", doc_type="fiologfile", size=10000,  body={"query": {"match": {"test_id.keyword": self.test_id}}})
+        results = self.es.search(index="*test1", doc_type="fiologfile", size=10000,  body={"query": {"match": {"test_id.keyword": self.test_id}}})
         for doc in test1_results['hits']['hits']:
             print doc["_source"]['date'] 
 
