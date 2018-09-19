@@ -112,6 +112,7 @@ def argument_handler():
         logger.info("Comparison_id: %s - Comparing %s " % (comparison_id, test_list))
         logger.info("Using Elasticsearch host and port: %s:%s " % (host, esport))
     else:
+        print host, comparison_id, esport
         logger.error(usage)
 #        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
         exit ()
