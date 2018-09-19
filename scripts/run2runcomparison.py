@@ -54,6 +54,7 @@ def test_data_generator(es, com_id, test_id_list):
 def get_test_data(es, comparison_id, test_id_list):
     
     start_time = time.time()
+    logger.info("comparison start time - %s" % start_time)
     
     for test_id in test_id_list:
         obj = test_holder(es, test_id, comparison_id, start_time)
