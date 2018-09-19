@@ -81,7 +81,8 @@ class test_holder():
         indices = self.es.indices.get_alias("*")
         
         for i in indices:
-            print i 
+            if "run2run" not in i: 
+                print i 
         
         results = self.es.search(
             size=10000,
