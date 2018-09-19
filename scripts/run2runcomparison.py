@@ -2,6 +2,7 @@
 
 import logging
 import getopt
+import sys
 
 
 from elasticsearch import Elasticsearch, helpers
