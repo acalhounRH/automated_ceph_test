@@ -98,7 +98,7 @@ def argument_handler():
     for opt, arg in opts:
         if opt in ('-t', '--title'):
             comparison_id = arg
-        if opt in ('-tl', '--test-list'):
+        if opt in ('-l', '--test-list'):
             test_list = arg.split(',')
         if opt in ('-h', '--host'):
             host = arg
