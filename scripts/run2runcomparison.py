@@ -70,7 +70,7 @@ class test_holder():
             print "doing stuff"
     
     def emit_actions(self):
-        results = self.es.search(index="*test1", doc_type="fiologfile", size=10000,  body={"query": {"match": {"test_id.keyword": self.test_id}}})
+        results = self.es.search(index="", doc_type="", size=10000,  body={"query": {"match": {"test_id.keyword": self.test_id}}})
         logger.info("Test1  %d documents found" % results['hits']['total'])
         
         
