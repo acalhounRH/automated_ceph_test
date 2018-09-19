@@ -98,6 +98,7 @@ class test_holder():
             str_skew_time = skew_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                 
             importdoc["_source"] = doc["_source"]
+            importdoc["_source"]["comparison_ID"] = self.comparison_id
             importdoc["_source"]["date"] = str_skew_time
             
             index_prefix = doc["_index"]
