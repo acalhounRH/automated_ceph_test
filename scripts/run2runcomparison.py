@@ -64,7 +64,7 @@ class test_holder():
     def __init__(self, es, test_id, comparison_id, start_time):
         self.test_id = test_id
         self.comparison_id = comparison_id
-        self.start_datetime_stamp = datetime.datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S.%fZ') 
+        self.start_datetime_stamp = datetime.datetime.strptime(datetime.datetime.fromtimestamp(start_time), '%Y-%m-%dT%H:%M:%S.%fZ') 
         self.offset = ""
         self.es = es
         
