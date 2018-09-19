@@ -88,6 +88,7 @@ class test_holder():
         print index_list 
         
         results = self.es.search(
+            index=index_list,
             size=10000,
             scroll='2m',
             sort="date:increasing",
