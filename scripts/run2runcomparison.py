@@ -80,7 +80,7 @@ class test_holder():
         
         indices = self.es.indices.get_alias("*")
         
-        print indicies
+        print indices
         
         results = self.es.search(
             size=10000,
