@@ -63,7 +63,7 @@ class test_holder():
         self.test_id = test_id
         self.comparison_id = comparison_id
         self.start_datetime_stamp = start_time
-        self.offset
+        self.offset = ""
         
     def modify_time(self):
             print "doing stuff"
