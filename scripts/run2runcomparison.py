@@ -88,7 +88,7 @@ class test_holder():
             current_index = doc["_index"]
             
             if current_index is not previous_index:
-                reset_offset(doc["_source"]["date"])
+                self.reset_offset(doc["_source"]["date"])
                 previous_index = current_index
                 
                 
