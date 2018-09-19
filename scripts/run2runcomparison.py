@@ -96,7 +96,7 @@ class test_holder():
                 
                 
             record_time = datetime.datetime.strptime(doc["_source"]["date"], '%Y-%m-%dT%H:%M:%S.%fZ')
-            skew_time = record_time + timedelta(seconds=self.offset)
+            skew_time = record_time + self.offset
             str_skew_time = skew_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                 
             importdoc["_source"] = doc["_source"]
