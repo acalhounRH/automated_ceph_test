@@ -42,7 +42,7 @@ def main():
 #     
 
 def test_data_generator(com_id, test_id_list):
-    object_generator = get_test_data(com_id, test_id)
+    object_generator = get_test_data(com_id, test_id_list)
 
     for obj in object_generator:
         for action in obj.emit_actions(): 
