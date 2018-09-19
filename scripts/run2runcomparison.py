@@ -89,7 +89,7 @@ def argument_handler():
                 -d or --debug - enables debug (verbose) logging output
             """
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 't:tl::h:p:d', ['title=', 'test-list=', 'host=', 'port=', 'debug'])
+        opts, _ = getopt.getopt(sys.argv[1:], 't:l::h:p:d', ['title=', 'test-list=', 'host=', 'port=', 'debug'])
     except getopt.GetoptError:
         print usage 
         exit(1)
