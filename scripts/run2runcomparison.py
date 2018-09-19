@@ -78,7 +78,7 @@ class test_holder():
               
         previous_index = ""
         
-        indices = es.indices.get_alias("*")
+        indices = self.es.indices.get_alias("*")
         
         print indicies
         
