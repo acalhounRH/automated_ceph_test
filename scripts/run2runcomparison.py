@@ -5,6 +5,7 @@ import getopt
 import sys
 import time
 import json
+import datetime
 from datetime import timedelta
 
 from elasticsearch import Elasticsearch, helpers
