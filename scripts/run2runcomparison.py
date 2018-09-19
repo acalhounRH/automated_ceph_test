@@ -78,35 +78,51 @@ class test_holder():
               
         previous_index = ""
         
-        results = self.es.search(size=10000,  body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": self.test_id}}})
+        results = self.es.search(
+            size=10000,
+            scroll='2m',
+            body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": self.test_id}}})
+        
+        sid = results['_scroll_id']
+        scroll_size = page['hits']['total']
+  
+  
         logger.info("Extracting data for %s" % self.test_id)
         logger.info("%d documents found" % results['hits']['total'])
         
-        for doc in results['hits']['hits']:
-            importdoc = {}
-            current_index = doc["_index"].strip()
+        while (scroll_size > 0):
+            print "Scrolling..."
             
-            if current_index != previous_index:
-                print "CHANGING OFFSET"
-                print current_index, previous_index
-                self.reset_offset(doc["_source"]["date"])
-                previous_index = current_index
-                
-                
-            record_time = datetime.datetime.strptime(doc["_source"]["date"], '%Y-%m-%dT%H:%M:%S.%fZ')
-            skew_time = record_time + self.offset
-            str_skew_time = skew_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-                
-            importdoc["_source"] = doc["_source"]
-            importdoc["_source"]["comparison_ID"] = self.comparison_id
-            importdoc["_source"]["date"] = str_skew_time
+            page_data = es.scroll(scroll_id = sid, scroll = '2m')
+            sid = page_data['_scroll_id']
+            scroll_size = len(page_data['hits']['hits'])
+            print "scroll size: " + str(scroll_size)
             
-            index_prefix = doc["_index"]
-            importdoc["_index"] = "%s-run2run-timeskew-comparison" % index_prefix
-            importdoc["_type"] = doc["_type"]
-            importdoc["_op_type"] = "create"
-            importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
-            yield importdoc
+            for doc in page_data['hits']['hits']:
+                importdoc = {}
+                current_index = doc["_index"].strip()
+                
+                if current_index != previous_index:
+                    print "CHANGING OFFSET"
+                    print current_index, previous_index
+                    self.reset_offset(doc["_source"]["date"])
+                    previous_index = current_index
+                    
+                    
+                record_time = datetime.datetime.strptime(doc["_source"]["date"], '%Y-%m-%dT%H:%M:%S.%fZ')
+                skew_time = record_time + self.offset
+                str_skew_time = skew_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                    
+                importdoc["_source"] = doc["_source"]
+                importdoc["_source"]["comparison_ID"] = self.comparison_id
+                importdoc["_source"]["date"] = str_skew_time
+                
+                index_prefix = doc["_index"]
+                importdoc["_index"] = "%s-run2run-timeskew-comparison" % index_prefix
+                importdoc["_type"] = doc["_type"]
+                importdoc["_op_type"] = "create"
+                importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
+                yield importdoc
 
 def argument_handler():
     comparison_id = ""
