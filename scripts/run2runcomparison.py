@@ -85,7 +85,7 @@ class test_holder():
         results = self.es.search(
             size=10000,
             scroll='2m',
-            sort="_source.ceph_benchmark_test.date",
+            sort="date:increasing",
             body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": self.test_id}}})
         
         sid = results['_scroll_id']
