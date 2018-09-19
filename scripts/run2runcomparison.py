@@ -1,5 +1,7 @@
 #! /usr/bin/python
 
+import logging
+
 from elasticsearch import Elasticsearch, helpers
 from util.common_logging import setup_loggers
 from proto_py_es_bulk import *
