@@ -93,7 +93,7 @@ class test_holder():
         while (scroll_size > 0):
             print "Scrolling..."
             
-            page_data = es.scroll(scroll_id = sid, scroll = '2m')
+            page_data = self.es.scroll(scroll_id = sid, scroll = '2m')
             sid = page_data['_scroll_id']
             scroll_size = len(page_data['hits']['hits'])
             print "scroll size: " + str(scroll_size)
