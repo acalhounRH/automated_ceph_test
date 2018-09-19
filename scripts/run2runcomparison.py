@@ -76,7 +76,7 @@ def argument_handler():
     comparison_id = ""
     test_list = ""
     host = ""
-    port = ""
+    esport = ""
     log_level = logging.INFO
     usage = """ 
             Usage:
