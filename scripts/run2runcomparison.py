@@ -3,6 +3,7 @@
 import logging
 import getopt
 import sys
+import time
 
 
 from elasticsearch import Elasticsearch, helpers
@@ -50,7 +51,7 @@ def test_data_generator(com_id, test_id_list):
             
 def get_test_data(comparison_id, test_id_list):
     
-    get_start_time
+    get_start_time = time.time()
     
     for test_id in test_id_list:
         obj = test_holder(test_id, comparison_id, start_time)
