@@ -9,6 +9,7 @@ import time
 from elasticsearch import Elasticsearch, helpers
 from util.common_logging import setup_loggers
 from proto_py_es_bulk import *
+from hidapi.hidconsole import start_time
 
 
 
@@ -59,10 +60,10 @@ def get_test_data(comparison_id, test_id_list):
     
 
 class test_holder():
-    def __init__(self):
-        self.test_id
-        self.comparison_id
-        self.start_datetime_stamp
+    def __init__(self, test_id, comparison_id, start_time):
+        self.test_id = test_id
+        self.comparison_id = comparison_id
+        self.start_datetime_stamp = start_time
         self.offset
         
     def modify_time(self):
