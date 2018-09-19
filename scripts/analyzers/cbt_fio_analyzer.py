@@ -81,3 +81,5 @@ def analyze_cbt_fiologs(tdir, cbt_config_obj, test_metadata):
 
             fiolog_transcriber_generator = cbt_fiolog_scribe.fiolog_transcriber(file, jsonfile, metadata)
             yield fiolog_transcriber_generator
+            
+            

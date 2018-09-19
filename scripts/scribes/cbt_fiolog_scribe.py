@@ -45,7 +45,7 @@ class fiolog_transcriber:
 
                 ms = float(row[0]) + float(start_time)
                 newtime = datetime.datetime.fromtimestamp(ms / 1000.0)
-                importdoc["_source"]['@timestamp'] = newtime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                importdoc["_source"]['date'] = newtime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                 
                 tmp_doc['fio']['fio_logs'][metric_name]['metic_value'] = int(row[1])
                 tmp_doc['fio']['fio_logs']['data direction'] = row[2]
