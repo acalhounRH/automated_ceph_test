@@ -76,23 +76,20 @@ class test_holder():
             print self.offset
     
     def emit_actions(self):
-        
-        importdoc = {}
-        importdoc["_index"] = "run2run-timeskew-comparison"
-        importdoc["_type"] = "run2run-timeskew-comparisondata"
-        importdoc["_op_type"] = "create"
-        
+              
         previous_index = ""
-        #importdoc["_source"]
         
         results = self.es.search(size=10000,  body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": self.test_id}}})
         logger.info("Extracting data for %s" % self.test_id)
         logger.info("%d documents found" % results['hits']['total'])
         
         for doc in results['hits']['hits']:
+            importdoc = {}
             current_index = doc["_index"]
             
             if current_index is not previous_index:
+                print "CHANGING OFFSET"
+                print current_index, previous_index
                 self.reset_offset(doc["_source"]["date"])
                 previous_index = current_index
                 
