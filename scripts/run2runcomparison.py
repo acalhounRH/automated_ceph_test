@@ -32,7 +32,7 @@ def main():
 #         print json.dumps(i, indent=1)
     
     
-    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(comparison_id, test_list))
+    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(es, comparison_id, test_list))
        
     FMT = '%Y-%m-%dT%H:%M:%SGMT'
     start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
