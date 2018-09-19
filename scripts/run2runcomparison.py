@@ -78,9 +78,14 @@ class test_holder():
               
         previous_index = ""
         
+        indices = es.indices.get_alias("*")
+        
+        print indicies
+        
         results = self.es.search(
             size=10000,
             scroll='2m',
+            sort="ceph_benchmark_test.date",
             body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": self.test_id}}})
         
         sid = results['_scroll_id']
