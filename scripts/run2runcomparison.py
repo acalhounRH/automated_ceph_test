@@ -80,6 +80,7 @@ class test_holder():
         
         indices = self.es.indices.get_alias("*")
         
+        index_list = ""
         for i in indices:
             if "run2run" not in i: 
                 index_list = "%s,%s" % (index_list, i)
