@@ -59,7 +59,7 @@ def get_test_data(es, comparison_id, test_id_list):
     
 
 class test_holder():
-    def __init__(self, test_id, comparison_id, start_time):
+    def __init__(self, es, test_id, comparison_id, start_time):
         self.test_id = test_id
         self.comparison_id = comparison_id
         self.start_datetime_stamp = start_time
