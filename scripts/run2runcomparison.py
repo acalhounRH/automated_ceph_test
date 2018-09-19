@@ -87,7 +87,7 @@ class test_holder():
             importdoc = {}
             current_index = doc["_index"].strip()
             
-            if current_index is not previous_index:
+            if current_index != previous_index:
                 print "CHANGING OFFSET"
                 print current_index, previous_index
                 self.reset_offset(doc["_source"]["date"])
