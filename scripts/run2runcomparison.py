@@ -9,7 +9,6 @@ import time
 from elasticsearch import Elasticsearch, helpers
 from util.common_logging import setup_loggers
 from proto_py_es_bulk import *
-from hidapi.hidconsole import start_time
 
 
 
