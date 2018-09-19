@@ -78,9 +78,10 @@ class test_holder():
               
         previous_index = ""
         
-        indices = self.es.indices.get_alias("*")
+        indices = self.es.indices.get_indices("*")
         
-        print indices
+        for i in indices:
+            print i 
         
         results = self.es.search(
             size=10000,
