@@ -93,7 +93,7 @@ class test_holder():
                 previous_index = current_index
                 
                 
-            record_time = datetime.datetime.strptime(doc["_source"]["date"], '%Y-%m-%dT%H:%M:%S.%f')
+            record_time = datetime.datetime.strptime(doc["_source"]["date"], '%Y-%m-%dT%H:%M:%S.%fZ')
             skew_time = record_time + timedelta(seconds=self.offset)
             str_skew_time = skew_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                 
