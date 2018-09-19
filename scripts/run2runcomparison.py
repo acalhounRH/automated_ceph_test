@@ -85,7 +85,7 @@ class test_holder():
         
         for doc in results['hits']['hits']:
             importdoc = {}
-            current_index = doc["_index"]
+            current_index = doc["_index"].strip()
             
             if current_index is not previous_index:
                 print "CHANGING OFFSET"
