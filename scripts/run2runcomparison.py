@@ -1,6 +1,8 @@
 #! /usr/bin/python
 
 import logging
+import getopt
+
 
 from elasticsearch import Elasticsearch, helpers
 from util.common_logging import setup_loggers
