@@ -73,7 +73,8 @@ class test_holder():
             print doc["_source"]['date'] 
 
 def argument_handler():
-    test_id = ""
+    comparison_id = ""
+    test_list = ""
     host = ""
     port = ""
     log_level = logging.INFO
