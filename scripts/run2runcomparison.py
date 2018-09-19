@@ -4,6 +4,7 @@ import logging
 import getopt
 import sys
 import time
+import json
 
 
 from elasticsearch import Elasticsearch, helpers
