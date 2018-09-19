@@ -69,7 +69,7 @@ class test_holder():
         self.es = es
         
     def reset_offset(self, initial_time):
-            self.offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, '%Y-%m-%dT%H:%M:%S.%f')
+            self.offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, '%Y-%m-%dT%H:%M:%S.%fZ')
     
     def emit_actions(self):
         
