@@ -8,6 +8,7 @@ import json
 import datetime
 import hashlib
 from datetime import timedelta
+import gmtime
 
 from elasticsearch import Elasticsearch, helpers
 from util.common_logging import setup_loggers
