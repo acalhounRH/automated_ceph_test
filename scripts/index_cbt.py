@@ -93,6 +93,8 @@ def process_data_generator(test_id):
 
     for obj in object_generator:
         for action in obj.emit_actions():
+            #generate index name and id 
+            #I.E add elasticsearch specific information to emitted data. 
             yield action
 
 def process_data(test_id):
