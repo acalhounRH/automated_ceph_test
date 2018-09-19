@@ -84,7 +84,7 @@ class test_holder():
             body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": self.test_id}}})
         
         sid = results['_scroll_id']
-        scroll_size = page['hits']['total']
+        scroll_size = results['hits']['total']
   
   
         logger.info("Extracting data for %s" % self.test_id)
