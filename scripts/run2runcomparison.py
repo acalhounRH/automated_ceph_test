@@ -70,6 +70,8 @@ class test_holder():
         
     def reset_offset(self, initial_time):
             self.offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, '%Y-%m-%dT%H:%M:%S.%fZ')
+            print "@@@@@@@@@@@@@"
+            print self.offset
     
     def emit_actions(self):
         
