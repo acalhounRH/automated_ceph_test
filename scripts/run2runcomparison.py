@@ -72,7 +72,7 @@ class test_holder():
     def emit_actions(self):
         results = self.es.search(index="*test1", doc_type="fiologfile", size=10000,  body={"query": {"match": {"test_id.keyword": self.test_id}}})
         for doc in results['hits']['hits']:
-            yield doc["_source"]['date'] 
+            yield doc
 
 def argument_handler():
     comparison_id = ""
