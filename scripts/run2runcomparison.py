@@ -77,7 +77,7 @@ class test_holder():
         importdoc["_type"] = "run2run-timeskew-comparisondata"
         importdoc["_op_type"] = "create"
         
-        previous_time = ""
+        previous_index = ""
         #importdoc["_source"]
         
         results = self.es.search(size=10000,  body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": self.test_id}}})
