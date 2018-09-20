@@ -81,7 +81,7 @@ class test_holder():
                 self.offset = self.offset_map[index]
             else:
                 record_time_struc = datetime.datetime.strptime(record_time, self.TIME_FMT)
-                new_offset = record_time_struc - self.start_datetime_stamp
+                new_offset = self.start_datetime_stamp - record_time_struc 
                 new_offset_in_sec = new_offset.total_seconds()
                 self.offset = new_offset_in_sec
                 self.offset_map[index] = new_offset
