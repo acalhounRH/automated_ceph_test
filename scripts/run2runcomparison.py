@@ -50,7 +50,7 @@ def test_data_generator(es, com_id, test_id_list):
     object_generator = get_test_data(es, com_id, test_id_list)
 
     for obj in object_generator:
-        for action in obj.emit_actions(): 
+        for action in obj.emit_actions(): ### TODO - change to yield obj.emit_action() 
             yield action
             
 def get_test_data(es, comparison_id, test_id_list):
@@ -80,7 +80,7 @@ class test_holder():
             if index in self.offset_map:
                 self.offset = self.offset_map[index]
             else:
-                new_offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, self.TIME_FMT)
+                new_offset = datetime.datetime.strptime(initial_time, self.TIME_FMT) - self.start_datetime_stamp
                 self.offset = new_offset
                 self.offset_map[index] = new_offset
                 
