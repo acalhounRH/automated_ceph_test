@@ -76,7 +76,7 @@ class test_holder():
         
             print self.offset_map
             if index in self.offset_map:
-                self.offset = self.offset_map['index']
+                self.offset = self.offset_map[index]
             else:
                 new_offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, '%Y-%m-%dT%H:%M:%S.%fZ')
                 self.offset = new_offset
