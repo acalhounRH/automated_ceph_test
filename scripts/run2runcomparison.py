@@ -55,7 +55,7 @@ def test_data_generator(es, com_id, test_id_list):
             
 def get_test_data(es, comparison_id, test_id_list):
     
-    start_time = datetime.datetime.now()
+    start_time = datetime.datetime.utcnow()
     logger.info("comparison start time - %s" % start_time)
     
     for test_id in test_id_list:
@@ -134,6 +134,7 @@ class test_holder():
                     
                     
                 record_time = datetime.datetime.strptime(doc["_source"]["date"], self.TIME_FMT)
+                
                 skew_time = record_time + self.offset
                 print skew_time, current_index
                 str_skew_time = skew_time.strftime(self.TIME_FMT)
