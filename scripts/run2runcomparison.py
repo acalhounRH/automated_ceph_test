@@ -79,7 +79,7 @@ class test_holder():
                 self.offset = self.offset_map['index']
             else:
                 new_offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, '%Y-%m-%dT%H:%M:%S.%fZ')
-                self.offset = new_offest
+                self.offset = new_offset
                 self.offset_map[index] = new_offset
                 
     def emit_actions(self):
