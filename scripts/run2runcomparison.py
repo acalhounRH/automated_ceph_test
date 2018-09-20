@@ -55,7 +55,7 @@ def test_data_generator(es, com_id, test_id_list):
             
 def get_test_data(es, comparison_id, test_id_list):
     
-    start_time = time.time()
+    start_time = datetime.datetime.fromtimestamp(time.time())
     logger.info("comparison start time - %s" % start_time)
     
     for test_id in test_id_list:
@@ -67,7 +67,7 @@ class test_holder():
     def __init__(self, es, test_id, comparison_id, start_time):
         self.test_id = test_id
         self.comparison_id = comparison_id
-        self.start_datetime_stamp = datetime.datetime.fromtimestamp(start_time) 
+        self.start_datetime_stamp = start_time 
         print self.start_datetime_stamp
         self.offset = ""
         self.offset_map = {}
