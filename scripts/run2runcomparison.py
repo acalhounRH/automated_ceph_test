@@ -72,7 +72,7 @@ class test_holder():
         self.offset = ""
         self.offset_map = {}
         self.es = es
-        self.TIME_FMT = '%Y-%m-%dT%H:%M:%S%fSZ'
+        self.TIME_FMT = '%Y-%m-%dT%H:%M:%S%fZ'
         
     def reset_offset(self, initial_time, index):
         
