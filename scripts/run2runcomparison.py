@@ -108,7 +108,7 @@ class test_holder():
             index=index_list,
             size=10000,
             scroll='2m',
-            sort="date:increasing",
+            sort="_source.date:increasing",
             body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": self.test_id}}})
         
         sid = results['_scroll_id']
