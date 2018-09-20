@@ -95,8 +95,6 @@ class test_holder():
                     index_list = "%s,%s" % (index_list, i)
                 else:
                     index_list = "%s" % (i)
-                    
-        print index_list 
         
         results = self.es.search(
             index=index_list,
@@ -118,7 +116,8 @@ class test_holder():
             page_data = self.es.scroll(scroll_id = sid, scroll = '2m')
             sid = page_data['_scroll_id']
             scroll_size = len(page_data['hits']['hits'])
-            print "scroll size: " + str(scroll_size)
+            doc_count += scroll_size
+            print "Document count: " + str(doc_count)
             
             for doc in page_data['hits']['hits']:
                 importdoc = {}
@@ -126,7 +125,7 @@ class test_holder():
                 
                 if current_index != previous_index:
                     print "CHANGING OFFSET"
-                    print current_index, previous_index
+                    #print current_index, previous_index
                     self.reset_offset(doc["_source"]["date"], current_index)
                     previous_index = current_index
                     
