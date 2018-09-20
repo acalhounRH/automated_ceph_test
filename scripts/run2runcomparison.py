@@ -140,7 +140,7 @@ class test_holder():
                     
                 record_time = datetime.datetime.strptime(doc["_source"]["date"], self.TIME_FMT)
                 
-                skew_time = record_time + timedelta(seonds=new_offset)
+                skew_time = record_time + timedelta(seconds=new_offset)
                 str_skew_time = skew_time.strftime(self.TIME_FMT)
                 print str_skew_time, current_index
                     
