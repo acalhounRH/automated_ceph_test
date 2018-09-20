@@ -71,7 +71,8 @@ class test_holder():
         print self.start_datetime_stamp
         self.offset = ""
         self.offset_map = {}
-        self.es = es
+        self.es = es,
+        self.TIME_FMT = '%Y-%m-%dT%H:%M:%SZ'
         
     def reset_offset(self, initial_time, index):
         
@@ -79,7 +80,7 @@ class test_holder():
             if index in self.offset_map:
                 self.offset = self.offset_map[index]
             else:
-                new_offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, '%Y-%m-%dT%H:%M:%S.%fZ')
+                new_offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, self.TIME_FMT)
                 self.offset = new_offset
                 self.offset_map[index] = new_offset
                 
@@ -132,9 +133,9 @@ class test_holder():
                     previous_index = current_index
                     
                     
-                record_time = datetime.datetime.strptime(doc["_source"]["date"], '%Y-%m-%dT%H:%M:%S.%fZ')
+                record_time = datetime.datetime.strptime(doc["_source"]["date"], self.TIME_FMT)
                 skew_time = record_time + self.offset
-                str_skew_time = skew_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+                str_skew_time = skew_time.strftime('self.TIME_FMT)
                     
                 importdoc["_source"] = doc["_source"]
                 importdoc["_source"]["comparison_ID"] = self.comparison_id
