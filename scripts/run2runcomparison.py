@@ -68,6 +68,7 @@ class test_holder():
         self.test_id = test_id
         self.comparison_id = comparison_id
         self.start_datetime_stamp = datetime.datetime.fromtimestamp(start_time) 
+        print self.start_datetime_stamp
         self.offset = ""
         self.offset_map = {}
         self.es = es
