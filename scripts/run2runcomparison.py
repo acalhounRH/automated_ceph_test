@@ -131,6 +131,7 @@ class test_holder():
                 current_index = doc["_index"].strip()
                 
                 if current_index != previous_index:
+                    print_once = True
                     print "CHANGING OFFSET"
                     #print current_index, previous_index
                     new_offset = self.reset_offset(doc["_source"]["date"], current_index)
@@ -142,7 +143,9 @@ class test_holder():
                 
                 skew_time = record_time + timedelta(seconds=new_offset)
                 str_skew_time = skew_time.strftime(self.TIME_FMT)
-                print str_skew_time, current_index
+                if print_once:
+                    print str_skew_time, current_index
+                    print_once = False
                     
                 importdoc["_source"] = doc["_source"]
                 importdoc["_source"]["comparison_ID"] = self.comparison_id
