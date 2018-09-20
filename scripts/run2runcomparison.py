@@ -69,11 +69,19 @@ class test_holder():
         self.comparison_id = comparison_id
         self.start_datetime_stamp = datetime.datetime.fromtimestamp(start_time) 
         self.offset = ""
+        self.offset_map = {}
         self.es = es
         
-    def reset_offset(self, initial_time):
-            self.offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, '%Y-%m-%dT%H:%M:%S.%fZ')
-    
+    def reset_offset(self, initial_time, index):
+        
+            print json.dumps(self.offset_map, indent=1)
+            if index in self.offset_map:
+                self.offset = self.offset_map['index']
+            else:
+                new_offset = self.start_datetime_stamp - datetime.datetime.strptime(initial_time, '%Y-%m-%dT%H:%M:%S.%fZ')
+                self.offset = new_offest
+                self.offset_map[index] = new_offset
+                
     def emit_actions(self):
               
         previous_index = ""
@@ -119,7 +127,7 @@ class test_holder():
                 if current_index != previous_index:
                     print "CHANGING OFFSET"
                     print current_index, previous_index
-                    self.reset_offset(doc["_source"]["date"])
+                    self.reset_offset(doc["_source"]["date"], current_index)
                     previous_index = current_index
                     
                     
