@@ -83,6 +83,7 @@ class test_holder():
                 self.offset = new_offset
                 self.offset_map[index] = new_offset
                 
+            print self.offset
     def emit_actions(self):
               
         previous_index = ""
