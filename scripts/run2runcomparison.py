@@ -74,17 +74,20 @@ class test_holder():
         self.es = es
         self.TIME_FMT = '%Y-%m-%dT%H:%M:%S.%fZ'
         
-    def reset_offset(self, initial_time, index):
+    def reset_offset(self, record_time, index):
         
            #S print self.offset_map
             if index in self.offset_map:
                 self.offset = self.offset_map[index]
             else:
-                new_offset = datetime.datetime.strptime(initial_time, self.TIME_FMT) - self.start_datetime_stamp
+                record_time_struc = datetime.datetime.strptime(record_time, self.TIME_FMT)
+                new_offset = record_time_struc - self.start_datetime_stamp
                 self.offset = new_offset
                 self.offset_map[index] = new_offset
                 
-            print self.offset
+            print "%s = %s - %s " % (self.offset, record_time_struc, self.start_datetime_stamp)
+            
+            return self.offset
     def emit_actions(self):
               
         previous_index = ""
@@ -129,13 +132,14 @@ class test_holder():
                 if current_index != previous_index:
                     print "CHANGING OFFSET"
                     #print current_index, previous_index
-                    self.reset_offset(doc["_source"]["date"], current_index)
+                    new_offset = self.reset_offset(doc["_source"]["date"], current_index)
+                    print new_offset
                     previous_index = current_index
                     
                     
                 record_time = datetime.datetime.strptime(doc["_source"]["date"], self.TIME_FMT)
                 
-                skew_time = record_time + self.offset
+                skew_time = record_time + new_offset
                 str_skew_time = skew_time.strftime(self.TIME_FMT)
                 print str_skew_time, current_index
                     
