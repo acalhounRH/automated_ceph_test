@@ -135,7 +135,7 @@ class test_holder():
                     
                 record_time = datetime.datetime.strptime(doc["_source"]["date"], self.TIME_FMT)
                 skew_time = record_time + self.offset
-                str_skew_time = skew_time.strftime('self.TIME_FMT)
+                str_skew_time = skew_time.strftime(self.TIME_FMT)
                     
                 importdoc["_source"] = doc["_source"]
                 importdoc["_source"]["comparison_ID"] = self.comparison_id
