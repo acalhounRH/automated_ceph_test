@@ -84,7 +84,7 @@ class test_holder():
                 new_offset = self.start_datetime_stamp - record_time_struc 
                 new_offset_in_sec = new_offset.total_seconds()
                 self.offset = new_offset_in_sec
-                self.offset_map[index] = new_offset
+                self.offset_map[index] = new_offset_in_sec
                 
                 print "%s = %s - %s " % (self.offset, record_time_struc, self.start_datetime_stamp)
             
