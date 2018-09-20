@@ -71,7 +71,7 @@ class test_holder():
         print self.start_datetime_stamp
         self.offset = ""
         self.offset_map = {}
-        self.es = es,
+        self.es = es
         self.TIME_FMT = '%Y-%m-%dT%H:%M:%SZ'
         
     def reset_offset(self, initial_time, index):
