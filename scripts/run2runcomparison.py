@@ -84,8 +84,9 @@ class test_holder():
             if "run2run" not in i:
                 if index_list: 
                     index_list = "%s,%s" % (index_list, i)
-                else
+                else:
                     index_list = "%s" % (i)
+                    
         print index_list 
         
         results = self.es.search(
