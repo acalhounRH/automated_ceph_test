@@ -74,7 +74,7 @@ class test_holder():
         
     def reset_offset(self, initial_time, index):
         
-            print json.dumps(self.offset_map, indent=1)
+            print self.offset_map
             if index in self.offset_map:
                 self.offset = self.offset_map['index']
             else:
