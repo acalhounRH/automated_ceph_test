@@ -86,7 +86,7 @@ class test_holder():
                 self.offset = new_offset_in_sec
                 self.offset_map[index] = new_offset
                 
-            print "%s = %s - %s " % (self.offset, record_time_struc, self.start_datetime_stamp)
+                print "%s = %s - %s " % (self.offset, record_time_struc, self.start_datetime_stamp)
             
             return self.offset
     def emit_actions(self):
