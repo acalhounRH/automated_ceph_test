@@ -82,7 +82,8 @@ class test_holder():
             else:
                 record_time_struc = datetime.datetime.strptime(record_time, self.TIME_FMT)
                 new_offset = record_time_struc - self.start_datetime_stamp
-                self.offset = new_offset
+                new_offset_in_sec = new_offset.total_seconds()
+                self.offset = new_offset_in_sec
                 self.offset_map[index] = new_offset
                 
             print "%s = %s - %s " % (self.offset, record_time_struc, self.start_datetime_stamp)
@@ -139,7 +140,7 @@ class test_holder():
                     
                 record_time = datetime.datetime.strptime(doc["_source"]["date"], self.TIME_FMT)
                 
-                skew_time = record_time + new_offset
+                skew_time = record_time + timedelta(seonds=new_offset)
                 str_skew_time = skew_time.strftime(self.TIME_FMT)
                 print str_skew_time, current_index
                     
