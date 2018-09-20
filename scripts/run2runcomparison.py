@@ -112,7 +112,7 @@ class test_holder():
   
         logger.info("Extracting data for %s" % self.test_id)
         logger.info("%d documents found" % results['hits']['total'])
-        
+        doc_count = scroll_size
         while (scroll_size > 0):
             print "Scrolling..."
             
