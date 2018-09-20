@@ -55,7 +55,7 @@ def test_data_generator(es, com_id, test_id_list):
             
 def get_test_data(es, comparison_id, test_id_list):
     
-    start_time = datetime.datetime.fromtimestamp(time.time())
+    start_time = datetime.datetime.now()
     logger.info("comparison start time - %s" % start_time)
     
     for test_id in test_id_list:
