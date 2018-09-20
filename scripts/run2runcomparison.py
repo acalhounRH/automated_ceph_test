@@ -85,6 +85,7 @@ class test_holder():
     def emit_actions(self):
               
         previous_index = ""
+        doc_count = 0
         
         indices = self.es.indices.get_alias("*")
         
