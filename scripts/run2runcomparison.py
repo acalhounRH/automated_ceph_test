@@ -118,13 +118,13 @@ class test_holder():
         logger.info("Extracting data for %s" % self.test_id)
         logger.info("%d documents found" % results['hits']['total'])
         while (scroll_size > 0):
-            print "Scrolling..."
+            logger.info("Scrolling...")
             
             page_data = self.es.scroll(scroll_id = sid, scroll = '2m')
             sid = page_data['_scroll_id']
             scroll_size = len(page_data['hits']['hits'])
             doc_count += scroll_size
-            print "Document count: " + str(doc_count)
+            logger.info("Document count: " + str(doc_count))
             
             for doc in page_data['hits']['hits']:
                 importdoc = {}
@@ -132,10 +132,10 @@ class test_holder():
                 
                 if current_index != previous_index:
                     print_once = True
-                    print "CHANGING OFFSET"
+                    logger.debug("CHANGING OFFSET")
                     #print current_index, previous_index
                     new_offset = self.reset_offset(doc["_source"]["date"], current_index)
-                    print new_offset
+                    logger.debug(new_offset)
                     previous_index = current_index
                     
                     
@@ -144,7 +144,7 @@ class test_holder():
                 skew_time = record_time + timedelta(seconds=new_offset)
                 str_skew_time = skew_time.strftime(self.TIME_FMT)
                 if print_once:
-                    print str_skew_time, current_index
+                    logger.debug(str_skew_time, current_index)
                     print_once = False
                     
                 importdoc["_source"] = doc["_source"]
