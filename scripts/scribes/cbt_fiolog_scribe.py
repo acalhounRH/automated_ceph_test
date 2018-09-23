@@ -22,7 +22,10 @@ class fiolog_transcriber:
         logger.debug("Indexing %s" % self.csv_file)
         jsondoc = json.load(open(self.json_file))
         test_time_ms = long(jsondoc['timestamp_ms'])
-        test_duration_ms = long(jsondoc['global options']['runtime']) * 1000
+        if "S" in jsondoc['global options']['runtime']: 
+            test_duration_sec = jsondoc['global options']['runtime']
+            test_duration_sec = test_duration_sec.strip("S")
+        test_duration_ms = long(test_duration_sec) * 1000
         start_time = test_time_ms - test_duration_ms
     
         file_name = os.path.basename(self.csv_file)
