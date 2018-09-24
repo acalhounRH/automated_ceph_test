@@ -109,7 +109,7 @@ def streaming_bulk(es, actions):
                         "timestamp": time.time()
                         }
                jsonstr = json.dumps(doc, indent=4, sort_keys=True)
-               logger.error(jsonst)
+               logger.error(jsonstr)
 #              errorsfp.flush()
                failures += 1
            else:
