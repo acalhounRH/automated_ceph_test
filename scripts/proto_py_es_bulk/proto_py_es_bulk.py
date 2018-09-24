@@ -101,16 +101,16 @@ def streaming_bulk(es, actions):
                    # ... otherwise consider it successful.
                    successes += 1
            elif status == 400:
-#                doc = {
-#                        "action": action,
-#                        "ok": ok,
-#                        "resp": resp,
-#                        "retry_count": retry_count,
-#                        "timestamp": tstos(time.time())
-#                        }
-#                jsonstr = json.dumps(doc, indent=4, sort_keys=True)
-#                print(jsonstr, file=errorsfp)
-#               errorsfp.flush()
+               doc = {
+                        "action": action,
+                        "ok": ok,
+                        "resp": resp,
+                        "retry_count": retry_count,
+                        "timestamp": tstos(time.time())
+                        }
+               jsonstr = json.dumps(doc, indent=4, sort_keys=True)
+               logger.error(jsonst)
+#              errorsfp.flush()
                failures += 1
            else:
                # Retry all other errors
