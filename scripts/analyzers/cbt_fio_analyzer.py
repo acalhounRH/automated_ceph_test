@@ -29,7 +29,7 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                      metadata['ceph_benchmark_test']['test_config']['op_size'] = op_size_kb
                 
                 if time_w_uint:
-                    time_wo_unit = time_w_uint.strip("S")
+                    time_wo_unit = int(time_w_uint.strip("S"))
                     metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
                 
                 if "librbdfio" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
