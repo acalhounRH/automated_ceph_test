@@ -18,6 +18,9 @@ def calc_backoff_sleep(backoff):
 
 def streaming_bulk(es, actions):
     
+def _tstos(ts=None):
+    return time.strftime("%Y-%m-%dT%H:%M:%S-%Z", time.gmtime(ts))
+    
     
     """
     streaming_bulk(es, actions, errorsfp)
@@ -106,7 +109,7 @@ def streaming_bulk(es, actions):
                         "ok": ok,
                         "resp": resp,
                         "retry_count": retry_count,
-                        "timestamp": time.time()
+                        "timestamp": tstos(time.time())
                         }
                jsonstr = json.dumps(doc, indent=4, sort_keys=True)
                logger.error(jsonstr)
