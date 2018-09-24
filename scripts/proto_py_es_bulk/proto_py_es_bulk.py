@@ -16,7 +16,7 @@ def calc_backoff_sleep(backoff):
     b = math.pow(2, backoff)
     return _r.uniform(0, min(b, ))
 
-def _tstos(ts=None):
+def tstos(ts=None):
     return time.strftime("%Y-%m-%dT%H:%M:%S-%Z", time.gmtime(ts))
     
 
