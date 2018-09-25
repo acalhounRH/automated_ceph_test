@@ -22,14 +22,16 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
             
                 
                 op_size_bytes = metadata['ceph_benchmark_test']['test_config']['op_size']
-                time_w_uint = metadata['ceph_benchmark_test']['test_config']['time']
+                time_w_unit = metadata['ceph_benchmark_test']['test_config']['time']
                 
                 if op_size_bytes: 
                      op_size_kb = int(op_size_bytes) / 1024
                      metadata['ceph_benchmark_test']['test_config']['op_size'] = op_size_kb
                 
-                if time_w_uint:
-                    time_wo_unit = int(time_w_uint.strip("S"))
+                if time_w_unit:
+                    
+                    time_wo_unit = time_w_unit.strip("S")
+                    time_wo_unit = int(time_wo_unit)
                     metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
                 
                 if "librbdfio" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
