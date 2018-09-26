@@ -64,7 +64,7 @@ class pbench_transcriber:
                             except Exception as e:
                                 logger.error("Unable to convert %s to a float" % row[col])
                                 logger.error("file %s " % self.csv_file)
-                                logger.exception()
+                                logger.exception("Exception Triggered")
                                 break
                                 
                             if 'pidstat' in tool:
