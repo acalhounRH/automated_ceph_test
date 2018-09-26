@@ -26,6 +26,8 @@ class fiolog_transcriber:
             if "S" in jsondoc['global options']['runtime']: 
                 test_duration_sec = jsondoc['global options']['runtime']
                 test_duration_sec = test_duration_sec.strip("S")
+        except:
+            test_duration_sec = jsondoc['global options']['runtime']
         test_duration_ms = long(test_duration_sec) * 1000
         start_time = test_time_ms - test_duration_ms
     
