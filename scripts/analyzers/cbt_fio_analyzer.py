@@ -28,11 +28,11 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                      op_size_kb = int(op_size_bytes) / 1024
                      metadata['ceph_benchmark_test']['test_config']['op_size'] = op_size_kb
                 
-                if "S" in time_w_unit:
-                    
-                    time_wo_unit = time_w_unit.strip("S")
-                    time_wo_unit = int(time_wo_unit)
-                else:
+                try:
+                    if "S" in time_w_unit:  
+                        time_wo_unit = time_w_unit.strip("S")
+                        time_wo_unit = int(time_wo_unit)
+                except:
                     time_wo_unit = time_w_unit
                     metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
                 
