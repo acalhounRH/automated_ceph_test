@@ -62,7 +62,7 @@ class pbench_transcriber:
                             try:
                                 metric_value = float(row[col])
                             except Exception as e:
-                                logger.error("Unable to convert %s to a float" % row[col]")
+                                logger.error("Unable to convert %s to a float" % row[col])
                                 logger.error("file %s " % self.csv_file)
                                 logger.exception()
                                 break
