@@ -60,11 +60,12 @@ class pbench_transcriber:
                             importdoc['_source']['date'] = thistime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                         else:
                             try:
-                                metric_value = float(row[col])
+                                 = float(row[col])
                             except Exception as e:
                                 logger.error("Unable to convert %s to a float" % row[col]")
                                 logger.error("file %s " % self.csv_file)
                                 logger.exception()
+                                break
                                 
                             if 'pidstat' in tool:
                                 node_type_list = ["ceph-mon", "ceph-osd", "ceph-mgr", "ceph-mds", "ceph-rgw"]
@@ -75,11 +76,11 @@ class pbench_transcriber:
                                         pid = col_ary[col].split('-', 1)[0]
                                         tmp_doc[tool][file_name]['process_name'] = node_type
                                         tmp_doc[tool][file_name]['process_pid'] = pid
-                                        tmp_doc[tool][file_name]['metric_value'] = float(row[col])
+                                        tmp_doc[tool][file_name]['metric_value'] = metric_value
                                         a = importdoc
                             else:
                                 tmp_doc[tool][file_name]['metric_stat'] = col_ary[col]
-                                tmp_doc[tool][file_name]['metric_value'] = float(row[col])
+                                tmp_doc[tool][file_name]['metric_value'] = metric_value
                                 a = importdoc
                         if a:
                                 importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
