@@ -60,7 +60,7 @@ class pbench_transcriber:
                             importdoc['_source']['date'] = thistime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                         else:
                             try:
-                                 = float(row[col])
+                                metric_value = float(row[col])
                             except Exception as e:
                                 logger.error("Unable to convert %s to a float" % row[col]")
                                 logger.error("file %s " % self.csv_file)
