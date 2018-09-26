@@ -59,6 +59,13 @@ class pbench_transcriber:
                             thistime = datetime.datetime.fromtimestamp(ms / 1000.0)
                             importdoc['_source']['date'] = thistime.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                         else:
+                            try:
+                                metric_value = float(row[col])
+                            except Exception as e:
+                                logger.error("Unable to convert %s to a float" % row[col]")
+                                logger.error("file %s " % self.csv_file)
+                                logger.exception()
+                                
                             if 'pidstat' in tool:
                                 node_type_list = ["ceph-mon", "ceph-osd", "ceph-mgr", "ceph-mds", "ceph-rgw"]
                                 pname = col_ary[col].split('/')[-1]
