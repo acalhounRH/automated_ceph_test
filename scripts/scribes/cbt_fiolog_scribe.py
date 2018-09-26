@@ -22,13 +22,13 @@ class fiolog_transcriber:
         logger.debug("Indexing %s" % self.csv_file)
         jsondoc = json.load(open(self.json_file))
         test_time_ms = long(jsondoc['timestamp_ms'])
-        test_duration_sec = 0
+        test_duration_sec = jsondoc['global options']['runtime']
         try:
-            if "S" in jsondoc['global options']['runtime']: 
-                test_duration_sec = jsondoc['global options']['runtime']
+            if "S" in test_duration_sec: 
                 test_duration_sec = test_duration_sec.strip("S")
         except:
-            test_duration_sec = jsondoc['global options']['runtime']
+            logger.debug("no S on duration time")
+            
         test_duration_ms = long(test_duration_sec) * 1000
         start_time = test_time_ms - test_duration_ms
     
