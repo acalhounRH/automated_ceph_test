@@ -16,7 +16,7 @@ def main():
 
     new_client = ceph_client()
     
-    logger.debug(issue_command("osd tree")) 
+    logger.debug(new_client.issue_command("osd tree")) 
         
    # cmd = json.dumps({"prefix": "osd tree", "format": "json"})
    # _, output, _ = cluster.mon_command(cmd, b'', timeout=6)
