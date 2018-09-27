@@ -49,7 +49,7 @@ def main():
     
     #print json.dumps(raw_osd_tree, indent=1)
     for i in raw_osd_tree['nodes']:
-        if i['type'] is host:
+        if i['type'] is "host":
             print json.dumps(i, indent=1)
    
    
