@@ -48,9 +48,15 @@ def main():
     new_modifer.modify_job_file()
     
     #print json.dumps(raw_osd_tree, indent=1)
+    osd_host_list = []
+    osd_list = []
     for i in raw_osd_tree['nodes']:
         if "host" in i['type']:
-            print json.dumps(i, indent=1)
+            osd_host_list.append(i)
+        if "osd" in i['type']:
+            print json.dumps(i, indent=4)
+            
+    
    
    
    # print json.dumps(ceph_status, indent=1)
