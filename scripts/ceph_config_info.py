@@ -139,7 +139,7 @@ class cbt_rbd_modifer():
         vol_per_clients = self.job_file['benchmarks']['librbdfio']['volumes_per_client']
         
         
-        vol_size = self.calculate_vol_size(self.total_size, numb_clients, vol_per_clients)
+        vol_size = self.calculate_vol_size(self.total_size, numb_clients, vol_per_clients, replication_number)
         
         self.job_file['benchmarks']['librbdfio']['vol_size'] = vol_size
         
