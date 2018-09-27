@@ -70,19 +70,25 @@ class ceph_client():
             
             new_value = 2 ** power
             
+            print "Current Value: %s" % power
             if new_value > raw_value: 
-                
+                print "the new value is greater than raw_value"
                 lower_delta = previous_value - raw_value
+                print "lower value: %s " % lower_delta
                 upper_delta = raw_value - new_value
+                print "upper value: %s " % upper_delta
                 
                 if lower_delta < upper_delta:
+                    print "return lower"
                     return previous_value
                     break
                 if upper_delta < lower_delta:
+                    print "return upper"
                     return new_value
                     break
             else: 
                 power += 1
+                previous_value = new_value
     
     def calculate_vol_size(self, total_storage, clients=3, numb_vol=8):
         """
