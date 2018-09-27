@@ -32,6 +32,7 @@ def main():
             job_file_dict = yaml.load(open(arg))    
     
     new_client = ceph_client()
+    
     raw_osd_tree = new_client.issue_command("osd tree")     
     ceph_status = new_client.issue_command("status")
     ceph_df = new_client.issue_command("df")
@@ -45,9 +46,11 @@ def main():
     setup_loggers(logging.DEBUG)
     
     new_modifer.modify_job_file()
-
     
-   # print json.dumps(ceph_status, indent=1)
+    
+    
+    
+   print json.dumps(raw_ose_tree, indent=1)
    # print json.dumps(ceph_status, indent=1)
    # print json.dumps(ceph_df, indent=1)
     
