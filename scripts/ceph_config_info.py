@@ -90,8 +90,8 @@ class ceph_client():
             
             this is a helper function that ensures the ceph cluster is populated at least to 50% of capacity 
         """
-        fifty_percent_of_total = total_storage * .1639
-        vol_size_bytes = ( (fifty_percent_of_total / clients ) / numb_vol )
+        percent_of_total = total_storage * .1639
+        vol_size_bytes = ( (percent_of_total / clients ) / numb_vol )
         
         vol_size_megabytes = (vol_size_bytes / 1024) / 1024
         
