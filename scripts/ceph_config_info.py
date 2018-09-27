@@ -5,12 +5,36 @@ import paramiko
 import sys
 import os
 import logging
-import json
+import json, yaml
+import getopt
 from util.common_logging import setup_loggers
 
 logger = logging.getLogger("index_cbt")
 
 def main():
+    
+    job_file_dict = {}
+    usage = """ 
+            Usage:
+                evaluatecosbench_pushes.py -t <test id> -h <host> -p <port>
+                
+                -j or --job_file - job file identifier
+            """
+    
+    try:
+        opts, _ = getopt.getopt(sys.argv[1:], 'j:', ['job_file'])
+    except getopt.GetoptError:
+        print usage 
+        exit(1)
+
+    for opt, arg in opts:
+        if opt in ('-j', '--job_file'):
+            job_file_dict = yaml.load(arg)    
+    
+    if job_file_dict :
+        new_modifer = cbt_modifer(job_file_dict)
+    else:
+        logger.warn("not modifying cbt job file")
     
     setup_loggers(logging.DEBUG)
 
@@ -27,14 +51,13 @@ def main():
    # print json.dumps(ceph_df, indent=1)
     
     total_storage_size = ceph_df['stats']['total_bytes']
-    print "Total size is %s" % total_storage_size
-    
+    print "Total size is %s" % total_storage_size    
     print "volume size should be nearest power of 2: %s" % new_client.calculate_vol_size(total_storage_size)
-   # cmd = json.dumps({"prefix": "osd tree", "format": "json"})
-   # _, output, _ = cluster.mon_command(cmd, b'', timeout=6)
-   # logger.debug(json.dumps(json.loads(output), indent=4))
-    #return json.dumps(json.loads(output), indent=4)
+
     
+def argument_handler():
+
+
     
 class ceph_client():
     def __init__(self):
@@ -58,7 +81,11 @@ class ceph_client():
         except Exception as e:
             logger.exception("Error issuing command")
             sys.exit(1)
-    
+        
+class cbt_modifer():
+    def __init__(self, yaml_dict):
+        self.job_file =  yaml_dict
+        
     def nearest_power_of_2(self, raw_value):
         
         previous_value = 0
@@ -99,9 +126,8 @@ class ceph_client():
         print vol_size_megabytes
         
         
-        return self.nearest_power_of_2(vol_size_megabytes)
-        
-        
+        return self.nearest_power_of_2(vol_size_megabytes) 
+    
         
         
         
