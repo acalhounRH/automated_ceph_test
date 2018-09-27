@@ -55,7 +55,7 @@ def main():
             osd_host_list.append(i)
         if "osd" in i['type']:
             id = i['id']
-            osd_list.insert(id, i)
+            osd_list.append(i)
     
     for j in osd_list:
         print json.dumps(i, indent=1)
