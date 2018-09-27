@@ -34,7 +34,7 @@ class ceph_client():
         except Exception as e:
             logger.exception("Connection error: %s" % e.strerror )
     
-    def issue_command(self, ):
+    def issue_command(self, command):
         cmd = json.dumps({"prefix": command, "format": "json"})
         try:
             _, output, _ = cluster.mon_command(cmd, b'', timeout=6)
