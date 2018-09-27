@@ -29,7 +29,7 @@ def main():
     total_storage_size = ceph_df['stats']['total_bytes']
     print "Total size is %s" % total_storage_size
     
-    print "volume size should be Raw: %s nearest power of 2: %s" % new_client.calculate_vol_size(total_storage_size)
+    print "volume size should be nearest power of 2: %s" % new_client.calculate_vol_size(total_storage_size)
    # cmd = json.dumps({"prefix": "osd tree", "format": "json"})
    # _, output, _ = cluster.mon_command(cmd, b'', timeout=6)
    # logger.debug(json.dumps(json.loads(output), indent=4))
@@ -63,28 +63,20 @@ class ceph_client():
         
         previous_value = 0
         new_value = 0
-        
-        match_found = False
-        power =1 
+
+        power = 1 
         while True:
             
             new_value = 2 ** power
-            
-            print "Current Value: %s" % new_value
             if new_value > raw_value: 
-                print "the new value is greater than raw_value"
                 
                 lower_delta = raw_value - previous_value 
-                print "lower value: %s " % lower_delta
                 upper_delta = new_value - raw_value 
-                print "upper value: %s " % upper_delta
                 
                 if lower_delta < upper_delta:
-                    print "return lower"
                     return previous_value
                     break
                 if upper_delta < lower_delta:
-                    print "return upper"
                     return new_value
                     break
             else: 
@@ -104,7 +96,7 @@ class ceph_client():
         vol_size_megabytes = (vol_size_bytes / 1024) / 1024
         
         
-        return vol_size_megabytes, self.nearest_power_of_2(vol_size_megabytes)
+        return self.nearest_power_of_2(vol_size_megabytes)
         
         
         
