@@ -129,7 +129,7 @@ class cbt_rbd_modifer():
         
         return self.nearest_power_of_2(vol_size_megabytes) 
     
-    def modify_job_file():
+    def modify_job_file(self):
         numb_clients = len(self.job_file['cluster']['clients'])
         
         vol_per_clients = self.job_file['benchmarks']['librbdfio']['volumes_per_client']
