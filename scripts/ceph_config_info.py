@@ -130,6 +130,9 @@ class cbt_rbd_modifer():
         return self.nearest_power_of_2(vol_size_megabytes) 
     
     def modify_job_file(self):
+        
+        print json.dumps(self.job_file, indent=1)
+        
         numb_clients = 0
         for i in self.job_file['cluster']['clients']:
             numb_clients += 1
