@@ -25,6 +25,8 @@ def main():
     print json.dumps(ceph_status, indent=1)
     print json.dumps(ceph_status, indent=1)
     print json.dumps(ceph_df, indent=1)
+    
+    print "Total size is %s" % ceph_df['stats']['total_bytes']
    # cmd = json.dumps({"prefix": "osd tree", "format": "json"})
    # _, output, _ = cluster.mon_command(cmd, b'', timeout=6)
    # logger.debug(json.dumps(json.loads(output), indent=4))
