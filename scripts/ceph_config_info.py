@@ -18,6 +18,7 @@ def main():
     
     logger.debug(new_client.issue_command("osd tree")) 
         
+    logger.debug(new_client.issue_command("status"))
    # cmd = json.dumps({"prefix": "osd tree", "format": "json"})
    # _, output, _ = cluster.mon_command(cmd, b'', timeout=6)
    # logger.debug(json.dumps(json.loads(output), indent=4))
