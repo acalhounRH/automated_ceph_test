@@ -127,8 +127,6 @@ class cbt_rbd_modifer():
     
     def modify_job_file(self):
         
-        print json.dumps(self.job_file, indent=1)
-        
         numb_clients = 0
         for i in self.job_file['cluster']['clients']:
             numb_clients += 1
