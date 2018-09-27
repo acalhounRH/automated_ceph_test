@@ -26,18 +26,18 @@ def main():
     
 class ceph_client():
     def __init__(self):
-        cluster = rados.Rados(conffile="/etc/ceph/ceph.conf",
+        self.cluster = rados.Rados(conffile="/etc/ceph/ceph.conf",
                       conf=dict(keyring='/etc/ceph/ceph.client.admin.keyring'),
                       )
         try:
-            cluster.connect()
+            self.cluster.connect()
         except Exception as e:
             logger.exception("Connection error: %s" % e.strerror )
     
     def issue_command(self, command):
         cmd = json.dumps({"prefix": command, "format": "json"})
         try:
-            _, output, _ = cluster.mon_command(cmd, b'', timeout=6)
+            _, output, _ = self.cluster.mon_command(cmd, b'', timeout=6)
             return json.dumps(json.loads(output), indent=4)
         except Exception as e:
             logger.exception("Error issuing command")
