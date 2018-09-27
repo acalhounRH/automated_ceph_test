@@ -111,7 +111,7 @@ class cbt_rbd_modifer():
                 power += 1
                 previous_value = new_value
     
-    def calculate_vol_size(self, total_storage, clients, numb_vol):
+    def calculate_vol_size(self, total_storage, clients, numb_vol, replication_numb):
         """
             This method will calculate the vol_size form the total storage, 
             number of clients, and number of volumes per client. 
@@ -119,13 +119,9 @@ class cbt_rbd_modifer():
             this is a helper function that ensures the ceph cluster is populated at least to 50% of capacity 
         """
         
-        replication = 3 
-        percent_of_total = ( total_storage / replication ) * .40
+        percent_of_total = ( total_storage / replication_numb ) * .40
         vol_size_bytes = ( (percent_of_total / clients ) / numb_vol )
-        print vol_size_bytes
         vol_size_megabytes = (vol_size_bytes / 1024) / 1024
-        print vol_size_megabytes
-        
         
         return self.nearest_power_of_2(vol_size_megabytes) 
     
@@ -137,6 +133,9 @@ class cbt_rbd_modifer():
         for i in self.job_file['cluster']['clients']:
             numb_clients += 1
         
+        
+        pool_profile = self.job_file['benchmarks']['librbdfio']['pool_profile']
+        replication_number = self.job_file['cluster']['pool_profiles'][pool_profile]['replication']
         vol_per_clients = self.job_file['benchmarks']['librbdfio']['volumes_per_client']
         
         
