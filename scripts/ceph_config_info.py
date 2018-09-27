@@ -70,9 +70,10 @@ class ceph_client():
             
             new_value = 2 ** power
             
-            print "Current Value: %s" % power
+            print "Current Value: %s" % new_value
             if new_value > raw_value: 
                 print "the new value is greater than raw_value"
+                
                 lower_delta = previous_value - raw_value
                 print "lower value: %s " % lower_delta
                 upper_delta = raw_value - new_value
