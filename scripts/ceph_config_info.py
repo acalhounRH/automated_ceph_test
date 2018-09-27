@@ -47,10 +47,9 @@ def main():
     
     new_modifer.modify_job_file()
     
-    
-    
-    
-   print json.dumps(raw_ose_tree, indent=1)
+    print json.dumps(raw_ose_tree, indent=1)
+   
+   
    # print json.dumps(ceph_status, indent=1)
    # print json.dumps(ceph_df, indent=1)
     
