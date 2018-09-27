@@ -59,6 +59,31 @@ class ceph_client():
             logger.exception("Error issuing command")
             sys.exit(1)
     
+    def nearest_power_of_2(self, raw_value):
+        
+        previous_value = 0
+        new_value = 0
+        
+        match_found = False
+        power =1 
+        while True:
+            
+            new_value = 2 ** power
+            
+            if new_value > raw_value: 
+                
+                lower_delta = previous_value - raw_value
+                upper_delta = raw_value - new_value
+                
+                if lower_delta < upper_delta:
+                    return previous_value
+                    break
+                if upper_delta < lower_delta:
+                    return new_value
+                    break
+            else: 
+                power += 1
+    
     def calculate_vol_size(self, total_storage, clients=3, numb_vol=8):
         """
             This method will calculate the vol_size form the total storage, 
@@ -71,7 +96,8 @@ class ceph_client():
         
         vol_size_megabytes = (vol_size_bytes / 1024) / 1024
         
-        return vol_size_megabytes
+        
+        return self.nearest_power_of_2(vol_size_megabytes)
         
         
         
