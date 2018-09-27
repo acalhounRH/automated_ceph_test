@@ -92,8 +92,9 @@ class ceph_client():
         """
         percent_of_total = total_storage * .1639
         vol_size_bytes = ( (percent_of_total / clients ) / numb_vol )
-        
+        print vol_size_bytes
         vol_size_megabytes = (vol_size_bytes / 1024) / 1024
+        print vol_size_megabytes
         
         
         return self.nearest_power_of_2(vol_size_megabytes)
