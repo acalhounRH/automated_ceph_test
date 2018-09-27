@@ -29,7 +29,7 @@ def main():
 
     for opt, arg in opts:
         if opt in ('-j', '--job_file'):
-            job_file_dict = yaml.load(arg)    
+            job_file_dict = yaml.load(open(arg))    
     
     new_client = ceph_client()
     raw_osd_tree = new_client.issue_command("osd tree")     
