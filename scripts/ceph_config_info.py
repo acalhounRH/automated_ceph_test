@@ -23,7 +23,7 @@ def main():
 
     cluster = rados.Rados(conffile="/etc/ceph/ceph.conf",
                           conf=dict(keyring='/etc/ceph/ceph.client.admin.keyring'),
-                          name=client_name)
+                          )
     cluster.connect()
     cmd = json.dumps({"prefix": "osd tree", "format": "json"})
     _, output, _ = cluster.mon_command(cmd, b'', timeout=6)
