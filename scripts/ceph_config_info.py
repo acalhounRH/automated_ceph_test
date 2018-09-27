@@ -13,16 +13,16 @@ def main():
     
     setup_loggers(logging.DEBUG)
     
-    name = os.path.basename(__file__)
+    client_name = os.path.basename(__file__)
 
     settings = {
         'conf': "/etc/ceph/ceph.conf",
         'keyring': '/etc/ceph/ceph.client.admin.keyring',
-        'client': 'client.bootstrap-osd'
+        'client': client_name
     }
 
-    cluster = rados.Rados(conffile=settings['conf'],
-                          conf=dict(keyring=settings['keyring']),
+    cluster = rados.Rados(conffile="/etc/ceph/ceph.conf",
+                          conf=dict(keyring='/etc/ceph/ceph.client.admin.keyring'),
                           name=settings['client'])
     cluster.connect()
     cmd = json.dumps({"prefix": "osd tree", "format": "json"})
