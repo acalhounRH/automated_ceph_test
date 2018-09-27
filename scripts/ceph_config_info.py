@@ -52,7 +52,7 @@ def main():
     
     
     print "Total size is %s" % total_storage_size    
-    print "volume size should be nearest power of 2: %s" % new_client.calculate_vol_size(total_storage_size)
+    
 
     
 class ceph_client():
