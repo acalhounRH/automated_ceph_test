@@ -74,9 +74,9 @@ class ceph_client():
             if new_value > raw_value: 
                 print "the new value is greater than raw_value"
                 
-                lower_delta = previous_value - raw_value
+                lower_delta = raw_value - previous_value 
                 print "lower value: %s " % lower_delta
-                upper_delta = raw_value - new_value
+                upper_delta = new_value - raw_value 
                 print "upper value: %s " % upper_delta
                 
                 if lower_delta < upper_delta:
