@@ -31,32 +31,28 @@ def main():
         if opt in ('-j', '--job_file'):
             job_file_dict = yaml.load(arg)    
     
-    if job_file_dict :
-        new_modifer = cbt_modifer(job_file_dict)
+    new_client = ceph_client()
+    raw_osd_tree = new_client.issue_command("osd tree")     
+    ceph_status = new_client.issue_command("status")
+    ceph_df = new_client.issue_command("df")
+    
+    if job_file_dict:
+        total_storage_size = ceph_df['stats']['total_bytes']
+        new_modifer = cbt_rbd_modifer(job_file_dict, total_storage_size)
     else:
         logger.warn("not modifying cbt job file")
     
     setup_loggers(logging.DEBUG)
+    
 
-    new_client = ceph_client()
-    
-    raw_osd_tree = new_client.issue_command("osd tree") 
-        
-    ceph_status = new_client.issue_command("status")
-    
-    ceph_df = new_client.issue_command("df")
     
    # print json.dumps(ceph_status, indent=1)
    # print json.dumps(ceph_status, indent=1)
    # print json.dumps(ceph_df, indent=1)
     
-    total_storage_size = ceph_df['stats']['total_bytes']
+    
     print "Total size is %s" % total_storage_size    
     print "volume size should be nearest power of 2: %s" % new_client.calculate_vol_size(total_storage_size)
-
-    
-def argument_handler():
-
 
     
 class ceph_client():
@@ -82,9 +78,13 @@ class ceph_client():
             logger.exception("Error issuing command")
             sys.exit(1)
         
-class cbt_modifer():
-    def __init__(self, yaml_dict):
+class cbt_rbd_modifer():
+    """
+        cbt__rbd_modifer updates the cbt rbd benchmark
+    """
+    def __init__(self, yaml_dict, total_size):
         self.job_file =  yaml_dict
+        self.total_size = total_size
         
     def nearest_power_of_2(self, raw_value):
         
@@ -110,7 +110,7 @@ class cbt_modifer():
                 power += 1
                 previous_value = new_value
     
-    def calculate_vol_size(self, total_storage, clients=3, numb_vol=8):
+    def calculate_vol_size(self, total_storage, clients, numb_vol):
         """
             This method will calculate the vol_size form the total storage, 
             number of clients, and number of volumes per client. 
@@ -128,9 +128,19 @@ class cbt_modifer():
         
         return self.nearest_power_of_2(vol_size_megabytes) 
     
+    def modify_job_file():
+        numb_clients = len(self.job_file['cluster']['clients'])
+        
+        vol_per_clients = self.job_file['benchmarks']['librbdfio']['volumes_per_client']
+        
+        
+        vol_size = self.calculate_vol_size(self.total_size, numb_clients, vol_per_clients)
+        
+        self.job_file['benchmarks']['librbdfio']['vol_size'] = vol_size
+        
+        print json.dumps(self.job_file, indent=1)
         
         
         
-    
 if __name__ == '__main__':
     main()
