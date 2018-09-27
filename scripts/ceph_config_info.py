@@ -69,7 +69,7 @@ class ceph_client():
         fifty_percent_of_total = total_storage * .5
         vol_size_bytes = ( (fifty_percent_of_total / clients ) / numb_vol )
         
-        vol_size_megabytes = vol_size_bytes * 0.00000095367432
+        vol_size_megabytes = (vol_size_bytes * 1024) * 1024
         
         return vol_size_megabytes
         
