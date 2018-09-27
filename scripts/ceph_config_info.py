@@ -29,7 +29,7 @@ def main():
     total_storage_size = ceph_df['stats']['total_bytes']
     print "Total size is %s" % total_storage_size
     
-    print "volume size should be %s " % calculate_vol_size(total_storage_size)
+    print "volume size should be %s " % new_client.calculate_vol_size(total_storage_size)
    # cmd = json.dumps({"prefix": "osd tree", "format": "json"})
    # _, output, _ = cluster.mon_command(cmd, b'', timeout=6)
    # logger.debug(json.dumps(json.loads(output), indent=4))
