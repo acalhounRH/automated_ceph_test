@@ -33,6 +33,7 @@ class ceph_client():
             self.cluster.connect()
         except Exception as e:
             logger.exception("Connection error: %s" % e.strerror )
+            sys.exit(1)
     
     def issue_command(self, command):
         cmd = json.dumps({"prefix": command, "format": "json"})
@@ -41,7 +42,7 @@ class ceph_client():
             return json.dumps(json.loads(output), indent=4)
         except Exception as e:
             logger.exception("Error issuing command")
-            sys.exit()
+            sys.exit(1)
         
         
         
