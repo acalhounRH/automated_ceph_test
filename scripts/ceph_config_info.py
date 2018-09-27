@@ -144,7 +144,7 @@ class cbt_rbd_modifer():
         
         self.job_file['benchmarks']['librbdfio']['vol_size'] = vol_size
         
-        print json.dumps(self.job_file, indent=1)
+        print yaml.dump(self.job_file)
         
         
         
