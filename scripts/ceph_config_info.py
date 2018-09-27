@@ -5,6 +5,7 @@ import paramiko
 import sys
 import os
 import logging
+import json
 from util.common_logging import setup_loggers
 
 logger = logging.getLogger("index_cbt")
