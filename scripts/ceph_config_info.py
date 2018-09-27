@@ -44,6 +44,7 @@ def main():
     
     setup_loggers(logging.DEBUG)
     
+    cbt_rbd_modifer.modify_job_file()
 
     
    # print json.dumps(ceph_status, indent=1)
