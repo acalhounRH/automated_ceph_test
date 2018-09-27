@@ -22,9 +22,9 @@ def main():
     
     ceph_df = new_client.issue_command("df")
     
-    print json.dumps(ceph_status, indent=1)
-    print json.dumps(ceph_status, indent=1)
-    print json.dumps(ceph_df, indent=1)
+   # print json.dumps(ceph_status, indent=1)
+   # print json.dumps(ceph_status, indent=1)
+   # print json.dumps(ceph_df, indent=1)
     
     total_storage_size = ceph_df['stats']['total_bytes']
     print "Total size is %s" % total_storage_size
