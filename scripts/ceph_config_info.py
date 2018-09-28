@@ -116,6 +116,7 @@ class ssh_remote_command():
                 output = stdout.readlines()
                 print output.strip("\n")
                 print stderr.readlines()
+                return output
             except Exception as e:
                 logger.error("Connection Failed: %s" % e)
     
