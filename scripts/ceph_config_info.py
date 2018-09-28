@@ -84,7 +84,9 @@ def main():
         try:
             #sshclient.load_host_keys(os.path.expanduser('~/.ssh/known_hosts'))
             sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            sshclient.connect(fqdn, username="root", key_filename=os.path.realpath("~/.ssh/authorized_keys"))
+            key_path = os.path("~/.ssh/authorized_keys")
+            print key_path
+            sshclient.connect(fqdn, username="root", key_filename=key_path)
             stdin, stdout, stderr = sshclient.exec_command(socket.gethostname())
             
             print stdin
