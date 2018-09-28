@@ -96,7 +96,7 @@ def main():
             
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
             output = remoteclient.issue_command(hostname, pid_grep_command)
-            print output.[0]
+            print "osd %s has a pid of %s" % (id, output.[0])
             
    
    
