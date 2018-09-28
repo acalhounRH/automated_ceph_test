@@ -75,7 +75,7 @@ def main():
     #sshclient = SSHClient()
     remoteclient = ssh_remote_command()
     
-    
+    host_dict = {}
     for host in osd_host_list:
         hostname = host['name']
         print hostname
@@ -84,18 +84,24 @@ def main():
         fqdn = socket.gethostbyaddr(ipaddress)[0]
         print fqdn
         output = remoteclient.issue_command(hostname, "ip a")
+        
+        host_dict[hostname] = {}
         for line in output:
             seperated_line = line.split(" ")
            # print seperated_line
             
             if seperated_line[0].strip(":").isdigit():
-                print "found interface: %s" % seperated_line[1]
+                interface_name = seperated_line[1]
+                #print "found interface: %s" % interface_name
+                host_dict[hostname][interface_name] = []
                 
             if "inet" in line and not "inet6" in line:
                 ipindex = seperated_line.index("inet") + 1
-                print "found ip adress %s" % seperated_line[ipindex]
+                ip_address = seperated_line[ipindex]
+                #print "found ip adress %s" % ip_address  
+                host_dict[hostname][interface_name].append(ip_address)
                 
-        #print output
+        print json.dumps(host_dict)
         
         for osd in host['children']:
             id = osd['id']
