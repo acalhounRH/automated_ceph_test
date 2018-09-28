@@ -1,7 +1,6 @@
 #! /usr/bin/python
 
 import rados
-
 import sys
 import os
 import logging
