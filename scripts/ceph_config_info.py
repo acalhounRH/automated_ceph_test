@@ -81,7 +81,7 @@ def main():
         print fqdn
         
         try:
-            sshclient.load_system_host_keys()
+            sshclient.load_host_keys()
             sshclient.connect(fqdn, username="root")
             stdin, stdout, stderr = client.exec_command(socket.gethostname())
             
