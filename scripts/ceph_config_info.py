@@ -66,8 +66,6 @@ def main():
             print json.dumps(new_host_map, indent=4)
         mod_list.append(new_host_map)
             
-    
-   
    
    # print json.dumps(ceph_status, indent=1)
    # print json.dumps(ceph_df, indent=1)
