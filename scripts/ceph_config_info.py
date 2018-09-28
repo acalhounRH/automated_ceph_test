@@ -67,6 +67,8 @@ def main():
                 child = {}
                 child['service_type'] = node_type_list
                 child['service_id'] = service_id
+                if "mon" in node_type_list:
+                    service_id = host.split('.')[0]
                 child['service_pid'] = get_ceph_service_pid(remoteclient, host, node_type_list, service_id)
                 #search for process
                 
