@@ -131,6 +131,7 @@ def get_interfaces(remoteclient, host):
     return interface_dict
 
 def get_ceph_service_pid(remoteclient, host, service, id):
+    print service, id
     pid_grep_command = "ps -eaf | grep %s | grep 'id %s ' | grep -v grep| awk '{print $2}'" % (service, id)
     output = remoteclient.issue_command(host, pid_grep_command)
     return output[0]
