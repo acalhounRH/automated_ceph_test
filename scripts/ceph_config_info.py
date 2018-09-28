@@ -81,7 +81,7 @@ def get_cpu_info(remoteclient, host):
         #print line
         seperated_line = line.split(":")
         #print seperated_line
-        cpu_info_dict[seperated_line[0]] = seperated_line[1]
+        cpu_info_dict[seperated_line[0].strip()] = seperated_line[1].strip()
         
     print json.dumps(cpu_info_dict, indent=4)
     
