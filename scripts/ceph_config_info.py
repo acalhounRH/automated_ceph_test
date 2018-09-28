@@ -101,7 +101,7 @@ def main():
                 #print "found ip adress %s" % ip_address  
                 host_dict[hostname][interface_name].append(ip_address)
                 
-    print json.dumps(host_dict, indent=1)
+    
         
         for osd in host['children']:
             id = osd['id']
@@ -109,7 +109,7 @@ def main():
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
             output = remoteclient.issue_command(hostname, pid_grep_command)
             print "osd %s has a pid of %s" % (id, output[0])
-            
+    print json.dumps(host_dict)
    
    
    # print json.dumps(ceph_status, indent=1)
