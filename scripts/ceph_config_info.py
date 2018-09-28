@@ -86,7 +86,8 @@ def main():
             id = osd['id']
             
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
-            remoteclient.issue_command(fqdn, pid_grep_command)
+            output = remoteclient.issue_command(hostname, pid_grep_command)
+            print output
             
         
    
