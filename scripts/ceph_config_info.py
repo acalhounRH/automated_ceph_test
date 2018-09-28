@@ -78,7 +78,8 @@ def get_cpu_info(remoteclient, host):
     cpu_info_dict = {}
     
     for line in output:
-        seperated_line = line.split
+        #print line
+        seperated_line = line.split()
         print seperated_line
     
 def get_interfaces(remoteclient, host):
