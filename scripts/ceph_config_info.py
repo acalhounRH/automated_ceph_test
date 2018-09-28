@@ -56,17 +56,19 @@ def main():
     for i in raw_osd_tree['nodes']:
         if "host" in i['type']:
             osd_host_list.append(i)
-            print json.dumps(i, indent=1)
+            #print json.dumps(i, indent=1)
         if "osd" in i['type']:
             id = i['id']
             osd_dict[id] = i
+            
+            
     mod_list = []
     for j in osd_host_list:
         new_host_map = j
         for k in j['children']:
             index_position = new_host_map['children'].index(k)
             new_host_map['children'][index_position] = osd_dict[k]  
-            print json.dumps(new_host_map, indent=4)
+           # print json.dumps(new_host_map, indent=4)
         mod_list.append(new_host_map)
             
    
@@ -81,7 +83,7 @@ def main():
         print ipaddress
         fqdn = socket.gethostbyaddr(ipaddress)[0]
         print fqdn
-        output = remoteclient.issue_command(hostname, "ip a -f")
+        output = remoteclient.issue_command(hostname, "ip a")
         for line in output:
             seperated_line = line.split(" ")
             print seperated_line
@@ -89,7 +91,7 @@ def main():
             if seperated_line[0].strip(":").isdigit():
                 print "found interface: %s" % seperated_line[1]
                 
-            if "inet" in line:
+            if "inet" in line and not "inet6" in line:
                 ipindex = seperated_line.index("inet") + 1
                 print "found ip adress %s" % seperated_line[ipindex]
                 
