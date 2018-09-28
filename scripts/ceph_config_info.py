@@ -56,7 +56,7 @@ def main():
     for i in raw_osd_tree['nodes']:
         if "host" in i['type']:
             osd_host_list.append(i)
-            #print json.dumps(i, indent=1)
+            
         if "osd" in i['type']:
             id = i['id']
             osd_dict[id] = i
@@ -70,9 +70,7 @@ def main():
             new_host_map['children'][index_position] = osd_dict[k]  
            # print json.dumps(new_host_map, indent=4)
         mod_list.append(new_host_map)
-            
-   
-    #sshclient = SSHClient()
+        
     remoteclient = ssh_remote_command()
     
     host_dict = {}
