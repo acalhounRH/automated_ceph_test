@@ -57,9 +57,9 @@ def main():
             host_map[host] = {}
             
             #get interface dict
-            host_map[host]['Interfaces'] = get_interfaces(remoteclient, host)
+            host_map[host]['interfaces'] = get_interfaces(remoteclient, host)
             #get cpuinfo dict
-            get_cpu_info(remoteclient, host)
+           host_map[host]['cpu_info'] = get_cpu_info(remoteclient, host)
                 
             host_map[host]['children'] = []
             for service_id in ceph_node_map[node_type_list][host]:
@@ -92,7 +92,9 @@ def get_cpu_info(remoteclient, host):
         elif "Flags" not in cpu_prop:
             cpu_info_dict[cpu_prop] = cpu_prop_value  
         
-    print json.dumps(cpu_info_dict, indent=4)
+    #print json.dumps(cpu_info_dict, indent=4)
+    
+    return cpu_info_dict
     
 def get_interfaces(remoteclient, host):
     output = remoteclient.issue_command(host, "ip a")
