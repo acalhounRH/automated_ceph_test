@@ -84,7 +84,10 @@ def main():
             output = remoteclient.issue_command(name, pid_grep_command)
             node['pid'] = output[0]
             osd_dict[id] = node        
-            
+    
+    
+    print json.dumps(osd_host_list, indent=4)
+    
     for host in osd_host_list:       
         for child_id in host['children']:
             index_position = osd_host_list[host]['children'].index(child_id)
