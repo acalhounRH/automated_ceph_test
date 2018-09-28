@@ -78,11 +78,8 @@ def main():
     host_dict = {}
     for host in osd_host_list:
         hostname = host['name']
-        print hostname
         ipaddress = socket.gethostbyname(hostname)
-        print ipaddress
         fqdn = socket.gethostbyaddr(ipaddress)[0]
-        print fqdn
         output = remoteclient.issue_command(hostname, "ip a")
         
         host_dict[hostname] = {}
