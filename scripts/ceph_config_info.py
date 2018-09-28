@@ -49,15 +49,17 @@ def main():
     
     #print json.dumps(raw_osd_tree, indent=1)
     osd_host_list = []
-    osd_list = []
+    osd_dict = {}
     for i in raw_osd_tree['nodes']:
         if "host" in i['type']:
             osd_host_list.append(i)
+            print json.dumps(i, indent=1)
         if "osd" in i['type']:
             id = i['id']
-            osd_list.append(i)
+            osd_dict[id] = i
     
-    for j in osd_list:
+    for j in osd_host_list:
+        for k in j['ch']
         print json.dumps(i, indent=1)
             
     
@@ -66,10 +68,7 @@ def main():
    # print json.dumps(ceph_status, indent=1)
    # print json.dumps(ceph_df, indent=1)
     
-    
     print "Total size is %s" % total_storage_size    
-    
-
     
 class ceph_client():
     def __init__(self):
