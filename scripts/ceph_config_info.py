@@ -89,7 +89,7 @@ def main():
             output = remoteclient.issue_command(hostname, pid_grep_command)
             print output
             output = remoteclient.issue_command(hostname, "ip a")
-        
+            print output
    
    
    # print json.dumps(ceph_status, indent=1)
