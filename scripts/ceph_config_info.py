@@ -81,7 +81,7 @@ def main():
         print ipaddress
         fqdn = socket.gethostbyaddr(ipaddress)[0]
         print fqdn
-        output = remoteclient.issue_command(hostname, "ip a")
+        output = remoteclient.issue_command(hostname, "ip a -f")
         for line in output:
             seperated_line = line.split(" ")
             print seperated_line
@@ -89,7 +89,7 @@ def main():
             if seperated_line[0].strip(":").isdigit():
                 print "found interface: %s" % seperated_line[1]
                 
-            if "inet " in line:
+            if "inet" in line:
                 ipindex = seperated_line.index("inet") + 1
                 print "found ip adress %s" % seperated_line[ipindex]
                 
