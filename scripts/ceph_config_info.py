@@ -81,6 +81,8 @@ def main():
         print ipaddress
         fqdn = socket.gethostbyaddr(ipaddress)[0]
         print fqdn
+        output = remoteclient.issue_command(hostname, "ip a")
+        print output
         
         for osd in host['children']:
             id = osd['id']
@@ -88,8 +90,7 @@ def main():
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
             output = remoteclient.issue_command(hostname, pid_grep_command)
             print output
-            output = remoteclient.issue_command(hostname, "ip a")
-            print output
+            
    
    
    # print json.dumps(ceph_status, indent=1)
