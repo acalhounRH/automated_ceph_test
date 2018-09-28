@@ -80,7 +80,10 @@ def get_cpu_info(remoteclient, host):
     for line in output:
         #print line
         seperated_line = line.split(":")
-        print seperated_line
+        #print seperated_line
+        cpu_info_dict[seperated_line[0]] = seperated_line[1]
+        
+    print json.dumps(cpu_info_dict, indent=4)
     
 def get_interfaces(remoteclient, host):
     output = remoteclient.issue_command(host, "ip a")
