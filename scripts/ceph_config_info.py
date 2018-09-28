@@ -49,8 +49,6 @@ def main():
     
     setup_loggers(logging.DEBUG)
     
-    
-    
     osd_host_list = []
     osd_dict = {}
     for i in raw_osd_tree['nodes']:
@@ -59,17 +57,16 @@ def main():
             
         if "osd" in i['type']:
             id = i['id']
-            osd_dict[id] = i
+            osd_dict[id] = i        
             
-            
-    mod_list = []
-    for j in osd_host_list:
-        new_host_map = j
-        for k in j['children']:
-            index_position = new_host_map['children'].index(k)
-            new_host_map['children'][index_position] = osd_dict[k]  
-           # print json.dumps(new_host_map, indent=4)
-        mod_list.append(new_host_map)
+#     mod_list = []
+#     for j in osd_host_list:
+#         new_host_map = j
+#         for k in j['children']:
+#             index_position = new_host_map['children'].index(k)
+#             new_host_map['children'][index_position] = osd_dict[k]  
+#            # print json.dumps(new_host_map, indent=4)
+#         mod_list.append(new_host_map)
         
     remoteclient = ssh_remote_command()
     
