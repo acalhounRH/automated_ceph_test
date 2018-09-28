@@ -49,63 +49,83 @@ def main():
     
     setup_loggers(logging.DEBUG)
     
-    osd_host_list = []
-    osd_dict = {}
-    for i in raw_osd_tree['nodes']:
-        if "host" in i['type']:
-            osd_host_list.append(i)
-            
-        if "osd" in i['type']:
-            id = i['id']
-            osd_dict[id] = i        
-            
-    mod_list = []
-    for j in osd_host_list:
-        new_host_map = j
-        for k in j['children']:
-            index_position = new_host_map['children'].index(k)
-            new_host_map['children'][index_position] = osd_dict[k]  
-           # print json.dumps(new_host_map, indent=4)
-        mod_list.append(new_host_map)
-        
     remoteclient = ssh_remote_command()
     
-    host_dict = {}
-    for host in osd_host_list:
-        hostname = host['name']
-        ipaddress = socket.gethostbyname(hostname)
-        fqdn = socket.gethostbyaddr(ipaddress)[0]
+    osd_host_list = {}
+    osd_dict = {}
+    for node in raw_osd_tree['nodes']:
         
-        
-        host_dict[hostname] = {}
-        
-        interface_dict = {}
-        output = remoteclient.issue_command(hostname, "ip a")
-        for line in output:
-            seperated_line = line.split(" ")
+        if "host" in node['type']:
             
-            if seperated_line[0].strip(":").isdigit():
-                interface_name = seperated_line[1]
-                interface_dict[interface_name] = []
+            name = node['name']
+            ipaddress = socket.gethostbyname(name)
+            fqdn = socket.gethostbyaddr(ipaddress)[0]
+            
+            interface_dict = {}
+            output = remoteclient.issue_command(name, "ip a")
+            for line in output:
+                seperated_line = line.split(" ")
                 
-            if "inet" in line and not "inet6" in line:
-                ipindex = seperated_line.index("inet") + 1
-                ip_address = seperated_line[ipindex]
-                interface_dict[interface_name].append(ip_address)
-        
-        host_dict[hostname]["Interfaces"] = interface_dict
-    
-        ceph_data = []
-        for osd in host['children']:
-            id = osd['id']
+                if seperated_line[0].strip(":").isdigit():
+                    interface_name = seperated_line[1]
+                    interface_dict[interface_name] = []
+                    
+                if "inet" in line and not "inet6" in line:
+                    ipindex = seperated_line.index("inet") + 1
+                    ip_address = seperated_line[ipindex]
+                    interface_dict[interface_name].append(ip_address)
+            node["interfaces"] = interface_dict
+            osd_host_list[hostname] = node
+            
+        if "osd" in node['type']:
+            id = node['id']
             
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
             output = remoteclient.issue_command(hostname, pid_grep_command)
-            osd_dict[id]['pid'] = output[0]
-            ceph_data.append(osd_dict[id])
+            node['pid'] = output[0]
+            osd_dict[id] = node        
+            
+    for host in osd_host_list:       
+        for child_id in host['children']:
+            index_position = osd_host_list[host]['children'].index(child_id)
+            osd_host_list[host]['children'][index_position] = osd_dict[child_id]  
+            # print json.dumps(new_host_map, indent=4)
+    
+    print json.dumps(osd_host_list, indent=4)
+#    host_dict = {}
+#    for host in osd_host_list:
+ 
         
-        host_dict[hostname]["ceph_data"] = ceph_data 
-    print json.dumps(host_dict, indent=4)
+        
+#         host_dict[hostname] = {}
+#         
+#         interface_dict = {}
+#         output = remoteclient.issue_command(hostname, "ip a")
+#         for line in output:
+#             seperated_line = line.split(" ")
+#             
+#             if seperated_line[0].strip(":").isdigit():
+#                 interface_name = seperated_line[1]
+#                 interface_dict[interface_name] = []
+#                 
+#             if "inet" in line and not "inet6" in line:
+#                 ipindex = seperated_line.index("inet") + 1
+#                 ip_address = seperated_line[ipindex]
+#                 interface_dict[interface_name].append(ip_address)
+#         
+#         host_dict[hostname]["Interfaces"] = interface_dict
+#     
+#         ceph_data = []
+#         for osd in host['children']:
+#             id = osd['id']
+#             
+#             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
+#             output = remoteclient.issue_command(hostname, pid_grep_command)
+#             osd_dict[id]['pid'] = output[0]
+#             ceph_data.append(osd_dict[id])
+#         
+#         host_dict[hostname]["ceph_data"] = ceph_data 
+#     print json.dumps(host_dict, indent=4)
    
 
     
