@@ -103,19 +103,19 @@ class ssh_remote_command():
     def issue_command(self, host, command):
         
         try:
-                sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                key_path = os.path.expanduser("~/.ssh/authorized_keys")
-                sshclient.connect(host, username="root", key_filename=key_path)
-                stdin, stdout, stderr = sshclient.exec_command(command)
-                
-                #SSprint stdin.readlines()
-                
-                output = stdout.readlines()
-                print output.strip("\n")
-                print stderr.readlines()
-                return output
-            except Exception as e:
-                logger.error("Connection Failed: %s" % e)
+            sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            key_path = os.path.expanduser("~/.ssh/authorized_keys")
+            sshclient.connect(host, username="root", key_filename=key_path)
+            stdin, stdout, stderr = sshclient.exec_command(command)
+            
+            #SSprint stdin.readlines()
+            
+            output = stdout.readlines()
+            print output.strip("\n")
+            print stderr.readlines()
+            return output
+        except Exception as e:
+            logger.error("Connection Failed: %s" % e)
     
 class ceph_client():
     def __init__(self):
