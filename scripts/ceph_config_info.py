@@ -76,7 +76,7 @@ def main():
         hostname = host['name']
         ipaddress = socket.gethostbyname(hostname)
         try:
-            sshclient.connect(ipaddres, username="root")
+            sshclient.connect(ipaddress, username="root")
             stdin, stdout, stderr = client.exec_command(socket.gethostname())
             
             print stdout
