@@ -101,7 +101,7 @@ def main():
                 #print "found ip adress %s" % ip_address  
                 interface_dict[interface_name].append(ip_address)
         
-        host_dict["Interfaces"] = interface_dict
+        host_dict[hostname]["Interfaces"] = interface_dict
     
         
         for osd in host['children']:
