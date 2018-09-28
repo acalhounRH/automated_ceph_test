@@ -77,7 +77,7 @@ def main():
         print hostname
         ipaddress = socket.gethostbyname(hostname)
         print ipaddress
-        fqdn = socket.gethostbyaddr(ipaddress)
+        fqdn = socket.gethostbyaddr(ipaddress)[0]
         print fqdn
         
         try:
