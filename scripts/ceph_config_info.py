@@ -8,6 +8,7 @@ import logging
 import json, yaml
 import getopt
 import socket
+import paramiko
 from paramiko import SSHClient
 from util.common_logging import setup_loggers
 
