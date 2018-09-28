@@ -95,7 +95,7 @@ def main():
                 stdin, stdout, stderr = sshclient.exec_command(pid_grep_command)
                 
                 #SSprint stdin.readlines()
-                output = stdout.readlines()
+                output = stdout.readlines()[0]
                 print output.strip("\n")
                 print stderr.readlines()
             except Exception as e:
