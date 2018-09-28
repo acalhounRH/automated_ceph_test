@@ -59,8 +59,9 @@ def main():
             osd_dict[id] = i
     
     for j in osd_host_list:
-        for k in j['ch']
-        print json.dumps(i, indent=1)
+        for k in j['children']:
+            
+            print json.dumps(i, indent=1)
             
     
    
