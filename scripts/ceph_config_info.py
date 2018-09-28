@@ -84,11 +84,11 @@ def main():
         output = remoteclient.issue_command(hostname, "ip a")
         for line in output:
             seperated_line = line.split(" ")
-            seperated_line = seperated_line.remove('')
             print seperated_line
             if seperated_line[0].strip(":").isdigit():
                 print "found interface: %s" % seperated_line[1]
-            if "inet " in seperated_line:
+                
+            if "inet" in seperated_line:
                 print "found ip adress %s" % seperated_line[1]
                 
         #print output
