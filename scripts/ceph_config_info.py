@@ -89,7 +89,7 @@ def main():
             ipaddress = socket.gethostbyname(name)
             fqdn = socket.gethostbyaddr(ipaddress)[0]
             
-            node["interfaces"] = get_interfaces(remoteclient, name)
+            node["interfaces"] = get_interfaces(remoteclient, host)
             osd_host_list[name] = node
             
         if "osd" in node['type']:
