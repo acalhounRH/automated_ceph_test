@@ -71,7 +71,7 @@ def main():
             
    
     #sshclient = SSHClient()
-    sshclient = ssh_remote_command()
+    remoteclient = ssh_remote_command()
     
     
     for host in osd_host_list:
@@ -86,7 +86,7 @@ def main():
             id = osd['id']
             
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
-            sshclient.issue_command(fqdn, pid_grep_command)
+            remoteclient.issue_command(fqdn, pid_grep_command)
             
         
    
@@ -103,10 +103,10 @@ class ssh_remote_command():
     def issue_command(self, host, command):
         
         try:
-            sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            self.sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             key_path = os.path.expanduser("~/.ssh/authorized_keys")
-            sshclient.connect(host, username="root", key_filename=key_path)
-            stdin, stdout, stderr = sshclient.exec_command(command)
+            self.sshclient.connect(host, username="root", key_filename=key_path)
+            stdin, stdout, stderr = self.sshclient.exec_command(command)
             
             #SSprint stdin.readlines()
             
