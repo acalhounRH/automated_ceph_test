@@ -86,7 +86,7 @@ def main():
             id = osd['id']
             
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
-            
+            sshclient.issue_command(fqdn, pid_grep_command)
             
         
    
@@ -100,14 +100,14 @@ class ssh_remote_command():
     def __init__(self):
           self.sshclient = SSHClient()
     
-    def issue_command(self, command):
+    def issue_command(self, host, command):
         
         try:
                 #sshclient.load_host_keys(os.path.expanduser('~/.ssh/known_hosts'))
                 sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 key_path = os.path.expanduser("~/.ssh/authorized_keys")
                 print key_path
-                sshclient.connect(fqdn, username="root", key_filename=key_path)
+                sshclient.connect(host, username="root", key_filename=key_path)
                 #sshclient.invoke_shell()
                 stdin, stdout, stderr = sshclient.exec_command(command)
                 
