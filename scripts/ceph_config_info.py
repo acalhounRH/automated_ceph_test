@@ -70,7 +70,7 @@ def main():
             
    
     sshclient = SSHClient()
-    sshclient.load_system_host_keys()
+    
     
     for host in osd_host_list:
         hostname = host['name']
@@ -81,6 +81,7 @@ def main():
         print fqdn
         
         try:
+            sshclient.load_system_host_keys()
             sshclient.connect(fqdn, username="root")
             stdin, stdout, stderr = client.exec_command(socket.gethostname())
             
