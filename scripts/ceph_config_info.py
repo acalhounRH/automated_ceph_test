@@ -80,11 +80,12 @@ def main():
         hostname = host['name']
         ipaddress = socket.gethostbyname(hostname)
         fqdn = socket.gethostbyaddr(ipaddress)[0]
-        output = remoteclient.issue_command(hostname, "ip a")
+        
         
         host_dict[hostname] = {}
         
-        interface_dict = []
+        interface_dict = {}
+        output = remoteclient.issue_command(hostname, "ip a")
         for line in output:
             seperated_line = line.split(" ")
            # print seperated_line
