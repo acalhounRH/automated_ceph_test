@@ -81,7 +81,21 @@ def get_cpu_info(remoteclient, host):
         #print line
         seperated_line = line.split(":")
         #print seperated_line
-        cpu_info_dict[seperated_line[0].strip()] = seperated_line[1].strip()
+        cpu_prop = seperated_line[0].strip()
+        cpu_prop_value = seperated_line[1].strip()
+        
+        if "NUMA node0 CPU(s)" in cpu_prop or "NUMA node0 CPU(s)" in cpu_prop:
+            cpu_info_dict[cpu_prop] = []
+            split_values = cpu_prop_value.split(",")
+            for value in split_values:
+                cpu_info_dict[cpu_prop].append(value)
+        elif "Flags"in cpu_prop:
+            cpu_info_dict[cpu_prop] = []
+            split_values = cpu_prop_value.split(" ")
+            for value in split_values:
+                cpu_info_dict[cpu_prop].append(value)
+        else:
+            cpu_info_dict[cpu_prop] = cpu_prop_value  
         
     print json.dumps(cpu_info_dict, indent=4)
     
