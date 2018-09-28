@@ -81,7 +81,7 @@ def main():
             id = node['id']
             
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
-            output = remoteclient.issue_command(hostname, pid_grep_command)
+            output = remoteclient.issue_command(name, pid_grep_command)
             node['pid'] = output[0]
             osd_dict[id] = node        
             
