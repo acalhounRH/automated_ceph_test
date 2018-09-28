@@ -113,11 +113,6 @@ def main():
         host_dict[hostname]["ceph_data"] = ceph_data 
     print json.dumps(host_dict, indent=4)
    
-   
-   # print json.dumps(ceph_status, indent=1)
-   # print json.dumps(ceph_df, indent=1)
-    
-    print "Total size is %s" % total_storage_size  
     
 class ssh_remote_command():
     def __init__(self):
