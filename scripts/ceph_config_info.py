@@ -59,7 +59,7 @@ def main():
             #get interface dict
             host_map[host]['interfaces'] = get_interfaces(remoteclient, host)
             #get cpuinfo dict
-           host_map[host]['cpu_info'] = get_cpu_info(remoteclient, host)
+            host_map[host]['cpu_info'] = get_cpu_info(remoteclient, host)
                 
             host_map[host]['children'] = []
             for service_id in ceph_node_map[node_type_list][host]:
