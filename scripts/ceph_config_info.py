@@ -11,6 +11,7 @@ import socket
 import paramiko
 from paramiko import SSHClient
 from util.common_logging import setup_loggers
+from elasticsearch import client
 
 logger = logging.getLogger("index_cbt")
 
@@ -40,7 +41,7 @@ def main():
     raw_osd_tree = new_client.issue_command("osd tree")
     ceph_node_map = new_client.issue_command("node ls")
     print json.dumps(ceph_node_map, indent=4)
-    sys.exit() 
+
     ceph_status = new_client.issue_command("status")
     ceph_df = new_client.issue_command("df")
     
@@ -53,6 +54,27 @@ def main():
     
     setup_loggers(logging.DEBUG)
     
+    host_map = {}
+    for node_type_list in ceph_node_map:
+        for host in ceph_node_map[node_type_list]:
+            host_map[host] = {}
+            
+            #get interface dict
+            host_map[host]['Interfaces'] = get_interfaces(remoteclient, name)
+            #get cpuinfo dict
+            host_map[host]['children'] = []
+            for service_id in ceph_node_map[node_type_list][host]:
+                child = {}
+                child['service_type'] = node_type_list
+                child['service_id'] = service_id
+                child['service_pid'] = get_ceph_service_pid(remoteclient, host, node_type_list, service_id)
+                #search for process
+                
+                
+                host_map[host]['children'].append(child)
+                #service_type
+                #service_id
+                #service_pid
     
     
     osd_host_list = {}
@@ -65,28 +87,13 @@ def main():
             ipaddress = socket.gethostbyname(name)
             fqdn = socket.gethostbyaddr(ipaddress)[0]
             
-            interface_dict = {}
-            output = remoteclient.issue_command(name, "ip a")
-            for line in output:
-                seperated_line = line.split(" ")
-                
-                if seperated_line[0].strip(":").isdigit():
-                    interface_name = seperated_line[1]
-                    interface_dict[interface_name] = []
-                    
-                if "inet" in line and not "inet6" in line:
-                    ipindex = seperated_line.index("inet") + 1
-                    ip_address = seperated_line[ipindex]
-                    interface_dict[interface_name].append(ip_address)
-            node["interfaces"] = interface_dict
+            node["interfaces"] = get_interfaces(remoteclient, name)
             osd_host_list[name] = node
             
         if "osd" in node['type']:
             id = node['id']
             
-            pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
-            output = remoteclient.issue_command(name, pid_grep_command)
-            node['pid'] = output[0]
+
             osd_dict[id] = node        
     
     
@@ -99,6 +106,33 @@ def main():
             # print json.dumps(new_host_map, indent=4)
     
     print json.dumps(osd_host_list, indent=4)
+    
+    
+def get_interfaces(remoteclient, host):
+    output = remoteclient.issue_command(host, "ip a")
+    interface_dict = {}
+    for line in output:
+        seperated_line = line.split(" ")
+        
+        #Get interface name
+        if seperated_line[0].strip(":").isdigit():
+            interface_name = seperated_line[1]
+            interface_dict[interface_name] = []
+        
+        #Get IPv4 for interface 
+        if "inet" in line and not "inet6" in line:
+            ipindex = seperated_line.index("inet") + 1
+            ip_address = seperated_line[ipindex]
+            interface_dict[interface_name].append(ip_address)
+        
+    #return a dict of all interfaces:IPaddresses
+    return interface_dict
+
+def get_ceph_service_pid(remoteclient, host, service, id):
+    pid_grep_command = "ps -eaf | grep %s | grep 'id %s ' | grep -v grep| awk '{print $2}'" % (service, id)
+    output = remoteclient.issue_command(name, pid_grep_command)
+    return = output[0]
+    
 #    host_dict = {}
 #    for host in osd_host_list:
  
