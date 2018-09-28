@@ -89,7 +89,7 @@ def main():
             if "inet " in seperated_line:
                 print seperated_line[1]
                 
-        print output
+        #print output
         
         for osd in host['children']:
             id = osd['id']
