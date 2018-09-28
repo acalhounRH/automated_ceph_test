@@ -68,10 +68,15 @@ def main():
         mod_list.append(new_host_map)
             
    
-client = SSHClient()
-client.load_system_host_keys()
-client.connect("hostname", username="user")
-stdin, stdout, stderr = client.exec_command('program')
+    sshclient = SSHClient()
+    sshclient.load_system_host_keys()
+    
+    try:
+        sshclient.connect("hostname", username="user")
+    except Exception as e:
+        logger.error("Connection Failed: %s" e)
+        
+    stdin, stdout, stderr = client.exec_command('program')
    
    
    
