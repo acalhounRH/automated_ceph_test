@@ -86,7 +86,7 @@ def main():
             seperated_line = line.split(" ")
             if seperated_line[0].strip(":").isdigit()
                 print seperated_line[0]
-            if "inet address" in seperated_line:
+            if "inet " in seperated_line:
                 print seperated_line[1]
                 
         print output
