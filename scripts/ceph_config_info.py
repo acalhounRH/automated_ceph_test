@@ -74,8 +74,9 @@ def main():
     
     for host in osd_host_list:
         hostname = host['name']
+        ipaddress = socket.gethostbyname(hostname)
         try:
-            sshclient.connect(hostname, username="root")
+            sshclient.connect(ipaddres, username="root")
             stdin, stdout, stderr = client.exec_command(socket.gethostname())
             
             print stdout
