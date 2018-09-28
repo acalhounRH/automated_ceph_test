@@ -111,7 +111,7 @@ class ssh_remote_command():
             #SSprint stdin.readlines()
             
             output = stdout.readlines()
-            print output.strip("\n")
+            print output
             print stderr.readlines()
             return output
         except Exception as e:
