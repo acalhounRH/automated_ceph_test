@@ -90,7 +90,7 @@ def main():
             sshclient.invoke_shell()
             stdin, stdout, stderr = sshclient.exec_command("Hello World")
             
-            print stdin.readlines()
+            #SSprint stdin.readlines()
             print stdout.readlines()
             print stderr.readlines()
         except Exception as e:
