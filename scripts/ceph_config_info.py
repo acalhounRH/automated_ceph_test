@@ -1,12 +1,13 @@
 #! /usr/bin/python
 
 import rados
-import paramiko
+
 import sys
 import os
 import logging
 import json, yaml
 import getopt
+from paramiko import SSHClient
 from util.common_logging import setup_loggers
 
 logger = logging.getLogger("index_cbt")
@@ -66,6 +67,15 @@ def main():
             print json.dumps(new_host_map, indent=4)
         mod_list.append(new_host_map)
             
+   
+client = SSHClient()
+client.load_system_host_keys()
+client.connect("hostname", username="user")
+stdin, stdout, stderr = client.exec_command('program')
+   
+   
+   
+   
    
    # print json.dumps(ceph_status, indent=1)
    # print json.dumps(ceph_df, indent=1)
