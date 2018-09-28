@@ -85,6 +85,7 @@ def main():
         for line in output:
             seperated_line = line.split(" ")
             print seperated_line
+            
             if seperated_line[0].strip(":").isdigit():
                 print "found interface: %s" % seperated_line[1]
                 
