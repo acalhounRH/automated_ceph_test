@@ -88,7 +88,7 @@ def main():
             print key_path
             sshclient.connect(fqdn, username="root", key_filename=key_path)
             #sshclient.invoke_shell()
-            stdin, stdout, stderr = sshclient.exec_command("ps -eaf | grep osd | grep 1")
+            stdin, stdout, stderr = sshclient.exec_command("ps -eaf | grep osd | grep '--id 1 '")
             
             #SSprint stdin.readlines()
             print stdout.readlines()
