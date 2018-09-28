@@ -102,42 +102,6 @@ def get_ceph_service_pid(remoteclient, host, service, id):
     output = remoteclient.issue_command(host, pid_grep_command)
     return output[0]
     
-#    host_dict = {}
-#    for host in osd_host_list:
- 
-        
-        
-#         host_dict[hostname] = {}
-#         
-#         interface_dict = {}
-#         output = remoteclient.issue_command(hostname, "ip a")
-#         for line in output:
-#             seperated_line = line.split(" ")
-#             
-#             if seperated_line[0].strip(":").isdigit():
-#                 interface_name = seperated_line[1]
-#                 interface_dict[interface_name] = []
-#                 
-#             if "inet" in line and not "inet6" in line:
-#                 ipindex = seperated_line.index("inet") + 1
-#                 ip_address = seperated_line[ipindex]
-#                 interface_dict[interface_name].append(ip_address)
-#         
-#         host_dict[hostname]["Interfaces"] = interface_dict
-#     
-#         ceph_data = []
-#         for osd in host['children']:
-#             id = osd['id']
-#             
-#             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
-#             output = remoteclient.issue_command(hostname, pid_grep_command)
-#             osd_dict[id]['pid'] = output[0]
-#             ceph_data.append(osd_dict[id])
-#         
-#         host_dict[hostname]["ceph_data"] = ceph_data 
-#     print json.dumps(host_dict, indent=4)
-   
-
     
 class ssh_remote_command():
     def __init__(self):
