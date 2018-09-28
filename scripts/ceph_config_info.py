@@ -43,12 +43,13 @@ def main():
     if job_file_dict:
         total_storage_size = ceph_df['stats']['total_bytes']
         new_modifer = cbt_rbd_modifer(job_file_dict, total_storage_size)
+        new_modifer.modify_job_file()
     else:
         logger.warn("not modifying cbt job file")
     
     setup_loggers(logging.DEBUG)
     
-    new_modifer.modify_job_file()
+    
     
     osd_host_list = []
     osd_dict = {}
@@ -110,6 +111,7 @@ def main():
         host_dict[hostname]["ceph_data"] = ceph_data 
     print json.dumps(host_dict, indent=4)
    
+
     
 class ssh_remote_command():
     def __init__(self):
