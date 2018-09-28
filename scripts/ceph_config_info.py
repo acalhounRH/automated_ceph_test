@@ -38,7 +38,7 @@ def main():
     remoteclient = ssh_remote_command()
     
     raw_osd_tree = new_client.issue_command("osd tree")
-    ceph_node_map = new_client.issue_command("node ls all")
+    ceph_node_map = new_client.issue_command("node ls")
     print json.dumps(ceph_node_map, indent=4)
     sys.exit() 
     ceph_status = new_client.issue_command("status")
