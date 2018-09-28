@@ -88,17 +88,14 @@ def main():
         output = remoteclient.issue_command(hostname, "ip a")
         for line in output:
             seperated_line = line.split(" ")
-           # print seperated_line
             
             if seperated_line[0].strip(":").isdigit():
                 interface_name = seperated_line[1]
-                #print "found interface: %s" % interface_name
                 interface_dict[interface_name] = []
                 
             if "inet" in line and not "inet6" in line:
                 ipindex = seperated_line.index("inet") + 1
                 ip_address = seperated_line[ipindex]
-                #print "found ip adress %s" % ip_address  
                 interface_dict[interface_name].append(ip_address)
         
         host_dict[hostname]["Interfaces"] = interface_dict
@@ -110,7 +107,7 @@ def main():
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
             output = remoteclient.issue_command(hostname, pid_grep_command)
             print "osd %s has a pid of %s" % (id, output[0])
-    print json.dumps(host_dict, indent=1)
+    print json.dumps(host_dict, indent=4)
    
    
    # print json.dumps(ceph_status, indent=1)
