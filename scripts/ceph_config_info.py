@@ -90,7 +90,8 @@ def main():
                 print "found interface: %s" % seperated_line[1]
                 
             if "inet" in line:
-                print "found ip adress %s" % seperated_line[1]
+                ipindex = seperated_line.index("inet") + 1
+                print "found ip adress %s" % seperated_line[ipindex]
                 
         #print output
         
