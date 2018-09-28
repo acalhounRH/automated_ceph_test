@@ -101,7 +101,7 @@ def main():
                 #print "found ip adress %s" % ip_address  
                 host_dict[hostname][interface_name].append(ip_address)
                 
-        print json.dumps(host_dict, indent=1)
+    print json.dumps(host_dict, indent=1)
         
         for osd in host['children']:
             id = osd['id']
