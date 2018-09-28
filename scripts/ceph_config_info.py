@@ -95,7 +95,8 @@ def main():
                 stdin, stdout, stderr = sshclient.exec_command(pid_grep_command)
                 
                 #SSprint stdin.readlines()
-                print stdout.readlines()
+                output = stdout.readlines()
+                print output.strip("\n")
                 print stderr.readlines()
             except Exception as e:
                 logger.error("Connection Failed: %s" % e)
