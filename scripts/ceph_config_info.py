@@ -52,8 +52,6 @@ def main():
     else:
         logger.warn("not modifying cbt job file")
     
-    
-    
     host_map = {}
     for node_type_list in ceph_node_map:
         for host in ceph_node_map[node_type_list]:
