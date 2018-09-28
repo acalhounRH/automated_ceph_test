@@ -111,8 +111,8 @@ class ssh_remote_command():
             #SSprint stdin.readlines()
             
             output = stdout.readlines()
-            print output
-            print stderr.readlines()
+            #print output
+            #print stderr.readlines()
             return output
         except Exception as e:
             logger.error("Connection Failed: %s" % e)
