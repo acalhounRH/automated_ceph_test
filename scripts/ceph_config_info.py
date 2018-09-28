@@ -84,7 +84,7 @@ def main():
         output = remoteclient.issue_command(hostname, "ip a")
         for line in output:
             seperated_line = line.split(" ")
-            if seperated_line[0].strip(":").isdigit()
+            if seperated_line[0].strip(":").isdigit():
                 print seperated_line[0]
             if "inet " in seperated_line:
                 print seperated_line[1]
