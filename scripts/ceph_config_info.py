@@ -35,8 +35,12 @@ def main():
             job_file_dict = yaml.load(open(arg))    
     
     new_client = ceph_client()
+    remoteclient = ssh_remote_command()
     
-    raw_osd_tree = new_client.issue_command("osd tree")     
+    raw_osd_tree = new_client.issue_command("osd tree")
+    ceph_node_map = new_client.issue_command("node ls all")
+    print json.dumps(ceph_node_map, indent=4)
+    sys.exit() 
     ceph_status = new_client.issue_command("status")
     ceph_df = new_client.issue_command("df")
     
@@ -49,7 +53,7 @@ def main():
     
     setup_loggers(logging.DEBUG)
     
-    remoteclient = ssh_remote_command()
+    
     
     osd_host_list = {}
     osd_dict = {}
