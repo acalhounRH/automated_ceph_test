@@ -12,7 +12,7 @@ import paramiko
 from paramiko import SSHClient
 from util.common_logging import setup_loggers
 
-#logger = logging.getLogger("index_cbt")
+logger = logging.getLogger("index_cbt")
 
 def main():
     
