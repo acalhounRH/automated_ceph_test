@@ -7,6 +7,7 @@ import os
 import logging
 import json, yaml
 import getopt
+import socket
 from paramiko import SSHClient
 from util.common_logging import setup_loggers
 
@@ -71,15 +72,17 @@ def main():
     sshclient = SSHClient()
     sshclient.load_system_host_keys()
     
-    try:
-        sshclient.connect("hostname", username="user")
-    except Exception as e:
-        logger.error("Connection Failed: %s" e)
+    for host in osd_host_list:
+        hostname = host['name']
+        try:
+            sshclient.connect(hostname, username="root")
+            stdin, stdout, stderr = client.exec_command(socket.gethostname())
+            
+            print stdout
+        except Exception as e:
+            logger.error("Connection Failed: %s" % e)
+            
         
-    stdin, stdout, stderr = client.exec_command('program')
-   
-   
-   
    
    
    # print json.dumps(ceph_status, indent=1)
