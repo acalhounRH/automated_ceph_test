@@ -85,9 +85,9 @@ def main():
         for line in output:
             seperated_line = line.split(" ")
             if seperated_line[0].strip(":").isdigit():
-                print seperated_line[0]
+                print "found interface: %s" % seperated_line[1]
             if "inet " in seperated_line:
-                print seperated_line[1]
+                print "found ip adress %s" % seperated_line[1]
                 
         #print output
         
