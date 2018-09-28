@@ -104,7 +104,6 @@ def main():
             
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
             output = remoteclient.issue_command(hostname, pid_grep_command)
-            print "osd %s has a pid of %s" % (id, output[0])
             osd_dict[id]['pid'] = output[0]
             ceph_data.append(osd_dict[id])
         
