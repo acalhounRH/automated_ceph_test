@@ -83,6 +83,8 @@ def main():
         output = remoteclient.issue_command(hostname, "ip a")
         
         host_dict[hostname] = {}
+        
+        interface_dict = []
         for line in output:
             seperated_line = line.split(" ")
            # print seperated_line
@@ -90,14 +92,15 @@ def main():
             if seperated_line[0].strip(":").isdigit():
                 interface_name = seperated_line[1]
                 #print "found interface: %s" % interface_name
-                host_dict[hostname][interface_name] = []
+                interface_dict[interface_name] = []
                 
             if "inet" in line and not "inet6" in line:
                 ipindex = seperated_line.index("inet") + 1
                 ip_address = seperated_line[ipindex]
                 #print "found ip adress %s" % ip_address  
-                host_dict[hostname][interface_name].append(ip_address)
-                
+                interface_dict[interface_name].append(ip_address)
+        
+        host_dict["Interfaces"] = interface_dict
     
         
         for osd in host['children']:
