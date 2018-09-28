@@ -87,8 +87,8 @@ def main():
             key_path = os.path.expanduser("~/.ssh/authorized_keys")
             print key_path
             sshclient.connect(fqdn, username="root", key_filename=key_path)
-            sshclient.invoke_shell()
-            stdin, stdout, stderr = sshclient.exec_command("Hello World")
+            #sshclient.invoke_shell()
+            stdin, stdout, stderr = sshclient.exec_command("ps -eaf | grep osd | grep 1")
             
             #SSprint stdin.readlines()
             print stdout.readlines()
