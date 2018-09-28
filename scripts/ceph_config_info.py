@@ -35,6 +35,7 @@ def main():
         if opt in ('-j', '--job_file'):
             job_file_dict = yaml.load(open(arg))    
     
+    setup_loggers(logging.DEBUG)
     new_client = ceph_client()
     remoteclient = ssh_remote_command()
     
@@ -42,8 +43,6 @@ def main():
     #ceph_status = new_client.issue_command("status")
     ceph_node_map = new_client.issue_command("node ls")
     #print json.dumps(ceph_node_map, indent=4)
-
-
     ceph_df = new_client.issue_command("df")
     
     if job_file_dict:
@@ -53,7 +52,7 @@ def main():
     else:
         logger.warn("not modifying cbt job file")
     
-    setup_loggers(logging.DEBUG)
+    
     
     host_map = {}
     for node_type_list in ceph_node_map:
