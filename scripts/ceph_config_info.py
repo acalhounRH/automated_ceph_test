@@ -91,7 +91,7 @@ def main():
             stdin, stdout, stderr = sshclient.exec_command("Hello World")
             
             print stdin
-            print stdout
+            print stdout.readlines()
             print stderr
         except Exception as e:
             logger.error("Connection Failed: %s" % e)
