@@ -75,7 +75,9 @@ def main():
                 #service_type
                 #service_id
                 #service_pid
+    print json.dumps(host_map, indent=4)
     
+    sys.exit()
     
     osd_host_list = {}
     osd_dict = {}
