@@ -60,7 +60,7 @@ def main():
             host_map[host] = {}
             
             #get interface dict
-            host_map[host]['Interfaces'] = get_interfaces(remoteclient, name)
+            host_map[host]['Interfaces'] = get_interfaces(remoteclient, host)
             #get cpuinfo dict
             host_map[host]['children'] = []
             for service_id in ceph_node_map[node_type_list][host]:
@@ -89,7 +89,7 @@ def main():
             ipaddress = socket.gethostbyname(name)
             fqdn = socket.gethostbyaddr(ipaddress)[0]
             
-            node["interfaces"] = get_interfaces(remoteclient, host)
+            node["interfaces"] = get_interfaces(remoteclient, name)
             osd_host_list[name] = node
             
         if "osd" in node['type']:
