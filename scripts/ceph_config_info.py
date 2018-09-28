@@ -38,11 +38,11 @@ def main():
     new_client = ceph_client()
     remoteclient = ssh_remote_command()
     
-    raw_osd_tree = new_client.issue_command("osd tree")
+    #raw_osd_tree = new_client.issue_command("osd tree")
     ceph_node_map = new_client.issue_command("node ls")
-    print json.dumps(ceph_node_map, indent=4)
+    #print json.dumps(ceph_node_map, indent=4)
 
-    ceph_status = new_client.issue_command("status")
+    #ceph_status = new_client.issue_command("status")
     ceph_df = new_client.issue_command("df")
     
     if job_file_dict:
@@ -69,48 +69,12 @@ def main():
                 child['service_id'] = service_id
                 if "mon" in node_type_list:
                     service_id = host.split('.')[0]
-                child['service_pid'] = get_ceph_service_pid(remoteclient, host, node_type_list, service_id)
-                #search for process
-                
-                
+                child['service_pid'] = get_ceph_service_pid(remoteclient, host, node_type_list, service_id)                
                 host_map[host]['children'].append(child)
-                #service_type
-                #service_id
-                #service_pid
+
     print json.dumps(host_map, indent=4)
     
     sys.exit()
-    
-    osd_host_list = {}
-    osd_dict = {}
-    for node in raw_osd_tree['nodes']:
-        
-        if "host" in node['type']:
-            
-            name = node['name']
-            ipaddress = socket.gethostbyname(name)
-            fqdn = socket.gethostbyaddr(ipaddress)[0]
-            
-            node["interfaces"] = get_interfaces(remoteclient, name)
-            osd_host_list[name] = node
-            
-        if "osd" in node['type']:
-            id = node['id']
-            
-
-            osd_dict[id] = node        
-    
-    
-    for host in osd_host_list:
-        print json.dumps(host, indent=4)
-        for child_id in osd_host_list[host]['children']:
-            print child_id
-            index_position = osd_host_list[host]['children'].index(child_id)
-            osd_host_list[host]['children'][index_position] = osd_dict[child_id]  
-            # print json.dumps(new_host_map, indent=4)
-    
-    print json.dumps(osd_host_list, indent=4)
-    
     
 def get_interfaces(remoteclient, host):
     output = remoteclient.issue_command(host, "ip a")
