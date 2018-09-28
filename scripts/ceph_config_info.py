@@ -113,11 +113,13 @@ class ssh_remote_command():
             #SSprint stdin.readlines()
             
             output = stdout.readlines()
+            #remove trailing \n
             formated_output = []
             for i in output:
                 formated_output.append(i.strip('\n'))
                 
             return formated_output
+        
         except Exception as e:
             logger.error("Connection Failed: %s" % e)
     
