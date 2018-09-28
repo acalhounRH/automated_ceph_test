@@ -59,6 +59,8 @@ def main():
             #get interface dict
             host_map[host]['Interfaces'] = get_interfaces(remoteclient, host)
             #get cpuinfo dict
+            get_cpu_info(remoteclient, host)
+                
             host_map[host]['children'] = []
             for service_id in ceph_node_map[node_type_list][host]:
                 child = {}
@@ -70,6 +72,14 @@ def main():
                 host_map[host]['children'].append(child)
 
     print json.dumps(host_map, indent=4)
+    
+def get_cpu_info(remoteclient, host):
+    output = remoteclient.issue_command(host, "lscpu")
+    cpu_info_dict = {}
+    
+    for line in output:
+        seperated_line = line.split
+        print seperated_line
     
 def get_interfaces(remoteclient, host):
     output = remoteclient.issue_command(host, "ip a")
