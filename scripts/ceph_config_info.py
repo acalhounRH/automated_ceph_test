@@ -100,13 +100,17 @@ def main():
         
         host_dict[hostname]["Interfaces"] = interface_dict
     
-        
+        ceph_data = []
         for osd in host['children']:
             id = osd['id']
             
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
             output = remoteclient.issue_command(hostname, pid_grep_command)
             print "osd %s has a pid of %s" % (id, output[0])
+            osd_dict[id]['pid'] = output[0]
+            ceph_data.append(osd_dict[id])
+        
+        host_dict[hostname]["ceph_data"] = ceph_data 
     print json.dumps(host_dict, indent=4)
    
    
