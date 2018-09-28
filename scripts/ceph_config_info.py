@@ -81,7 +81,7 @@ def main():
         fqdn = socket.gethostbyaddr(ipaddress)[0]
         print fqdn
         
-        for osd in host[children]:
+        for osd in host['children']:
             id = osd['id']
             
             pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
