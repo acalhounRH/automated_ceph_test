@@ -81,20 +81,24 @@ def main():
         fqdn = socket.gethostbyaddr(ipaddress)[0]
         print fqdn
         
-        try:
-            #sshclient.load_host_keys(os.path.expanduser('~/.ssh/known_hosts'))
-            sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            key_path = os.path.expanduser("~/.ssh/authorized_keys")
-            print key_path
-            sshclient.connect(fqdn, username="root", key_filename=key_path)
-            #sshclient.invoke_shell()
-            stdin, stdout, stderr = sshclient.exec_command("ps -eaf | grep osd | grep 'id 1 ' | grep -v grep| awk '{print $2}'")
+        for osd in host[children]:
+            id = osd['id']
             
-            #SSprint stdin.readlines()
-            print stdout.readlines()
-            print stderr.readlines()
-        except Exception as e:
-            logger.error("Connection Failed: %s" % e)
+            pid_grep_command = "ps -eaf | grep osd | grep 'id %s ' | grep -v grep| awk '{print $2}'" % id
+            try:
+                #sshclient.load_host_keys(os.path.expanduser('~/.ssh/known_hosts'))
+                sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                key_path = os.path.expanduser("~/.ssh/authorized_keys")
+                print key_path
+                sshclient.connect(fqdn, username="root", key_filename=key_path)
+                #sshclient.invoke_shell()
+                stdin, stdout, stderr = sshclient.exec_command(pid_grep_command)
+                
+                #SSprint stdin.readlines()
+                print stdout.readlines()
+                print stderr.readlines()
+            except Exception as e:
+                logger.error("Connection Failed: %s" % e)
             
         
    
