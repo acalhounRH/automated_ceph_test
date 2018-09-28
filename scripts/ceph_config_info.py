@@ -57,11 +57,13 @@ def main():
         if "osd" in i['type']:
             id = i['id']
             osd_dict[id] = i
-    
+    mod_list = []
     for j in osd_host_list:
+        new_host_map = j
         for k in j['children']:
-            
-            print json.dumps(i, indent=1)
+            new_host_map['children'][k] = osd_dict[k] 
+            print json.dumps(new_host_map, indent=1)
+        mod_list.append(new_host_map)
             
     
    
