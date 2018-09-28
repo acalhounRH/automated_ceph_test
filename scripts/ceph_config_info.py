@@ -75,7 +75,7 @@ def main():
                     ip_address = seperated_line[ipindex]
                     interface_dict[interface_name].append(ip_address)
             node["interfaces"] = interface_dict
-            osd_host_list[hostname] = node
+            osd_host_list[name] = node
             
         if "osd" in node['type']:
             id = node['id']
