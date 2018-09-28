@@ -62,7 +62,9 @@ def main():
         new_host_map = j
         for k in j['children']:
             index_position = new_host_map['children'].index(k)
-            new_host_map['children'][index_position] = osd_dict[k] 
+            new_dict = k
+            new_dict = {osd_dict[k]}
+            new_host_map['children'][index_position] = new_dict  
             print json.dumps(new_host_map, indent=1)
         mod_list.append(new_host_map)
             
