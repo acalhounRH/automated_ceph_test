@@ -86,9 +86,8 @@ def main():
             osd_dict[id] = node        
     
     
-    print json.dumps(osd_host_list, indent=4)
-    
-    for host in osd_host_list:       
+    for host in osd_host_list:
+        print json.dumps(host, indent=4)
         for child_id in host['children']:
             print child_id
             index_position = osd_host_list[host['name']]['children'].index(child_id['id'])
