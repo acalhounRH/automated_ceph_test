@@ -41,13 +41,13 @@ def main():
     #raw_osd_tree = new_client.issue_command("osd tree")
     #ceph_status = new_client.issue_command("status")
     ceph_node_map = new_client.issue_command("node ls")
-    #print json.dumps(ceph_node_map, indent=4)
     ceph_df = new_client.issue_command("df")
     
     if job_file_dict:
         total_storage_size = ceph_df['stats']['total_bytes']
         new_modifer = cbt_rbd_modifer(job_file_dict, total_storage_size)
         new_modifer.modify_job_file()
+        client_list = new_modifer.get_clients_list()
     else:
         logger.warn("not modifying cbt job file")
     
@@ -70,6 +70,9 @@ def main():
                     service_id = host.split('.')[0]
                 child['service_pid'] = get_ceph_service_pid(remoteclient, host, node_type_list, service_id)                
                 host_map[host]['children'].append(child)
+                
+    if client_list:
+        for client in client_list
 
     print json.dumps(host_map, indent=4)
     
@@ -234,6 +237,8 @@ class cbt_rbd_modifer():
         
         print yaml.dump(self.job_file)
         
+    def get_clients_list(self):
+            return sef.job_file['cluster']['clients']
         
         
 if __name__ == '__main__':
