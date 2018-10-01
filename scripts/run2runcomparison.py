@@ -24,14 +24,8 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    print "start"
     #TODO instead of only supporting A:B comparisons, try using a comma seperated list in order to provide 1:* comparisons 
-    es, comparison_id, test_list = argument_handler()
-    
-    
-#     for i in test_data_generator(es, comparison_id, test_list):
-#         print json.dumps(i, indent=1)
-    
+    es, comparison_id, test_list = argument_handler() 
     
     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(es, comparison_id, test_list))
        
@@ -68,7 +62,6 @@ class test_holder():
         self.test_id = test_id
         self.comparison_id = comparison_id
         self.start_datetime_stamp = start_time 
-        print self.start_datetime_stamp
         self.offset = ""
         self.offset_map = {}
         self.es = es
@@ -86,7 +79,7 @@ class test_holder():
                 self.offset = new_offset_in_sec
                 self.offset_map[index] = new_offset_in_sec
                 
-                print "%s = %s - %s " % (self.offset, record_time_struc, self.start_datetime_stamp)
+               # print "%s = %s - %s " % (self.offset, record_time_struc, self.start_datetime_stamp)
             
             return self.offset
     def emit_actions(self):
@@ -117,14 +110,15 @@ class test_holder():
   
         logger.info("Extracting data for %s" % self.test_id)
         logger.info("%d documents found" % results['hits']['total'])
+        logger.info("Scrolling search results...")
         while (scroll_size > 0):
-            logger.info("Scrolling...")
+            
             
             page_data = self.es.scroll(scroll_id = sid, scroll = '2m')
             sid = page_data['_scroll_id']
             scroll_size = len(page_data['hits']['hits'])
             doc_count += scroll_size
-            logger.info("Document count: " + str(doc_count))
+            logger.debug("Document count: " + str(doc_count))
             
             for doc in page_data['hits']['hits']:
                 importdoc = {}
@@ -133,9 +127,10 @@ class test_holder():
                 if current_index != previous_index:
                     print_once = True
                     logger.debug("CHANGING OFFSET")
+                    logger.debug("New index is %s" % current_index)
                     #print current_index, previous_index
                     new_offset = self.reset_offset(doc["_source"]["date"], current_index)
-                    logger.debug(new_offset)
+                    logger.debug("new offset is %s " % new_offset)
                     previous_index = current_index
                     
                     
