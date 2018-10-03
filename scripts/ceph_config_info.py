@@ -111,8 +111,6 @@ def get_cpu_info(remoteclient, host):
                 cpu_info_dict[cpu_prop].append(value)
         elif "Flags" not in cpu_prop:
             cpu_info_dict[cpu_prop] = cpu_prop_value  
-        
-    #print json.dumps(cpu_info_dict, indent=4)
     
     return cpu_info_dict
     
