@@ -130,6 +130,7 @@ class test_holder():
                 str_skew_time = skew_time.strftime(self.TIME_FMT)
                     
                 importdoc["_source"] = doc["_source"]
+                mportdoc["_id"] = hashlib.md5(json.dumps(importdoc["_source"])).hexdigest()
                 importdoc["_source"]["comparison_ID"] = self.comparison_id
                 importdoc["_source"]["date"] = str_skew_time
                 
@@ -137,7 +138,7 @@ class test_holder():
                 importdoc["_index"] = "%s-run2run-timeskew-comparison" % index_prefix
                 importdoc["_type"] = doc["_type"]
                 importdoc["_op_type"] = "create"
-                importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
+                i
                 yield importdoc
 
 def argument_handler():
