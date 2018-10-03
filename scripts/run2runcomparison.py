@@ -130,7 +130,7 @@ class test_holder():
                 str_skew_time = skew_time.strftime(self.TIME_FMT)
                     
                 importdoc["_source"] = doc["_source"]
-                mportdoc["_id"] = hashlib.md5(json.dumps(importdoc["_source"])).hexdigest()
+                importdoc["_id"] = hashlib.md5(json.dumps(importdoc["_source"])).hexdigest()
                 importdoc["_source"]["comparison_ID"] = self.comparison_id
                 importdoc["_source"]["date"] = str_skew_time
                 
