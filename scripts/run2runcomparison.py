@@ -23,8 +23,7 @@ es_log.setLevel(logging.CRITICAL)
 urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
-def main():
-    #TODO instead of only supporting A:B comparisons, try using a comma seperated list in order to provide 1:* comparisons 
+def main(): 
     es, comparison_id, test_list = argument_handler() 
     
     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(es, comparison_id, test_list))
@@ -44,7 +43,7 @@ def test_data_generator(es, com_id, test_id_list):
     object_generator = get_test_data(es, com_id, test_id_list)
 
     for obj in object_generator:
-        for action in obj.emit_actions(): ### TODO - change to yield obj.emit_action() 
+        for action in obj.emit_actions(): 
             yield action
             
 def get_test_data(es, comparison_id, test_id_list):
@@ -54,8 +53,7 @@ def get_test_data(es, comparison_id, test_id_list):
     
     for test_id in test_id_list:
         obj = test_holder(es, test_id, comparison_id, start_time)
-        yield obj 
-    
+        yield obj    
 
 class test_holder():
     def __init__(self, es, test_id, comparison_id, start_time):
@@ -69,19 +67,17 @@ class test_holder():
         
     def reset_offset(self, record_time, index):
         
-           #S print self.offset_map
-            if index in self.offset_map:
-                self.offset = self.offset_map[index]
-            else:
-                record_time_struc = datetime.datetime.strptime(record_time, self.TIME_FMT)
-                new_offset = self.start_datetime_stamp - record_time_struc 
-                new_offset_in_sec = new_offset.total_seconds()
-                self.offset = new_offset_in_sec
-                self.offset_map[index] = new_offset_in_sec
-                
-               # print "%s = %s - %s " % (self.offset, record_time_struc, self.start_datetime_stamp)
-            
-            return self.offset
+        if index in self.offset_map:
+            self.offset = self.offset_map[index]
+        else:
+            record_time_struc = datetime.datetime.strptime(record_time, self.TIME_FMT)
+            new_offset = self.start_datetime_stamp - record_time_struc 
+            new_offset_in_sec = new_offset.total_seconds()
+            self.offset = new_offset_in_sec
+            self.offset_map[index] = new_offset_in_sec
+        
+        return self.offset
+    
     def emit_actions(self):
               
         previous_index = ""
@@ -106,41 +102,32 @@ class test_holder():
         
         sid = results['_scroll_id']
         scroll_size = results['hits']['total']
-  
-  
+        remaining_documents = scroll_size
+         
         logger.info("Extracting data for %s" % self.test_id)
         logger.info("%d documents found" % results['hits']['total'])
         logger.info("Scrolling search results...")
         while (scroll_size > 0):
             
-            
             page_data = self.es.scroll(scroll_id = sid, scroll = '2m')
             sid = page_data['_scroll_id']
             scroll_size = len(page_data['hits']['hits'])
             doc_count += scroll_size
-            logger.debug("Document count: " + str(doc_count))
+            remaining_documents -= scroll_size
+            logger.debug("Remaining Documents: " + str(remaining_documents))
             
             for doc in page_data['hits']['hits']:
                 importdoc = {}
                 current_index = doc["_index"].strip()
                 
                 if current_index != previous_index:
-                    print_once = True
-                    logger.debug("CHANGING OFFSET")
-                    logger.debug("New index is %s" % current_index)
-                    #print current_index, previous_index
                     new_offset = self.reset_offset(doc["_source"]["date"], current_index)
-                    logger.debug("new offset is %s " % new_offset)
                     previous_index = current_index
-                    
                     
                 record_time = datetime.datetime.strptime(doc["_source"]["date"], self.TIME_FMT)
                 
                 skew_time = record_time + timedelta(seconds=new_offset)
                 str_skew_time = skew_time.strftime(self.TIME_FMT)
-                if print_once:
-                    logger.debug(str_skew_time, current_index)
-                    print_once = False
                     
                 importdoc["_source"] = doc["_source"]
                 importdoc["_source"]["comparison_ID"] = self.comparison_id
@@ -164,7 +151,7 @@ def argument_handler():
                 run2runcomparison.py -t <title> -tl <test1,test2,test3> -h <host> -p <port> 
                 
                 -t or --title - test identifier
-                -tl or --test-list - comma seperated list of all test to be comparted
+                -l or --test-list - comma seperated list of all test to be comparted
                 -h or --host - Elasticsearch host ip or hostname
                 -p or --port - Elasticsearch port (elasticsearch default is 9200)
                 -d or --debug - enables debug (verbose) logging output
@@ -195,7 +182,6 @@ def argument_handler():
     else:
         print host, comparison_id, esport
         logger.error(usage)
-#        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
         exit ()
 
     es = Elasticsearch(
@@ -205,13 +191,6 @@ def argument_handler():
         )
     
     return es, comparison_id, test_list
-
-
-
-
-
-
-
 
 if __name__ == '__main__':
     main()
