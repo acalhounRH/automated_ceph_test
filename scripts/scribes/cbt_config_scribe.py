@@ -18,15 +18,19 @@ class cbt_config_transcriber:
         self.host_map = {}
         self.make_host_map()
    
-    def get_host_type(self, hostname_or_ip):
-                   
-        node_type = "UNKNOWN"
-        for k,v in self.cluster_host_to_type_map.items():
-            
-            if hostname_or_ip in v:
-                node_type = k
+    def set_host_type_list(self):
         
-        return node_type
+        host_type_list = []
+        
+        for host in self.host_map:
+            for child in host['children']:
+                if child['service_type'] not in host_type_list:
+                    host_type_list += "%s," % child['service_type']
+                    
+            self.host_map['host']['host_type_list'] = host_type_list
+    
+    def get_host_type(self, hostname_or_ip):
+        return host_type_list
     
     def make_host_map(self):
         ceph_node_map = self.new_client.issue_command("node ls")
