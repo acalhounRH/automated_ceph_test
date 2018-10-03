@@ -17,6 +17,7 @@ logger = logging.getLogger("index_cbt")
 def main():
     
     job_file_dict = {}
+    client_list = ""
     usage = """ 
             Usage:
                 evaluatecosbench_pushes.py -t <test id> -h <host> -p <port>
