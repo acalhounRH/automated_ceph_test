@@ -49,7 +49,7 @@ def main():
     if job_file_dict:
         total_storage_size = ceph_df['stats']['total_bytes']
         new_modifer = cbt_rbd_modifer(job_file_dict, total_storage_size)
-        new_modifer.modify_job_file()
+        #new_modifer.modify_job_file()
         client_list = new_modifer.get_clients_list()
     else:
         logger.warn("not modifying cbt job file")
