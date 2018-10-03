@@ -22,8 +22,8 @@ def main():
     es, test_id = argument_handler()
     
     ###: TODO need to add test mode and turn this on and the real streaming bulk call off. 
-     for i in process_data_generator(test_id):
-         print json.dumps(i, indent=1)
+    for i in process_data_generator(test_id):
+        print json.dumps(i, indent=1)
   
 #     res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, process_data_generator(test_id))
 #       
