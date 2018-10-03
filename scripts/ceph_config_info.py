@@ -38,6 +38,8 @@ def main():
     new_client = ceph_client()
     remoteclient = ssh_remote_command()
     
+    
+##########################
     #raw_osd_tree = new_client.issue_command("osd tree")
     #ceph_status = new_client.issue_command("status")
     ceph_node_map = new_client.issue_command("node ls")
@@ -72,9 +74,23 @@ def main():
                 host_map[host]['children'].append(child)
                 
     if client_list:
-        for client in client_list
+        for client in client_list:
+            child = {}
+            child['service_type'] = client
+                
+            if client not in host_map:
+                host_map[client] = {}                
+                #get interface dict
+                host_map[client]['interfaces'] = get_interfaces(remoteclient, client)
+                #get cpuinfo dict
+                host_map[client]['cpu_info'] = get_cpu_info(remoteclient, client)
+                    
+            host_map[client]['children'].append(child)
+                
 
     print json.dumps(host_map, indent=4)
+    
+#########################
     
 def get_cpu_info(remoteclient, host):
     output = remoteclient.issue_command(host, "lscpu")
@@ -238,7 +254,7 @@ class cbt_rbd_modifer():
         print yaml.dump(self.job_file)
         
     def get_clients_list(self):
-            return sef.job_file['cluster']['clients']
+            return self.job_file['cluster']['clients']
         
         
 if __name__ == '__main__':

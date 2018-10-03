@@ -109,6 +109,7 @@ def process_data(test_id):
             },
         "test_config": {}
         }
+    
     test_metadata['ceph_benchmark_test']['common']['test_info']['test_id'] = test_id
     
     #parse cbt achive dir and call process method
