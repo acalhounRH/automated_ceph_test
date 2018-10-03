@@ -77,7 +77,7 @@ def main():
     if client_list:
         for client in client_list:
             child = {}
-            child['service_type'] = client
+            child['service_type'] = "client"
                 
             if client not in host_map:
                 host_map[client] = {}                
