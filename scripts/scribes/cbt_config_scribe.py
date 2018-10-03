@@ -66,7 +66,7 @@ class cbt_config_transcriber:
                 self.host_map[client]['children'].append(child)
         print json.dumps(self.host_map, indent=4)
     
-    def get_cpu_info(remoteclient, host):
+    def get_cpu_info(self, remoteclient, host):
         output = remoteclient.issue_command(host, "lscpu")
         cpu_info_dict = {}
         
@@ -87,7 +87,7 @@ class cbt_config_transcriber:
         
         return cpu_info_dict    
     
-    def get_interfaces(remoteclient, host):
+    def get_interfaces(self, remoteclient, host):
         output = remoteclient.issue_command(host, "ip a")
         interface_dict = {}
         for line in output:
@@ -107,7 +107,7 @@ class cbt_config_transcriber:
         #return a dict of all interfaces:IPaddresses
         return interface_dict
 
-    def get_ceph_service_pid(remoteclient, host, service, id):
+    def get_ceph_service_pid(self, remoteclient, host, service, id):
         pid_grep_command = "ps -eaf | grep %s | grep 'id %s ' | grep -v grep| awk '{print $2}'" % (service, id)
         output = remoteclient.issue_command(host, pid_grep_command)
         return output[0]
