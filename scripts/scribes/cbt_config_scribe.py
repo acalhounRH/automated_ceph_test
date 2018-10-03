@@ -27,11 +27,11 @@ class cbt_config_transcriber:
                 if child['service_type'] not in host_type_list:
                     host_type_list += "%s," % child['service_type']
                     
-            self.host_map['host']['host_type_list'] = host_type_list
+            self.host_map[host]['host_type_list'] = host_type_list
     
     def get_host_type(self, hostname_or_ip):
         
-        return self.host_map['host']['host_type_list']
+        return self.host_map[hostname_or_ip]['host_type_list']
     
     def make_host_map(self):
         ceph_node_map = self.new_client.issue_command("node ls")
