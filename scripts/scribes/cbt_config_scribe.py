@@ -37,9 +37,9 @@ class cbt_config_transcriber:
                 self.host_map[host] = {}
                 
                 #get interface dict
-                self.host_map[host]['interfaces'] = get_interfaces(self.remoteclient, host)
+                self.host_map[host]['interfaces'] = self.get_interfaces(self.remoteclient, host)
                 #get cpuinfo dict
-                self.host_map[host]['cpu_info'] = get_cpu_info(self.remoteclient, host)
+                self.host_map[host]['cpu_info'] = self.get_cpu_info(self.remoteclient, host)
                     
                 self.host_map[host]['children'] = []
                 for service_id in ceph_node_map[node_type_list][host]:
@@ -48,7 +48,7 @@ class cbt_config_transcriber:
                     child['service_id'] = service_id
                     if "mon" in node_type_list:
                         service_id = host.split('.')[0]
-                    child['service_pid'] = get_ceph_service_pid(self.remoteclient, host, node_type_list, service_id)                
+                    child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host, node_type_list, service_id)                
                     self.host_map[host]['children'].append(child)
                     
         if client_list:
@@ -59,9 +59,9 @@ class cbt_config_transcriber:
                 if client not in self.host_map:
                     self.host_map[client] = {}                
                     #get interface dict
-                    self.host_map[client]['interfaces'] = get_interfaces(self.remoteclient, client)
+                    self.host_map[client]['interfaces'] = self.get_interfaces(self.remoteclient, client)
                     #get cpuinfo dict
-                    self.host_map[client]['cpu_info'] = get_cpu_info(self.remoteclient, client)
+                    self.host_map[client]['cpu_info'] = self.get_cpu_info(self.remoteclient, client)
                         
                 self.host_map[client]['children'].append(child)
         print json.dumps(self.host_map, indent=4)
