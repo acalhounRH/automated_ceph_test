@@ -22,11 +22,13 @@ class pbench_transcriber:
             print '\x1b[80D' + '\x1b[K'+ text,
             sys.stdout.flush()
 
-    def get_service_info(self, service_pid):
-        if found:
-            return service_name, instance
-        else:
-            return -1
+    def get_service_id(self, service_pid):
+        instance = -1
+        for child in self.host_info['children']:
+            if service_pid in child:
+                instance = child['service_id']
+        
+        return instance
 
     def emit_actions(self):
         importdoc = {}
