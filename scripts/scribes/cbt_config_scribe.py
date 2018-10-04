@@ -23,6 +23,7 @@ class cbt_config_transcriber:
         host_type_list = ""
         
         for host in self.host_map:
+            host_type_list = ""
             print host
             for child in self.host_map[host]['children']:
                 print child
