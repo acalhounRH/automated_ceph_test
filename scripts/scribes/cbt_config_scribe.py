@@ -12,12 +12,13 @@ class cbt_config_transcriber:
         self.config = yaml.load(open(cbt_yaml_config))   
         self.config_file = cbt_yaml_config
 
-        
-        self.new_client = ceph_client()
-        self.remoteclient = ssh_remote_command()
-        self.host_map = {}
-        self.make_host_map()
-   
+        try:
+            self.new_client = ceph_client()
+            self.remoteclient = ssh_remote_command()
+            self.host_map = {}
+            self.make_host_map()
+        except:
+            logging.warning("Unable to retrive host information")
     def set_host_type_list(self):
         
         host_type_list = ""
