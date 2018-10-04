@@ -20,7 +20,7 @@ class cbt_config_transcriber:
    
     def set_host_type_list(self):
         
-        host_type_list = []
+        host_type_list = ""
         
         for host in self.host_map:
             print host
