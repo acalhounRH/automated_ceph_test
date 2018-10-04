@@ -26,9 +26,7 @@ class cbt_config_transcriber:
         
         for host in self.host_map:
             host_type_list = ""
-            print host
             for child in self.host_map[host]['children']:
-                print child
                 if child['service_type'] not in host_type_list:
                     host_type_list += "%s," % str(child['service_type'])
                     
