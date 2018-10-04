@@ -86,6 +86,7 @@ class pbench_transcriber:
                                         instance = self.get_service_id(pid)
                                         
                                         tmp_doc[tool][file_name]['process_name'] = node_type
+                                        tmp_doc[tool][file_name]['service_id'] = instance
                                         tmp_doc[tool][file_name]['process_pid'] = pid
                                         
                                         if "cpu_usage" in file_name:
