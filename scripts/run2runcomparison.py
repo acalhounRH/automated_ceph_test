@@ -138,7 +138,6 @@ class test_holder():
                 importdoc["_index"] = "%s-run2run-timeskew-comparison" % index_prefix
                 importdoc["_type"] = doc["_type"]
                 importdoc["_op_type"] = "create"
-                i
                 yield importdoc
 
 def argument_handler():
