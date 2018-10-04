@@ -1,7 +1,7 @@
 
 import yaml, os, time, json, hashlib, sys
 import socket, datetime, csv, logging
-from scribes import *
+
 
 logger = logging.getLogger("index_cbt")
 
