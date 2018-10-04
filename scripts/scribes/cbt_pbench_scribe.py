@@ -24,11 +24,8 @@ class pbench_transcriber:
 
     def get_service_id(self, service_pid):
         instance = -1
-        print service_pid
         for child in self.host_info['children']:
-            print child
             if service_pid in child['service_pid']:
-                print "###############GOT IT###############"
                 instance = child['service_id']
         
         return instance
