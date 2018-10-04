@@ -30,7 +30,7 @@ def analyze_cbt_Pbench_data(tdir, cbt_config_obj, test_metadata):
                         metadata['ceph_benchmark_test']['common']['test_info']['tool'] = tool
                         metadata['ceph_benchmark_test']['common']['test_info']['file_name'] = os.path.basename(pfname)
                     
-                        pb_transcriber_generator = cbt_pbench_scribe.pbench_transcriber(pfname, metadata)
+                        pb_transcriber_generator = cbt_pbench_scribe.pbench_transcriber(pfname, metadata, cbt_config_obj)
                         yield pb_transcriber_generator
         else:
             logger.warn("Pbench directory not Found, %s does not exist." % host_dir_fullpath)

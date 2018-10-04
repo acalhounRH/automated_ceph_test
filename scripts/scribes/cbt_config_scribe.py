@@ -19,6 +19,7 @@ class cbt_config_transcriber:
             self.make_host_map()
         except:
             logging.warning("Unable to retrive host information")
+            
     def set_host_type_list(self):
         
         host_type_list = ""
