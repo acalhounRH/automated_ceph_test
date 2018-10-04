@@ -32,7 +32,7 @@ class cbt_config_transcriber:
                     
             self.host_map[host]['host_type_list'] = host_type_list
     
-    def get_host_info(self, host):
+    def get_host_info(self, hostname_or_ip):
            
         try: #check if string is an ip
             ipaddress.ip_address(hostname_or_ip)
@@ -48,9 +48,9 @@ class cbt_config_transcriber:
                 if hostname_or_ip in host:
                     return self.host_map[host]               
     
-    def get_host_type(self, hostname_or_ip):
+    def get_host_type(self, host):
         
-        host_info = self.get_host_info(hostname_or_ip)
+        host_info = self.get_host_info(host)
         return host_info['host_type_list']
     
     def make_host_map(self):
