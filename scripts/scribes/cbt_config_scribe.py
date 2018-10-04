@@ -34,7 +34,9 @@ class cbt_config_transcriber:
     
     def get_host_type(self, hostname_or_ip):
         
-        return self.host_map[hostname_or_ip]['host_type_list']
+        for host in self.host_map:
+            if hostname_or_ip in host:
+                return self.host_map[hostname_or_ip]['host_type_list']
     
     def make_host_map(self):
         ceph_node_map = self.new_client.issue_command("node ls")
