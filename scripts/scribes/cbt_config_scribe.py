@@ -80,7 +80,7 @@ class cbt_config_transcriber:
             for client in client_list:
                 child = {}
                 child['service_type'] = "client"
-                child['service_pid'] = -1
+                child['service_pid'] = "-1"
                 child['service_id'] = -1
                     
                 if client not in self.host_map:
