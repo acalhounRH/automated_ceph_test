@@ -1,6 +1,6 @@
 
 import yaml, os, time, json, hashlib, paramiko
-import socket, datetime, logging, rados
+import socket, datetime, logging, rados, ipaddress
 from paramiko import SSHClient
 
 logger = logging.getLogger("index_cbt")
@@ -32,11 +32,26 @@ class cbt_config_transcriber:
                     
             self.host_map[host]['host_type_list'] = host_type_list
     
+    def get_host_info(self, host):
+           
+        try: #check if string is an ip
+            ipaddress.ip_address(hostname_or_ip)
+            for host in self.host_map:
+                for interface in self.host_map[host]['interfaces']:
+                    for address in self.host_map[host]['interfaces'][interface]:
+                        if hostname_or_ip in address:
+                            return self.host_map[host]
+                        
+            
+        except: # treat string as hostname 
+            for host in self.host_map:
+                if hostname_or_ip in host:
+                    return self.host_map[host]               
+    
     def get_host_type(self, hostname_or_ip):
         
-        for host in self.host_map:
-            if hostname_or_ip in host:
-                return self.host_map[host]['host_type_list']
+        host_info = self.get_host_info(hostname_or_ip)
+        return host_info['host_type_list']
     
     def make_host_map(self):
         ceph_node_map = self.new_client.issue_command("node ls")
@@ -77,7 +92,6 @@ class cbt_config_transcriber:
         self.set_host_type_list()
         print json.dumps(self.host_map, indent=4)
         
-    
     def get_cpu_info(self, remoteclient, host):
         output = remoteclient.issue_command(host, "lscpu")
         cpu_info_dict = {}
@@ -123,7 +137,6 @@ class cbt_config_transcriber:
         pid_grep_command = "ps -eaf | grep %s | grep 'id %s ' | grep -v grep| awk '{print $2}'" % (service, id)
         output = remoteclient.issue_command(host, pid_grep_command)
         return output[0]
-    
     
     def emit_actions(self):
         
