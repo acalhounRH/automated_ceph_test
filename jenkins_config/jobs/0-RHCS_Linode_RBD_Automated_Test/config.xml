@@ -11,10 +11,15 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-6f986dd8-d0c4-48ec-872f-ef04f1ad5e18</name>
+          <name>separator-4dff8436-0de0-4302-b17b-ee823f6d4ec6</name>
           <description></description>
           <sectionHeader>Linode Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -80,7 +85,7 @@
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-f6cc1854-3912-4f76-96e3-391175ba3033</name>
+          <name>separator-ec027e07-fdd1-43b9-bfd9-cc03a9536562</name>
           <description></description>
           <sectionHeader>Ceph-Ansible Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -131,7 +136,7 @@ devices:
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-ad92bfc3-a75e-4178-a950-1b72de1f492c</name>
+          <name>separator-a1a91c70-8c00-4851-a3e6-205166ed121b</name>
           <description></description>
           <sectionHeader>Pbench Monitoring Tools</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -215,7 +220,7 @@ devices:
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-e46e979d-8e82-4504-a9e3-b602b681fa8d</name>
+          <name>separator-573af37f-cafa-4d05-a464-f689980e6228</name>
           <description></description>
           <sectionHeader>Ceph Benchmark Tool and Analysis Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -254,13 +259,12 @@ devices:
 benchmarks:
     librbdfio:
         time_based: true
-        time: 120
-        ramp: 60
+        time: 300
         vol_size: 4096
         volumes_per_client: 1
         log_avg_msec: [1000]
-        mode:  [read] #[read, write, randwrite, randread, randrw] 
-        op_size: [4096] #[4096, 8192, 16384, 32768, 65536] 
+        mode:  [read, write, randwrite, randread, randrw] 
+        op_size: [4096, 8192, 16384, 32768, 65536] 
         concurrent_procs: [1]
         numjobs: [1]
         iodepth: [32]  #[16]
@@ -272,11 +276,6 @@ benchmarks:
         </hudson.model.TextParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.53">
     <script>pipeline {

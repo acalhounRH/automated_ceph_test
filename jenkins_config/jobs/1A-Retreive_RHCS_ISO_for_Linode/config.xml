@@ -1,0 +1,93 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>ceph_iso_file</name>
+          <description>The RHCS iso to be used for installation.
+
+by default will specify the latest version of RHCS on download site.</description>
+          <defaultValue>RHCEPH-*-x86_64-dvd.iso</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>ceph_iso_path</name>
+          <description>location of the RHCS iso file to be used for installation.
+
+by default will specify the latest version of RHCS on download site.
+
+Example: 
+
+http://download-node-02.eng.bos.redhat.com/composes/auto/ceph-3.0-rhel-7/latest-RHCEPH-3-RHEL-7/compose/OSD/x86_64/iso/</description>
+          <defaultValue>http://download-node-02.eng.bos.redhat.com/composes/auto/ceph-3.0-rhel-7/latest-RHCEPH-3-RHEL-7/compose/OSD/x86_64/iso</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>agentname</name>
+          <description>Agent destination for the iso file. </description>
+          <defaultValue></defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <assignedNode>master</assignedNode>
+  <canRoam>false</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>#!/bin/bash
+
+#lookup agent IP using agent name
+agenthostname=`cat ~/linode_agent_list | grep $agentname | cut -d &quot;=&quot; -f 2`
+
+#pull iso
+mkdir iso_holder
+cd iso_holder
+
+if [[ $ceph_iso_file =~ &quot;RHCEPH-*-x86_64-dvd.iso&quot; ]]; then
+	echo &quot;**************$ceph_iso_file&quot;
+	sudo wget -r -nd --no-parent -A &quot;$ceph_iso_file&quot; $ceph_iso_path &amp;&gt; /dev/null
+    new_ceph_iso_file=&quot;$(ls)&quot;
+else
+	sudo wget $ceph_iso_path/$ceph_iso_file &amp;&gt; /dev/null
+    new_ceph_iso_file=$ceph_iso_file
+fi
+
+
+#clearout linode agent ceph-ansible staging area
+ssh $agenthostname &quot; 
+	hostname
+	if [ ! -d ~/automated_ceph_test/staging_area/rhcs_latest/ ]; then
+		mkdir -p ~/automated_ceph_test/staging_area/{rhcs_latest,rhcs_old}
+	else
+		mv ~/automated_ceph_test/staging_area/rhcs_latest/* ~/automated_ceph_test/staging_area/rhcs_old/
+	fi
+    ls ~/automated_ceph_test/staging_area/*
+&quot;   
+
+echo &quot;###################### $new_ceph_iso_file $agenthostname&quot;
+scp $new_ceph_iso_file $agenthostname:~/automated_ceph_test/staging_area/rhcs_latest
+
+ls 
+
+cd ../
+rm -rf iso_holder</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

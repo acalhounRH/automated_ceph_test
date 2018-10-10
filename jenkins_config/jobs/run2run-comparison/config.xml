@@ -1,7 +1,7 @@
 <?xml version='1.1' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>delete Linode VMs after test completes so we don&apos;t get charged for them.</description>
+  <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
@@ -10,13 +10,8 @@
     </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
-        <hudson.model.PasswordParameterDefinition>
-          <name>Linode_API_Key</name>
-          <description>Setup a Linode account and get an API key: https://www.linode.com/docs/platform/api/api-key</description>
-          <defaultValue>{AQAAABAAAAAQq8yZFwyplcuMWX8WjB2u4gptXb4GADxV+8MJ1xRC33s=}</defaultValue>
-        </hudson.model.PasswordParameterDefinition>
         <org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition plugin="nodelabelparameter@1.7.2">
-          <name>agentName</name>
+          <name></name>
           <description></description>
           <allowedSlaves/>
           <defaultSlaves/>
@@ -26,6 +21,12 @@
           <ignoreOfflineNodes>false</ignoreOfflineNodes>
           <nodeEligibility class="org.jvnet.jenkins.plugins.nodelabelparameter.node.AllNodeEligibility"/>
         </org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>Elasticsearch_host</name>
+          <description></description>
+          <defaultValue></defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -38,13 +39,8 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>#!/bin/bash
-
-cd $HOME/ceph-linode/
-virtualenv-2 linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
-export LINODE_API_KEY=$Linode_API_Key
-python ./linode-destroy.py
-</command>
+      <command>~/automated_ceph_test/scripts/run2runcomparison.py -h $Elasticsearch_host -p 9200 -l Jenkins-Test-18-2018-10-01T15-03-08-UTC,Jenkins-Test-17-2018-09-28T11-48-34-UTC -t Bluestore-filestore-comparison-10-02-18 -d
+#~/automated_ceph_test/scripts/run2runcomparison.py -h localhost -p 9200 -l Jenkins-Test-18-2018-10-01T15-03-08-UTC,Jenkins-Test-17-2018-09-28T11-48-34-UTC -t Bluestore-filestore-comparison-10-02-18T04:26PM -d</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

@@ -10,6 +10,11 @@
     </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
+        <hudson.model.BooleanParameterDefinition>
+          <name>linode_cluster</name>
+          <description>Flag to specify if the setup is being performed in linode. Default is false</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>cbt_archive_dir</name>
           <description>cbt archive directory, defaults to pbench agent output directory with jenkins build ID (build time stamp).</description>
@@ -52,6 +57,19 @@ benchmarks:
         use_existing_volumes: true</defaultValue>
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
+        <org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition plugin="nodelabelparameter@1.7.2">
+          <name>agentName</name>
+          <description></description>
+          <allowedSlaves/>
+          <defaultSlaves>
+            <string>master</string>
+          </defaultSlaves>
+          <triggerIfResult>multiSelectionDisallowed</triggerIfResult>
+          <allowMultiNodeSelection>false</allowMultiNodeSelection>
+          <triggerConcurrentBuilds>false</triggerConcurrentBuilds>
+          <ignoreOfflineNodes>false</ignoreOfflineNodes>
+          <nodeEligibility class="org.jvnet.jenkins.plugins.nodelabelparameter.node.AllNodeEligibility"/>
+        </org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -61,22 +79,37 @@ benchmarks:
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
-  <concurrentBuild>false</concurrentBuild>
+  <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
+script_dir=$HOME/automated_ceph_test
+
+if [ &quot;$linode_cluster&quot; == &quot;true&quot; ]; then
+	inventory_file=$HOME/ceph-linode/ansible_inventory
+else
+	inventory_file=$script_dir/ansible_inventory
+fi
+
 source /etc/profile.d/pbench-agent.sh
-echo &quot;$cbt_settings&quot; &gt; /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
-/automated_ceph_test/scripts/addhost_to_jobfile.sh /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
+mkdir -p $HOME/cbt/jenkins_jobfiles/
+jobfiles_dir=$HOME/cbt/jenkins_jobfiles/
+echo &quot;$cbt_settings&quot; &gt; $jobfiles_dir/automated_test.yml
+
+$script_dir/scripts/addhost_to_jobfile.sh $jobfiles_dir/automated_test.yml $inventory_file
 
 echo &quot;################Jenkins Job File################&quot;
-cat /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml
+cat $jobfiles_dir/automated_test.yml
 
 sudo mkdir -m 777 $cbt_archive_dir
-export START_TIME=`date +%s%N | cut -b1-13`
-/automated_ceph_test/cbt/cbt.py /automated_ceph_test/cbt/job_files/jenkins_jobfiles/automated_test.yml -a $cbt_archive_dir
-export STOP_TIME=`date +%s%N | cut -b1-13`</command>
+$HOME/cbt/cbt.py $jobfiles_dir/automated_test.yml -a $cbt_archive_dir
+
+echo &quot;role_to_hostnames [ &quot; &gt; $cbt_archive_dir/results/ansible_facts.json
+ansible all -m setup -i $inventory_file | sed -s &apos;s/ | SUCCESS =&gt; /&quot;&amp;/&apos; | sed -s &apos;s/ | SUCCESS =&gt; /&quot;: /&apos; | sed -s &apos;s/},/}/&apos; | sed -s &apos;s/}/},/&apos; &gt;&gt; $cbt_archive_dir/results/ansible_facts.json
+echo &quot;]&quot; &gt;&gt; $cbt_archive_dir/results/ansible_facts.json
+
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

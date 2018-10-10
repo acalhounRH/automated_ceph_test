@@ -17,7 +17,7 @@
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-662943c6-8139-42f2-abea-c95a7c9769b0</name>
+          <name>separator-ed5e0261-5730-4678-987c-afd4998f4e83</name>
           <description></description>
           <sectionHeader>External Agent Configuration</sectionHeader>
           <sectionHeaderStyle></sectionHeaderStyle>
@@ -29,7 +29,7 @@
           <defaultValue>{AQAAABAAAAAQGujJk4qWkpkfQ080UzKJGoQ8RpTLtQ+bFia/kuvIOAI=}</defaultValue>
         </hudson.model.PasswordParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-b1dca5a2-68c7-4a5b-87f6-52e005cc400b</name>
+          <name>separator-e0a9d097-2b45-40ce-b4d5-cfeb886f8f25</name>
           <description></description>
           <sectionHeader>Interal Agent Configuration</sectionHeader>
           <sectionHeaderStyle></sectionHeaderStyle>
@@ -45,8 +45,7 @@
     </hudson.model.ParametersDefinitionProperty>
   </properties>
   <scm class="hudson.scm.NullSCM"/>
-  <assignedNode>master</assignedNode>
-  <canRoam>false</canRoam>
+  <canRoam>true</canRoam>
   <disabled>false</disabled>
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
@@ -56,13 +55,23 @@
     <hudson.tasks.Shell>
       <command>#/bin/bash
 
-script_dir=/automated_ceph_test/
+script_dir=$HOME/automated_ceph_test/
 
 
 if [ ! -z &quot;$agent_host&quot; ]; then
 	jenkins_agent=$agent_host
+    setup_cmd=&quot;setup.sh -a&quot;
+    echo &quot;*****************************&quot;
+	new_host=&quot;
+		Host $jenkins_agent
+	  		User root
+	  		StrictHostKeyChecking no
+		&quot;
+	
+	echo &quot;$new_host&quot; &gt;&gt; $HOME/.ssh/config
 else
-	cd $script_dir
+	setup_cmd=&quot;setup.sh -a -l&quot;
+	cd $script_dir 
     pwd
 	virtualenv linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
 	export LINODE_API_KEY=$Linode_API_key
@@ -72,9 +81,16 @@ else
 		exit 0 
 	else
 		echo &quot;*****************************&quot;
+        
+        if [[ `grep $agent_name ~/linode_agent_list` ]]; then
+        	sed -i -e &quot;s/$agent_name=.*/$agent_name=$jenkins_agent/g&quot; ~/linode_agent_list
+        else
+        	echo &quot;$agent_name=$jenkins_agent&quot; &gt;&gt; ~/linode_agent_list
+        fi
 		new_host=&quot;
 		Host $jenkins_agent
 	  		User root
+            UserKnownHostsFile /dev/null
 	  		StrictHostKeyChecking no
 		&quot;
 	
@@ -83,23 +99,46 @@ else
 fi
 
 
-nohup ssh -nNT -R 8080:localhost:8080 $jenkins_agent &amp;
-nohup ssh -nNT -R 8081:localhost:8081 $jenkins_agent &amp;
-nohup ssh -nNT -R 9000:localhost:9000 $jenkins_agent &amp;
+#nohup ssh -nNT -R 8080:localhost:8080 $jenkins_agent &amp;
+autossh -M 20001 -f -N $jenkins_agent -R 8080:localhost:8080 -C 
+#nohup ssh -nNT -R 8081:localhost:8081 $jenkins_agent &amp;
+autossh -M 30001 -f -N $jenkins_agent -R 8081:localhost:8081 -C 
+#nohup ssh -nNT -R 9200:localhost:9200 $jenkins_agent &amp;
+autossh -M 40001 -f -N $jenkins_agent -R 9200:localhost:9200 -C
+ 
+j_host=&quot;
+	Host $jenkins_agent
+		User root
+		StrictHostKeyChecking no
+		&quot;
 
+ssh $jenkins_agent &quot;
+    
+    echo \&quot;$j_host\&quot; &gt;&gt; ~/.ssh/config
+    ssh-keygen -f ~/.ssh/id_rsa -t rsa -N \&quot;\&quot;
+    ssh-keygen -y -f ~/.ssh/id_rsa &gt; ~/.ssh/id_rsa.pub
+    cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
+    cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
+    cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys
+    ssh $jenkins_agent \&quot;echo \\&quot;##############################\\&quot;; date\&quot;
+    &quot;
+    
 ssh $jenkins_agent &quot;
 	yum install git -y
     yum install wget -y
+    yum install patch -y
 	cd
 	git clone https://github.com/acalhounRH/automated_ceph_test
-    git clone &lt;ceph-linode&gt;
+    eval ~/automated_ceph_test/setup.sh -a -l
     # remove when updated to 3.1, needed on 3.0
-    patch command to add ansible firewall off
+    patch ceph-linode/launch.sh automated_ceph_test/scripts/ceph-linode.patch
 	yum install java -y
-    wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar
+    if [ ! -f swarm-client-3.9.jar ]; then
+    	wget https://repo.jenkins-ci.org/releases/org/jenkins-ci/plugins/swarm-client/3.9/swarm-client-3.9.jar
+    fi   
     &quot;
   
-ssh $jenkins_agent &quot;nohup java -jar /swarm-client-3.9.jar -master http://localhost:8080 -name $agent_name -labels $agent_name -executors 2 &amp; &quot; &amp;
+ssh $jenkins_agent &quot;nohup java -jar swarm-client-3.9.jar -master http://10.18.81.12:8080 -disableClientsUniqueId -name $agent_name -labels $agent_name -executors 5 &amp; &quot; &amp;
 </command>
     </hudson.tasks.Shell>
   </builders>
