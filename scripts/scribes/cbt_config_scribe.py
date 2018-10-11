@@ -68,7 +68,7 @@ class cbt_config_transcriber:
         logger.debug("getting client list")
         client_list = self.config['cluster']['clients']
         
-        ceph_role_list = ['mds', 'mon', 'ods', 'mgr']
+        ceph_role_list = ['mds', 'mon', 'osd', 'mgr']
         for role in ceph_role_list:
             host_role_list = self.acitve_ceph_client.issue_command("%s metadata" % role)
             print json.dumps(host_role_list, indent=4)
