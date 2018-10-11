@@ -50,8 +50,11 @@ class cbt_config_transcriber:
     
     def get_host_type(self, host):
         
-        host_info = self.get_host_info(host)
-        return host_info['host_type_list']
+        try:
+            host_info = self.get_host_info(host)
+            return host_info['host_type_list']
+        except:
+            logger.warn("Unable to get host info")
     
     def make_host_map(self):
         ceph_node_map = self.new_client.issue_command("node ls")
