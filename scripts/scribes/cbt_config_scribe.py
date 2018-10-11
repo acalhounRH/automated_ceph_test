@@ -60,7 +60,7 @@ class cbt_config_transcriber:
             host_info = self.get_host_info(host_fqdn)
             return host_info['host_type_list']
         except:
-            logger.warn("Unable to get host info")
+            logger.warn("Unable to get host type")
     
     def make_host_map(self):
         logger.debug("getting ceph node map")
