@@ -95,7 +95,7 @@ class cbt_config_transcriber:
                         
                 self.host_map[client]['children'].append(child)
         self.set_host_type_list()
-        #print json.dumps(self.host_map, indent=4)
+        print json.dumps(self.host_map, indent=4)
         
     def get_cpu_info(self, remoteclient, host):
         output = remoteclient.issue_command(host, "lscpu")
