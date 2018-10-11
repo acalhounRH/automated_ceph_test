@@ -86,8 +86,10 @@ def analyze_cbt_fiologs(tdir, cbt_config_obj, test_metadata):
             hostname = os.path.basename(file).split('log.', 1)[1]
             
             metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = hostname
-            metadata['ceph_benchmark_test']['application_config']['ceph_config']['ceph_node-type'] = cbt_config_obj.get_host_type(hostname)
-            
+            try:
+                metadata['ceph_benchmark_test']['application_config']['ceph_config']['ceph_node-type'] = cbt_config_obj.get_host_type(hostname)
+            except:
+                logger.debug("Unable to set get host type list")
 
             fiolog_transcriber_generator = cbt_fiolog_scribe.fiolog_transcriber(file, jsonfile, metadata)
             yield fiolog_transcriber_generator
