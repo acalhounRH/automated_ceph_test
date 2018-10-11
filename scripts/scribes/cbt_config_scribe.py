@@ -118,6 +118,8 @@ class cbt_config_transcriber:
     def get_fqdn(self, remoteclient, host):
         output = remoteclient.issue_command(host, "hostname -f")
         
+        output = output[0].strip()
+        
         print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
         print output
         
