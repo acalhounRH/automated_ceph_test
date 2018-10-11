@@ -73,7 +73,7 @@ class cbt_config_transcriber:
             host_role_list = self.acitve_ceph_client.issue_command("%s metadata" % role)
             print json.dumps(host_role_list, indent=4)
             
-        sys.exit()
+        os.exit
         
         for node_type_list in ceph_node_map:
             for host in ceph_node_map[node_type_list]:
