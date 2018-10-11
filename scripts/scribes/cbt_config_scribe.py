@@ -84,6 +84,8 @@ class cbt_config_transcriber:
                         service_id = host.split('.')[0]
                     child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host, node_type_list, service_id)                
                     self.host_map[host]['children'].append(child)
+        
+        print json.dumps(self.host_map, indent=4)
                     
         if client_list:
             for client in client_list:
