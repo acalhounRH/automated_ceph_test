@@ -70,7 +70,7 @@ class cbt_config_transcriber:
         
         ceph_role_list = ['mds', 'mon', 'ods', 'mgr']
         for role in ceph_role_list:
-            host_role_list = self.acitve_ceph_client.issue_command("role metadata" % role)
+            host_role_list = self.acitve_ceph_client.issue_command("%s metadata" % role)
             print json.dumps(host_role_list, indent=4)
             
         sys.exit()
