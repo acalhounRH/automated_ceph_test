@@ -91,15 +91,15 @@ class cbt_config_transcriber:
         if client_list:
             for client in client_list:
                 
-                fqdn = self.get_fqdn(self.remoteclient, client)
+                client_fqdn = self.get_fqdn(self.remoteclient, client)
                 child = {}
                 child['service_type'] = "client"
                 child['service_pid'] = "-1"
                 child['service_id'] = -1
                     
-                if client not in self.host_map:
-                    self.host_map[client] = {}                
-                    self.host_map[client]['children'] = []
+                if client_fqdn not in self.host_map:
+                    self.host_map[client_fqdn] = {}                
+                    self.host_map[client_fqdn]['children'] = []
                     try:
                         #get interface dict
                         self.host_map[client]['interfaces'] = self.get_interfaces(self.remoteclient, client)
@@ -110,7 +110,7 @@ class cbt_config_transcriber:
                     
                     
                         
-                self.host_map[client]['children'].append(child)
+                self.host_map[client_fqdn]['children'].append(child)
         self.set_host_type_list()
         print json.dumps(self.host_map, indent=4)
         
