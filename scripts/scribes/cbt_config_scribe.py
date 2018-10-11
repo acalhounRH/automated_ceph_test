@@ -68,13 +68,6 @@ class cbt_config_transcriber:
         logger.debug("getting client list")
         client_list = self.config['cluster']['clients']
         
-        ceph_role_list = ['mds', 'mon', 'osd', 'mgr']
-        for role in ceph_role_list:
-            host_role_list = self.acitve_ceph_client.issue_command("%s metadata" % role)
-            print json.dumps(host_role_list, indent=4)
-            
-        os.exit
-        
         for node_type_list in ceph_node_map:
             for host in ceph_node_map[node_type_list]:
                 host_fqdn = self.get_fqdn(self.remoteclient, host)
@@ -91,10 +84,36 @@ class cbt_config_transcriber:
                     child['service_type'] = node_type_list
                     child['service_id'] = service_id
                     if "mon" in node_type_list:
-                        service_id = host.split('.')[0]
+                        service_id = host_fqdn.split('.')[0]
+                        
                     child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, node_type_list, service_id)                
                     self.host_map[host_fqdn]['children'].append(child)
+        
+        ceph_role_list = ['mds', 'mon', 'osd', 'mgr']
+        for role in ceph_role_list:
+            host_role_list = self.acitve_ceph_client.issue_command("%s metadata" % role)
+            for role_info in host_role_list:
+                host_fqdn = self.get_fqdn(self.remoteclient, role_info['hostname'])
+                
+                child = {}
+                child['service_type'] = node_type_list
+                child['service_id'] = service_id
+                if "mon" in role or "mgr" in role:
+                    service_id = host_fqdn.split('.')[0]
                     
+                child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, node_type_list, service_id)                
+                
+                if host_fqdn not in self.host_map:
+                    self.host_map[client_fqdn] = {}
+                    self.host_map[host_fqdn]['children'] = [] 
+                    #get interface dict
+                    self.host_map[host_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, host_fqdn)
+                    #get cpuinfo dict
+                    self.host_map[host_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, host_fqdn)
+                    
+                self.host_map[host_fqdn]['children'].append(child)
+                    
+        
         if client_list:
             for client in client_list:
                 
@@ -118,7 +137,9 @@ class cbt_config_transcriber:
                     
                         
                 self.host_map[client_fqdn]['children'].append(child)
-        self.set_host_type_list()       
+        self.set_host_type_list()
+        
+        print json.dumps(self.host_map, indent=4)
         
     def get_fqdn(self, remoteclient, host):
         output = remoteclient.issue_command(host, "hostname -f")
