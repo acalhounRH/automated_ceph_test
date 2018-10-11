@@ -17,10 +17,10 @@ class cbt_config_transcriber:
         except:
             logger.warn("Unable to establish a connection to ceph")   
             
-            self.remoteclient = ssh_remote_command()
+        self.remoteclient = ssh_remote_command()
 
-            self.host_map = {}
-            self.make_host_map()
+        self.host_map = {}
+        self.make_host_map()
 
             
     def set_host_type_list(self):
