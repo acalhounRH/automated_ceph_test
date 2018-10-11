@@ -88,8 +88,6 @@ class cbt_config_transcriber:
                         service_id = host.split('.')[0]
                     child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host, node_type_list, service_id)                
                     self.host_map[host]['children'].append(child)
-        
-        print json.dumps(self.host_map, indent=4)
                     
         if client_list:
             for client in client_list:
@@ -114,9 +112,7 @@ class cbt_config_transcriber:
                     
                         
                 self.host_map[client_fqdn]['children'].append(child)
-        self.set_host_type_list()
-        print json.dumps(self.host_map, indent=4)
-        
+        self.set_host_type_list()       
         
     def get_fqdn(self, remoteclient, host):
         output = remoteclient.issue_command(host, "hostname -f")

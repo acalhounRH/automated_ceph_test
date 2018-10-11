@@ -13,7 +13,6 @@ class pbench_transcriber:
         
         host = self.metadata['ceph_benchmark_test']['common']['hardware']['hostname']
         self.host_info = cbt_config_obj.get_host_info(host)
-        print json.dumps(self.host_info, indent=4)
         
     def debug_progress_logger(self, text):
         current_log_level = logger.level
