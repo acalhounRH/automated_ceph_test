@@ -105,7 +105,7 @@ class cbt_config_transcriber:
                     if "mon" in role or "mgr" in role:
                         service_id = host_fqdn.split('.')[0]
                         
-                    child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, node_type_list, service_id)                
+                    child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, role, service_id)                
                     
                     if host_fqdn not in self.host_map:
                         self.host_map[client_fqdn] = {}
