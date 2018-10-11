@@ -55,8 +55,9 @@ class cbt_config_transcriber:
     def get_host_type(self, host):
         
         try:
-            logger.debug("Get host info for %s" % host)
-            host_info = self.get_host_info(host)
+            host_fqdn = self.get_fqdn(self.remoteclient, client)
+            logger.debug("Get host info for %s" % host_fqdn)
+            host_info = self.get_host_info(host_fqdn)
             return host_info['host_type_list']
         except:
             logger.warn("Unable to get host info")
