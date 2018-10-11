@@ -96,7 +96,7 @@ class cbt_config_transcriber:
                     
                 if client not in self.host_map:
                     self.host_map[client] = {}                
-                    
+                    self.host_map[client]['children'] = []
                     try:
                         #get interface dict
                         self.host_map[client]['interfaces'] = self.get_interfaces(self.remoteclient, client)
