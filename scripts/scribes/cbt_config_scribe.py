@@ -91,10 +91,16 @@ class cbt_config_transcriber:
                     
                 if client not in self.host_map:
                     self.host_map[client] = {}                
-                    #get interface dict
-                    self.host_map[client]['interfaces'] = self.get_interfaces(self.remoteclient, client)
-                    #get cpuinfo dict
-                    self.host_map[client]['cpu_info'] = self.get_cpu_info(self.remoteclient, client)
+                    
+                    try:
+                        #get interface dict
+                        self.host_map[client]['interfaces'] = self.get_interfaces(self.remoteclient, client)
+                        #get cpuinfo dict
+                        self.host_map[client]['cpu_info'] = self.get_cpu_info(self.remoteclient, client)
+                    except:
+                        logger.debug("unable to reach client - %s" % client) 
+                    
+                    
                         
                 self.host_map[client]['children'].append(child)
         self.set_host_type_list()
