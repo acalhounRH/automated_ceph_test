@@ -57,7 +57,6 @@ class cbt_config_transcriber:
         
         try:
             host_fqdn = self.get_fqdn(self.remoteclient, host)
-            logger.debug("Get host info for %s" % host_fqdn)
             host_info = self.get_host_info(host_fqdn)
             return host_info['host_type_list']
         except:
