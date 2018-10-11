@@ -60,7 +60,7 @@ class cbt_config_transcriber:
             host_info = self.get_host_info(host_fqdn)
             return host_info['host_type_list']
         except:
-            logger.warn("Unable to get host type")
+            logger.warn("Unable to get host type list for %s" % host_fqdn)
     
     def make_host_map(self):
         logger.debug("getting ceph node map")
@@ -70,22 +70,23 @@ class cbt_config_transcriber:
 
         for node_type_list in ceph_node_map:
             for host in ceph_node_map[node_type_list]:
-                self.host_map[host] = {}
+                host_fqdn = self.get_fqdn(self.remoteclient, host)
+                self.host_map[host_fqdn] = {}
                 
                 #get interface dict
-                self.host_map[host]['interfaces'] = self.get_interfaces(self.remoteclient, host)
+                self.host_map[host_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, host_fqdn)
                 #get cpuinfo dict
-                self.host_map[host]['cpu_info'] = self.get_cpu_info(self.remoteclient, host)
+                self.host_map[host_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, host_fqdn)
                     
-                self.host_map[host]['children'] = []
-                for service_id in ceph_node_map[node_type_list][host]:
+                self.host_map[host_fqdn]['children'] = []
+                for service_id in ceph_node_map[node_type_list][host_fqdn]:
                     child = {}
                     child['service_type'] = node_type_list
                     child['service_id'] = service_id
                     if "mon" in node_type_list:
                         service_id = host.split('.')[0]
-                    child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host, node_type_list, service_id)                
-                    self.host_map[host]['children'].append(child)
+                    child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, node_type_list, service_id)                
+                    self.host_map[host_fqdn]['children'].append(child)
                     
         if client_list:
             for client in client_list:
@@ -101,11 +102,11 @@ class cbt_config_transcriber:
                     self.host_map[client_fqdn]['children'] = []
                     try:
                         #get interface dict
-                        self.host_map[client_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, client)
+                        self.host_map[client_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, client_fqdn)
                         #get cpuinfo dict
-                        self.host_map[client_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, client)
+                        self.host_map[client_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, client_fqdn)
                     except:
-                        logger.debug("unable to reach client - %s" % client) 
+                        logger.debug("unable to reach client - %s" % client_fqdn) 
                     
                     
                         
