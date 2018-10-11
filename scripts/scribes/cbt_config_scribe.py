@@ -14,7 +14,7 @@ class cbt_config_transcriber:
         self.config_file = cbt_yaml_config
 
         try:
-            self.new_client = ceph_client()
+            self.acitve_ceph_client = ceph_client()
         except:
             logger.warn("Unable to establish a connection to ceph")   
             
@@ -64,10 +64,17 @@ class cbt_config_transcriber:
     
     def make_host_map(self):
         logger.debug("getting ceph node map")
-        ceph_node_map = self.new_client.issue_command("node ls")
+        ceph_node_map = self.acitve_ceph_client.issue_command("node ls")
         logger.debug("getting client list")
         client_list = self.config['cluster']['clients']
-
+        
+        ceph_role_list = ['mds', 'mon', 'ods', 'mgr']
+        for role in ceph_role_list:
+            host_role_list = self.acitve_ceph_client.issue_command("role metadata" % role)
+            print json.dumps(host_role_list, indent=4)
+            
+        sys.exit()
+        
         for node_type_list in ceph_node_map:
             for host in ceph_node_map[node_type_list]:
                 host_fqdn = self.get_fqdn(self.remoteclient, host)
