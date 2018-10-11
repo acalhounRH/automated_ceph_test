@@ -95,6 +95,7 @@ class cbt_config_transcriber:
             print json.dumps(host_role_list, indent=4)
             
             for role_info in host_role_list:
+                print role_info['hostname']
                 host_fqdn = self.get_fqdn(self.remoteclient, role_info['hostname'])
                 
                 child = {}
