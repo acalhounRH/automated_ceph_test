@@ -57,7 +57,9 @@ class cbt_config_transcriber:
             logger.warn("Unable to get host info")
     
     def make_host_map(self):
+        logger.debug("getting ceph node map")
         ceph_node_map = self.new_client.issue_command("node ls")
+        logger.debug("getting client list")
         client_list = self.config['cluster']['clients']
 
         for node_type_list in ceph_node_map:

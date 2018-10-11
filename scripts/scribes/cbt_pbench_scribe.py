@@ -89,7 +89,7 @@ class pbench_transcriber:
                                         tmp_doc[tool][file_name]['service_id'] = instance
                                         tmp_doc[tool][file_name]['process_pid'] = pid
                                         
-                                        if "cpu_usage" in file_name:
+                                        if "cpu_usage" in file_name and self.host_info:
                                             metric_value = metric_value / int(self.host_info['cpu_info']['CPU(s)'])
 
                                         tmp_doc[tool][file_name]['metric_value'] = metric_value
@@ -97,7 +97,7 @@ class pbench_transcriber:
                             else:
                                 tmp_doc[tool][file_name]['metric_stat'] = col_ary[col]
                                 
-                                if "cpuall" in file_name:
+                                if "cpuall" in file_name and self.host_info:
                                     metric_value = metric_value / int(self.host_info['cpu_info']['CPU(s)'])
                                     
                                 tmp_doc[tool][file_name]['metric_value'] = metric_value
