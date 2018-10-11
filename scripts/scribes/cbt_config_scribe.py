@@ -14,11 +14,14 @@ class cbt_config_transcriber:
 
         try:
             self.new_client = ceph_client()
+        except:
+            logger.warn("Unable to establish a connection to ceph")   
+            
             self.remoteclient = ssh_remote_command()
+
             self.host_map = {}
             self.make_host_map()
-        except:
-            logger.warn("Unable to retrive host information")
+
             
     def set_host_type_list(self):
         
