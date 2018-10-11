@@ -94,27 +94,28 @@ class cbt_config_transcriber:
             host_role_list = self.acitve_ceph_client.issue_command("%s metadata" % role)
             print json.dumps(host_role_list, indent=4)
             
-            for role_info in host_role_list:
-                print role_info['hostname']
-                host_fqdn = self.get_fqdn(self.remoteclient, role_info['hostname'])
-                
-                child = {}
-                child['service_type'] = node_type_list
-                child['service_id'] = service_id
-                if "mon" in role or "mgr" in role:
-                    service_id = host_fqdn.split('.')[0]
+            if len(host_role_list) > 0:
+                for role_info in host_role_list:
+                    print role_info['hostname']
+                    host_fqdn = self.get_fqdn(self.remoteclient, role_info['hostname'])
                     
-                child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, node_type_list, service_id)                
-                
-                if host_fqdn not in self.host_map:
-                    self.host_map[client_fqdn] = {}
-                    self.host_map[host_fqdn]['children'] = [] 
-                    #get interface dict
-                    self.host_map[host_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, host_fqdn)
-                    #get cpuinfo dict
-                    self.host_map[host_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, host_fqdn)
+                    child = {}
+                    child['service_type'] = node_type_list
+                    child['service_id'] = service_id
+                    if "mon" in role or "mgr" in role:
+                        service_id = host_fqdn.split('.')[0]
+                        
+                    child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, node_type_list, service_id)                
                     
-                self.host_map[host_fqdn]['children'].append(child)
+                    if host_fqdn not in self.host_map:
+                        self.host_map[client_fqdn] = {}
+                        self.host_map[host_fqdn]['children'] = [] 
+                        #get interface dict
+                        self.host_map[host_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, host_fqdn)
+                        #get cpuinfo dict
+                        self.host_map[host_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, host_fqdn)
+                        
+                    self.host_map[host_fqdn]['children'].append(child)
                     
         
         if client_list:
