@@ -103,9 +103,9 @@ class cbt_config_transcriber:
                     self.host_map[client_fqdn]['children'] = []
                     try:
                         #get interface dict
-                        self.host_map[client]['interfaces'] = self.get_interfaces(self.remoteclient, client)
+                        self.host_map[client_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, client)
                         #get cpuinfo dict
-                        self.host_map[client]['cpu_info'] = self.get_cpu_info(self.remoteclient, client)
+                        self.host_map[client_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, client)
                     except:
                         logger.debug("unable to reach client - %s" % client) 
                     
