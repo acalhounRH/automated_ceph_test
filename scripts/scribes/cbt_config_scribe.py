@@ -110,7 +110,7 @@ class cbt_config_transcriber:
                     child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, role, service_id)                
                     
                     if host_fqdn not in self.host_map:
-                        self.host_map[client_fqdn] = {}
+                        self.host_map[host_fqdn] = {}
                         self.host_map[host_fqdn]['children'] = [] 
                         #get interface dict
                         self.host_map[host_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, host_fqdn)
