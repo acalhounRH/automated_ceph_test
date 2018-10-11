@@ -38,19 +38,20 @@ class cbt_config_transcriber:
     
     def get_host_info(self, hostname_or_ip):
            
-        try: #check if string is an ip
-            ipaddress.ip_address(hostname_or_ip)
-            for host in self.host_map:
-                for interface in self.host_map[host]['interfaces']:
-                    for address in self.host_map[host]['interfaces'][interface]:
-                        if hostname_or_ip in address:
-                            return self.host_map[host]
-                        
-            
-        except: # treat string as hostname 
-            for host in self.host_map:
-                if hostname_or_ip in host:
-                    return self.host_map[host]               
+        host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)   
+#         try: #check if string is an ip
+#             ipaddress.ip_address(hostname_or_ip)
+#             for host in self.host_map:
+#                 for interface in self.host_map[host]['interfaces']:
+#                     for address in self.host_map[host]['interfaces'][interface]:
+#                         if hostname_or_ip in address:
+#                             return self.host_map[host]
+#                         
+#             
+#         except: # treat string as hostname 
+        for host in self.host_map:
+            if host_fqdn in host:
+                return self.host_map[host]               
     
     def get_host_type(self, host):
         
