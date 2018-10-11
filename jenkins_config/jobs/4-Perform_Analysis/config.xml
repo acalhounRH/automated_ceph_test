@@ -22,6 +22,46 @@
           <defaultValue>Nul</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>elasticsearch_host</name>
+          <description></description>
+          <defaultValue>10.18.81.12</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>elasticsearch_port</name>
+          <description></description>
+          <defaultValue>9200</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+        <org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition plugin="nodelabelparameter@1.7.2">
+          <name>agentName</name>
+          <description></description>
+          <allowedSlaves/>
+          <defaultSlaves>
+            <string>master</string>
+          </defaultSlaves>
+          <triggerIfResult>multiSelectionDisallowed</triggerIfResult>
+          <allowMultiNodeSelection>false</allowMultiNodeSelection>
+          <triggerConcurrentBuilds>false</triggerConcurrentBuilds>
+          <ignoreOfflineNodes>false</ignoreOfflineNodes>
+          <nodeEligibility class="org.jvnet.jenkins.plugins.nodelabelparameter.node.AllNodeEligibility"/>
+        </org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>Evaluate_librbdfio_logs</name>
+          <description></description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>Evaluate_pbench</name>
+          <description></description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
+          <name>Evaluate_librbdfio_json</name>
+          <description></description>
+          <defaultValue>true</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -31,16 +71,35 @@
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
-  <concurrentBuild>false</concurrentBuild>
+  <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
-cd $archive_dir/results
-/automated_ceph_test/scripts/evaluatefiologs_pushes.py $Test_ID
-/automated_ceph_test/scripts/evaluatefiojson_pushes.py $Test_ID
+script_dir=$HOME/automated_ceph_test
+pip install -I urllib3
+
+
+#if [ &quot;$Evaluate_librbdfio_json&quot; = &quot;true&quot; ]; then
+#	cd $archive_dir/results
+#    echo &quot;Starting evaluatefiojson_pushes&quot;
+#	$script_dir/scripts/evaluatefiojson_pushes.py $Test_ID $elasticsearch_host $elasticsearch_port
+#fi    
+
+#if [ &quot;$Evaluate_pbench&quot; = &quot;true&quot; ]; then
+#	cd $archive_dir
+#    echo &quot;Starting evaluatepbench_pushes&quot;
+#	$script_dir/scripts/evaluatepbench_pushes.py $Test_ID $elasticsearch_host $elasticsearch_port
+#fi
+
+#if [ &quot;$Evaluate_librbdfio_logs&quot; = &quot;true&quot; ]; then
+#	cd $archive_dir/results
+#    echo &quot;Starting evaluatefiologs_pushes.py&quot;
+#	$script_dir/scripts/evaluatefiologs_pushes.py $Test_ID $elasticsearch_host $elasticsearch_port
+#fi
+
 cd $archive_dir
-/automated_ceph_test/scripts/evaluatepbench_pushes.py $Test_ID</command>
+$script_dir/scripts/index_cbt.py -t $Test_ID -h $elasticsearch_host -p $elasticsearch_port -d </command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

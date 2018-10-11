@@ -14,7 +14,7 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-6f986dd8-d0c4-48ec-872f-ef04f1ad5e18</name>
+          <name>separator-8fed8e8e-9b24-4170-8ecf-45c415bfe71a</name>
           <description></description>
           <sectionHeader>Linode Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -80,7 +80,7 @@
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-f6cc1854-3912-4f76-96e3-391175ba3033</name>
+          <name>separator-354a2c8c-1484-406e-ae40-01142ab1fa59</name>
           <description></description>
           <sectionHeader>Ceph-Ansible Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -131,7 +131,7 @@ devices:
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-ad92bfc3-a75e-4178-a950-1b72de1f492c</name>
+          <name>separator-b3d5fb16-acca-4993-adf5-10b3f19acdb7</name>
           <description></description>
           <sectionHeader>Pbench Monitoring Tools</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -215,7 +215,7 @@ devices:
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-e46e979d-8e82-4504-a9e3-b602b681fa8d</name>
+          <name>separator-0f978096-b659-4583-9a45-e5c8795d700e</name>
           <description></description>
           <sectionHeader>Ceph Benchmark Tool and Analysis Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -247,27 +247,19 @@ devices:
     clusterid: ceph
     iterations: 1
     pool_profiles:
-      rbd3rep:
+      rep3:
         pg_size: 128
         pgp_size: 128
         replication: 3
 benchmarks:
-    librbdfio:
-        time_based: true
-        time: 120
-        ramp: 60
-        vol_size: 4096
-        volumes_per_client: 1
-        log_avg_msec: [1000]
-        mode:  [read] #[read, write, randwrite, randread, randrw] 
-        op_size: [4096] #[4096, 8192, 16384, 32768, 65536] 
-        concurrent_procs: [1]
-        numjobs: [1]
-        iodepth: [32]  #[16]
-        cmd_path: &apos;/usr/local/bin/fio&apos;
-        pool_profile: &apos;rbd3rep&apos;
-        use_existing_volumes: false
-</defaultValue>
+    radosbench:
+        op_size: [4096, 8192, 16384, 32768, 65536]
+        write_only: False
+        time: 300
+        concurrent_ops: [ 128 ]
+        concurrent_procs: 1
+        use_existing: False
+        pool_profile: rep3</defaultValue>
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
       </parameterDefinitions>

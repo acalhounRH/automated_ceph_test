@@ -11,40 +11,100 @@
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.model.BooleanParameterDefinition>
+          <name>linode_cluster</name>
+          <description>Flag to specify if the setup is being performed in linode. Default is false</description>
+          <defaultValue>false</defaultValue>
+        </hudson.model.BooleanParameterDefinition>
+        <hudson.model.BooleanParameterDefinition>
           <name>sar</name>
           <description></description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>sar_interval</name>
+          <description>The interval at which Sar will collect samples, default is 3 seconds.</description>
+          <defaultValue>3</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>iostat</name>
           <description></description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>iostat_interval</name>
+          <description>The interval at which iostat will collect samples, default is 3 seconds.</description>
+          <defaultValue>3</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>mpstat</name>
           <description></description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>mpstat_interval</name>
+          <description>The interval at which mpstat will collect samples, default is 3 seconds.</description>
+          <defaultValue>3</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>pidstat</name>
           <description></description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>pidstat_interval</name>
+          <description>The interval at which pidstat will collect samples, default is 3 seconds.</description>
+          <defaultValue>3</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>proc-vmstat</name>
           <description></description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>proc-vmstat_interval</name>
+          <description>The interval at which proc-vmstat  will collect samples, default is 3 seconds.</description>
+          <defaultValue>3</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>proc-interrupts</name>
           <description></description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>proc-interrupts_interval</name>
+          <description>The interval at which proc-interrupts will collect samples, default is 3 seconds.</description>
+          <defaultValue>3</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
           <name>turbostat</name>
           <description></description>
           <defaultValue>false</defaultValue>
         </hudson.model.BooleanParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>turbostat_interval</name>
+          <description>The interval at which turbostat will collect samples, default is 3 seconds.</description>
+          <defaultValue>3</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition plugin="nodelabelparameter@1.7.2">
+          <name>agentName</name>
+          <description></description>
+          <allowedSlaves/>
+          <defaultSlaves>
+            <string>master</string>
+          </defaultSlaves>
+          <triggerIfResult>multiSelectionDisallowed</triggerIfResult>
+          <allowMultiNodeSelection>false</allowMultiNodeSelection>
+          <triggerConcurrentBuilds>false</triggerConcurrentBuilds>
+          <ignoreOfflineNodes>false</ignoreOfflineNodes>
+          <nodeEligibility class="org.jvnet.jenkins.plugins.nodelabelparameter.node.AllNodeEligibility"/>
+        </org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -54,45 +114,67 @@
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
-  <concurrentBuild>false</concurrentBuild>
+  <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
+script_dir=$HOME/automated_ceph_test
+source /etc/profile.d/pbench-agent.sh
+
+if [ &quot;$linode_cluster&quot; == &quot;true&quot; ]; then
+	echo &quot;setting up for linode&quot;
+	inventory_file=$HOME/ceph-linode/ansible_inventory_tmp
+    &gt; $HOME/.ssh/config
+else
+	inventory_file=$script_dir/ansible_inventory
+fi 
+
 
 function add_to_sshconfig {
+# if user have predefined users, it is their responsibility to setup ssh keys user register_host.sh
+if [ &quot;$linode_cluster&quot; == &quot;true&quot; ]; then
+	new_config=&quot;
+	Host $1
+  		User root
+  		StrictHostKeyChecking no
+	&quot;
 
-new_config=&quot;
-Host $1
-  User root
-  StrictHostKeyChecking no
-&quot;
-
-echo &quot;$new_config&quot; &gt;&gt; $HOME/.ssh/config
+	echo &quot;$new_config&quot; &gt;&gt; $HOME/.ssh/config
+fi 
 
 }
 
 function register_tools {
 
-	declare -a tools_ary
-
-	if [ &quot;$sar&quot; = &quot;true&quot; ]; then tools_ary+=&apos; sar&apos;; fi
-    if [ &quot;$iostat&quot; = &quot;true&quot; ]; then tools_ary+=&apos; iostat&apos;; fi
-    if [ &quot;$mpstat&quot; = &quot;true&quot; ]; then tools_ary+=&apos; mpstat&apos;; fi
-    if [ &quot;$pidstat&quot; = &quot;true&quot; ]; then tools_ary+=&apos; pidstat&apos;; fi
-    if [ &quot;$proc-vmstat&quot; = &quot;true&quot; ]; then tools_ary+=&apos; proc-vmstat&apos;; fi
-    if [ &quot;$proc-interrupts&quot; = &quot;true&quot; ]; then tools_ary+=&apos; proc-interrupts&apos;; fi
-    if [ &quot;$turbostat&quot; = &quot;true&quot; ]; then tools_ary+=&apos; turbostat&apos;; fi
+	if [ &quot;$sar&quot; = &quot;true&quot; ]; then
+        /opt/pbench-agent/util-scripts/pbench-register-tool --name=sar --remote=$1 default -- --interval=$sar_interval
+    fi
+    if [ &quot;$iostat&quot; = &quot;true&quot; ]; then
+        /opt/pbench-agent/util-scripts/pbench-register-tool --name=iostat --remote=$1 default -- --interval=$iostat_interval
+    fi
+    if [ &quot;$mpstat&quot; = &quot;true&quot; ]; then
+        /opt/pbench-agent/util-scripts/pbench-register-tool --name=mpstat --remote=$1 default -- --interval=$mpstat_interval        
+    fi
+    if [ &quot;$pidstat&quot; = &quot;true&quot; ]; then
+        /opt/pbench-agent/util-scripts/pbench-register-tool --name=pidstat --remote=$1 default -- --interval=$pidstat_interval        
+    fi
+    if [ &quot;$proc-vmstat&quot; = &quot;true&quot; ]; then 
+        /opt/pbench-agent/util-scripts/pbench-register-tool --name=proc-vmstat --remote=$1 default -- --interval=$proc_vmstat_interval        
+    fi
+    if [ &quot;$proc-interrupts&quot; = &quot;true&quot; ]; then
+        /opt/pbench-agent/util-scripts/pbench-register-tool --name=proc-interrupts --remote=$1 default -- --interval=$proc_interrupts_interval        
+    fi
+    if [ &quot;$turbostat&quot; = &quot;true&quot; ]; then
+        /opt/pbench-agent/util-scripts/pbench-register-tool --name=turbostat --remote=$1 default -- --interval=$turbo_interval       
+    fi
     
-    for tool_name in $tools_ary; do
-    	/opt/pbench-agent/util-scripts/pbench-register-tool --name=$tool_name --remote=$1 default -- --interval=3
-    done
+    #for tool_name in $tools_ary; do
+    #	/opt/pbench-agent/util-scripts/pbench-register-tool --name=$tool_name --remote=$1 default -- --interval=3
+    #done
 }
 
-source /etc/profile.d/pbench-agent.sh
-&gt; $HOME/.ssh/config
-
-service_inventory=&quot; 
+service_inventory=&quot;
 [servers:children]
 osds
 mons
@@ -100,50 +182,82 @@ mgrs
 clients
 &quot;
 
-inventory_file=/automated_ceph_test/ceph-linode/ansible_inventory_tmp
+if [ &quot;$linode_cluster&quot; == &quot;true&quot; ]; then
+	echo &quot;copy linode inventory&quot;
+	cp $HOME/ceph-linode/ansible_inventory $inventory_file
+fi
 
-cp /automated_ceph_test/ceph-linode/ansible_inventory $inventory_file
 echo &quot;$service_inventory&quot; &gt;&gt; $inventory_file
 
 #Setup and install pbench on all linode host
 cat $inventory_file
 
-if [ -d &quot;/automated_ceph_test/perf-dept&quot; ]; then
-	cd /automated_ceph_test/perf-dept
-    git checkout master
-	git remote update
-	git rebase 
-    cd sysadmin/Ansible
-else
-	cd /automated_ceph_test/
-	git clone http://git.app.eng.bos.redhat.com/git/perf-dept.git
-    cd perf-dept/sysadmin/Ansible
-fi
+#if [ &quot;$linode_cluster&quot; == &quot;true&quot; ]; then
+	yum install ceph-common -y
+	ansible -m fetch -a &quot;src=/etc/ceph/ceph.conf dest=/etc/ceph/ceph.conf.d&quot; client-000 -i $inventory_file
+    cp /etc/ceph/ceph.conf.d/client-000/etc/ceph/ceph.conf /etc/ceph/ceph.conf
+    ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
+	cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
+    cd /etc/yum.repos.d
+    yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y 
+    yum install -y yum-utils; yum-config-manager --enable epel
+	wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; yum install pbench-agent -y
+    yum install pbench-fio -y
+	yum install pdsh -y
+	echo &quot;******************* install pbench agent in linode&quot;
+	ansible -m shell -a &quot;yum install wget -y; cd /etc/yum.repos.d; wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; yum install pbench-agent -y&quot; -i $inventory_file all
+    echo &quot;*******************install pbench-fio and pdsh for CBT&quot;
+	ansible -m shell -a &quot;yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y; yum install -y yum-utils; yum-config-manager --enable epel; yum install pbench-fio -y; yum install pdsh -y;&quot; all -i $inventory_file
+    
+#else
 
-ansible-playbook pbench-repo-install.yml -i $inventory_file
-ansible -m shell -a &quot;yum install yum-utils -y; yum-config-manager --disable pbench; yum install pbench-agent -y&quot; -i $inventory_file servers
+#	if [ -d &quot;$script_dir/perf-dept&quot; ]; then
+#		cd $HOME/perf-dept
+#	    git checkout master
+#		git remote update
+#		git rebase 
+#	    cd sysadmin/Ansible
+#	else
+#		cd $HOME/
+#		git clone http://git.app.eng.bos.redhat.com/git/perf-dept.git
+#	    cd perf-dept/sysadmin/Ansible
+#	fi
 
-#install pbench-fio and pdsh for CBT
-ansible -m shell -a &quot;yum install pbench-fio -y; yum install pdsh -y;&quot; all -i $inventory_file
+#	echo &quot;******************* install pbench repo&quot;
+#	ansible-playbook pbench-repo-install.yml -i $inventory_file
+
+#	echo &quot;******************* install pbench agent&quot;
+#	ansible-playbook pbench-agent-internal-install.yml -i $inventory_file
+#   echo &quot;*******************install pbench-fio and pdsh for CBT&quot;
+#	ansible -m shell -a &quot;wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm; rpm -ivh epel-release-latest-7.noarch.rpm; yum install pbench-fio -y; yum install pdsh -y;&quot; all -i $inventory_file
+#fi
+	
+ansible -m copy -a &quot;src=/etc/ceph/ceph.client.admin.keyring dest=/etc/ceph/ceph.client.admin.keyring&quot; clients -i $inventory_file
+
 
 if [ ! -d /var/lib/pbench-agent/tools-default-old ]; then
   sudo mkdir -p /var/lib/pbench-agent/tools-default-old;
 fi
 
+echo &quot;******************* making tools dir&quot;
 sudo mv /var/lib/pbench-agent/tools-default/* /var/lib/pbench-agent/tools-default-old/
 sudo chmod 777 /var/lib/pbench-agent/tools-default/
 sudo chmod 777 /var/lib/pbench-agent/pbench.log 
 
+echo &quot;******************* registering tools:&quot;
 for i in `ansible --list-host -i $inventory_file all |grep -v hosts | grep -v &quot;:&quot;`
         do
+        		echo &quot;testing $i&quot;
                 ping $i -c 1 &gt; /dev/null 2&gt;&amp;1
                 exit_status=`echo $?`
                 if [ &quot;$exit_status&quot; -gt &quot;0&quot; ]; then
+                		echo &quot;failed ping on $i&quot;
                 		add_to_sshconfig `cat $inventory_file | grep $i | awk {&apos;print $2&apos;} | sed &apos;s/.*=//&apos;`
                 		register_tools `cat $inventory_file | grep $i | awk {&apos;print $2&apos;} | sed &apos;s/.*=//&apos;`
                 elif [ &quot;$exit_status&quot; -eq &quot;0&quot; ]; then
-                		add_to_sshconfig $1
-                		register_tools $1
+                		echo &quot;pinged $i&quot;
+                		add_to_sshconfig $i
+                		register_tools $i
                 else
                         echo &quot;Unable to register tools on $i&quot;
                 fi

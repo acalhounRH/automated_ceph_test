@@ -26,55 +26,46 @@
         <hudson.model.TextParameterDefinition>
           <name>Linode_Cluster_Configuration</name>
           <description>Modify to have the desired count and Linode plan for each daemon type.</description>
-          <defaultValue>[
-  {
-    &quot;count&quot;: 3,
-    &quot;prefix&quot;: &quot;mon&quot;,
-    &quot;plan&quot;: 1,
-    &quot;group&quot;: &quot;mons&quot;
-  },
-  {
-    &quot;count&quot;: 3,
-    &quot;prefix&quot;: &quot;osd&quot;,
-    &quot;plan&quot;: 1,
-    &quot;root_size&quot;: 4096,
-    &quot;group&quot;: &quot;osds&quot;
-  },
-  {
-    &quot;count&quot;: 1,
-    &quot;prefix&quot;: &quot;mgr&quot;,
-    &quot;plan&quot;: 1,
-    &quot;group&quot;: &quot;mgrs&quot;
-  },
-  {
-    &quot;count&quot;: 1,
-    &quot;prefix&quot;: &quot;client&quot;,
-    &quot;plan&quot;: 1,
-    &quot;group&quot;: &quot;clients&quot;
-  }
-]</defaultValue>
+          <defaultValue>{
+  &quot;datacenter&quot;: &quot;Newark&quot;,
+  &quot;distribution&quot;: &quot;CentOS 7&quot;,
+  &quot;kernel&quot;: 210,
+  &quot;nodes&quot;: [
+      {
+        &quot;count&quot;: 3,
+        &quot;prefix&quot;: &quot;mon&quot;,
+        &quot;plan&quot;: 1,
+        &quot;group&quot;: &quot;mons&quot;
+      },
+      {
+        &quot;count&quot;: 3,
+        &quot;prefix&quot;: &quot;osd&quot;,
+        &quot;plan&quot;: 1,
+        &quot;root_size&quot;: 4096,
+        &quot;group&quot;: &quot;osds&quot;
+      },
+      {
+        &quot;count&quot;: 1,
+        &quot;prefix&quot;: &quot;mds&quot;,
+        &quot;plan&quot;: 1,
+        &quot;group&quot;: &quot;mdss&quot;
+      },
+      {
+        &quot;count&quot;: 1,
+        &quot;prefix&quot;: &quot;mgr&quot;,
+        &quot;plan&quot;: 1,
+        &quot;group&quot;: &quot;mgrs&quot;
+      },
+      {
+        &quot;count&quot;: 1,
+        &quot;prefix&quot;: &quot;client&quot;,
+        &quot;plan&quot;: 1,
+        &quot;group&quot;: &quot;clients&quot;
+      }
+  ]
+}</defaultValue>
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>ceph_iso_file</name>
-          <description>The RHCS iso to be used for installation.
-
-by default will specify the latest version of RHCS on download site.</description>
-          <defaultValue>RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso</defaultValue>
-          <trim>false</trim>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
-          <name>ceph_iso_path</name>
-          <description>location of the RHCS iso file to be used for installation.
-
-by default will specify the latest version of RHCS on download site.
-
-Example: 
-
-http://download-node-02.eng.bos.redhat.com/composes/auto/ceph-3.0-rhel-7/latest-RHCEPH-3-RHEL-7/compose/OSD/x86_64/iso/</description>
-          <defaultValue>http://download-node-02.eng.bos.redhat.com/composes/auto/ceph-3.0-rhel-7/latest-RHCEPH-3-RHEL-7/compose/OSD/x86_64/iso/</defaultValue>
-          <trim>false</trim>
-        </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>ceph_ansible_all_config</name>
           <description>Contents of the all.yml to be used with ceph-ansible.</description>
@@ -87,7 +78,7 @@ ceph_repository: rhcs
 ceph_rhcs_version: 3 
 valid_ceph_repository_type:
   - iso
-ceph_rhcs_iso_path: /automated_ceph_test/ceph-linode/staging/rhcs_latest/$ceph_iso_file
+ceph_rhcs_iso_path: $HOME/automated_ceph_test/staging_area/rhcs_latest/&lt;ceph_iso_file&gt;
 monitor_interface: eth0
 journal_size: 5120 # OSD journal size in MB
 public_network: 192.168.128.0/17
@@ -107,6 +98,19 @@ devices:
   - /dev/sdc</defaultValue>
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
+        <org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition plugin="nodelabelparameter@1.7.2">
+          <name>agentName</name>
+          <description></description>
+          <allowedSlaves/>
+          <defaultSlaves>
+            <string>master</string>
+          </defaultSlaves>
+          <triggerIfResult>multiSelectionDisallowed</triggerIfResult>
+          <allowMultiNodeSelection>false</allowMultiNodeSelection>
+          <triggerConcurrentBuilds>false</triggerConcurrentBuilds>
+          <ignoreOfflineNodes>false</ignoreOfflineNodes>
+          <nodeEligibility class="org.jvnet.jenkins.plugins.nodelabelparameter.node.AllNodeEligibility"/>
+        </org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -116,35 +120,32 @@ devices:
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
-  <concurrentBuild>false</concurrentBuild>
+  <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
       <command>#!/bin/bash
 
-echo &quot;test test test&quot;
-inventory_file=/automated_ceph_test/ceph-linode/ansible_inventory
 
-#clearout ceph-ansible staging area 
-mv /automated_ceph_test/staging_area/rhcs_latest/* /automated_ceph_test/staging_area/rhcs_old/
-cd /automated_ceph_test/staging_area/rhcs_latest/
+echo &quot;test test test&quot;
+systemctl stop firewalld 
+systemctl stop iptables
+script_dir=$HOME/automated_ceph_test
+inventory_file=$HOME/ceph-linode/ansible_inventory
+
+sudo yum remove ceph-ansible -y
+rm -rf /usr/share/ceph-ansible
+
+cd $script_dir/staging_area/rhcs_latest/
+new_ceph_iso_file=&quot;$(ls)&quot;
 
 sudo rm -rf /ceph-ansible-keys
 sudo mkdir -m0777 /ceph-ansible-keys
 
-#pull iso
-if [[ $ceph_iso_file =~ &quot;RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso&quot; ]]; then
-	sudo wget -r -nd --no-parent -A &quot;$ceph_iso_file&quot; $ceph_iso_path &gt; /dev/null
-    new_ceph_iso_file=&quot;$(ls)&quot;
-else
-	sudo wget $ceph_iso_path/$ceph_iso_file &gt; /dev/null
-fi
-
-
 #mount ISO and create rhcs yum repo file 
-sudo cp /automated_ceph_test/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
-sudo mkdir -p /mnt/rhcs-latest/
+sudo cp $script_dir/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
+sudo mkdir -p /mnt/rhcs_latest/
 sudo umount /mnt/rhcs_latest/
-sudo mount /automated_ceph_test/staging_area/rhcs_latest/RHCEPH* /mnt/rhcs_latest/
+sudo mount $script_dir/staging_area/rhcs_latest/RHCEPH* /mnt/rhcs_latest/
 sudo yum clean all
 
 
@@ -153,17 +154,16 @@ sudo yum install ceph-ansible -y
 
 sudo sed -i &apos;s/gpgcheck=1/gpgcheck=0/g&apos; /usr/share/ceph-ansible/roles/ceph-common/templates/redhat_storage_repo.j2
 
+mkdir -p $script_dir/staging_area/tmp
 #setup all.yml
-echo &quot;$ceph_ansible_all_config&quot; &gt; /automated_ceph_test/staging_area/tmp/all.yml
-if [[ $ceph_iso_file =~ &quot;RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso&quot; ]]; then
-	sed -i &quot;s/RHCEPH.*$/$new_ceph_iso_file/g&quot; /automated_ceph_test/staging_area/tmp/all.yml
-fi
-sudo cp /automated_ceph_test/staging_area/tmp/all.yml /usr/share/ceph-ansible/group_vars/all.yml
+echo &quot;$ceph_ansible_all_config&quot; &gt; $script_dir/staging_area/tmp/all.yml
+sed -i &quot;s/&lt;ceph_iso_file&gt;/$new_ceph_iso_file/g&quot; $script_dir/staging_area/tmp/all.yml
+sudo cp $script_dir/staging_area/tmp/all.yml /usr/share/ceph-ansible/group_vars/all.yml
 
 
 #setup osd.yml
-echo &quot;$ceph_ansible_osds_config&quot; &gt; /automated_ceph_test/staging_area/tmp/osds.yml
-sudo cp /automated_ceph_test/staging_area/tmp/osds.yml /usr/share/ceph-ansible/group_vars/osds.yml
+echo &quot;$ceph_ansible_osds_config&quot; &gt; $script_dir/staging_area/tmp/osds.yml
+sudo cp $script_dir/staging_area/tmp/osds.yml /usr/share/ceph-ansible/group_vars/osds.yml
 
 
 #copy site.yml
@@ -171,7 +171,7 @@ sudo cp /usr/share/ceph-ansible/site.yml.sample /usr/share/ceph-ansible/site.yml
 
 
 #Start Ceph-linode deployment
-cd /automated_ceph_test/ceph-linode
+cd $HOME/ceph-linode
 echo &quot;$Linode_Cluster_Configuration&quot; &gt; cluster.json
 virtualenv-2 linode-env &amp;&amp; source linode-env/bin/activate &amp;&amp; pip install linode-python
 export LINODE_API_KEY=$Linode_API_KEY
@@ -181,22 +181,12 @@ ANSIBLE_STRATEGY=debug; ./launch.sh --ceph-ansible /usr/share/ceph-ansible
 
 
 #Health check
-/automated_ceph_test/scripts/check_cluster_status.sh
+$script_dir/scripts/check_cluster_status.sh $inventory_file
 exit_status=$?
 
-if [ &quot;$exit_status&quot; -eq &quot;0&quot; ]; then
-	#copy client key to all clients
-	ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
-	ansible -m copy -a &quot;src=$ceph_client_key dest=/etc/ceph/ceph.client.admin.keyring&quot; clients -i $inventory_file 
-else
-	exit 1
-fi </command>
+exit $exit_status</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
-  <buildWrappers>
-    <org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper plugin="credentials-binding@1.15">
-      <bindings class="empty-list"/>
-    </org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper>
-  </buildWrappers>
+  <buildWrappers/>
 </project>

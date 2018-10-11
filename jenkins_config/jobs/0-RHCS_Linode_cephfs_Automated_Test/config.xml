@@ -11,10 +11,15 @@
   <description></description>
   <keepDependencies>false</keepDependencies>
   <properties>
+    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
+    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
+      <autoRebuild>false</autoRebuild>
+      <rebuildDisabled>false</rebuildDisabled>
+    </com.sonyericsson.rebuild.RebuildSettings>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-6f986dd8-d0c4-48ec-872f-ef04f1ad5e18</name>
+          <name>separator-c182a11a-bf2c-4848-b9cc-dd4b23c139af</name>
           <description></description>
           <sectionHeader>Linode Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -34,7 +39,7 @@
         <hudson.model.PasswordParameterDefinition>
           <name>Linode_API_key</name>
           <description>Setup a Linode account and get an API key: https://www.linode.com/docs/platform/api/api-key</description>
-          <defaultValue>{AQAAABAAAAAQ7bznjY+1ddyQK/LT4BKJP2TjVEkkwm5rPtErxfKsonE=}</defaultValue>
+          <defaultValue>{AQAAABAAAABQUGayUvpksPXK4uinhB7bzEHbv3xAebT62ExGGp9teYQiCKeqQ39afcOgXjZzRzs4/guE1q8C4PNXKmb9R9K5dUcKZ52ZD/2GbMHUrMMDekH1L0BWJVQgsqZSkbTYbc7Y}</defaultValue>
         </hudson.model.PasswordParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>Linode_Cluster_Configuration</name>
@@ -80,7 +85,7 @@
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-f6cc1854-3912-4f76-96e3-391175ba3033</name>
+          <name>separator-5c4d628c-a706-46e1-9add-7faf4b55b9ab</name>
           <description></description>
           <sectionHeader>Ceph-Ansible Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -88,14 +93,14 @@
         </jenkins.plugins.parameter__separator.ParameterSeparatorDefinition>
         <hudson.model.StringParameterDefinition>
           <name>iso_file</name>
-          <description></description>
+          <description>assuming there is 1 .iso file in iso_path directory, the default value will find it</description>
           <defaultValue>RHCEPH-*-x86_64-dvd.iso</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.StringParameterDefinition>
           <name>iso_path</name>
-          <description></description>
-          <defaultValue>http://download-node-02.eng.bos.redhat.com/composes/auto/ceph-3.0-rhel-7/latest-RHCEPH-3-RHEL-7/compose/OSD/x86_64/iso/</defaultValue>
+          <description>directory containing the ISO image</description>
+          <defaultValue>http://download-node-02.eng.bos.redhat.com/rel-eng/RHCEPH-3.1-RHEL-7-20180912.0/compose/Tools/x86_64/iso/</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.TextParameterDefinition>
@@ -117,7 +122,9 @@ public_network: 192.168.0.0/17
 osd_objectstore: filestore
 ceph_conf_overrides:
   mon:
-    mon_allow_pool_delete: true</defaultValue>
+    mon_allow_pool_delete: true
+  osd:
+    filestore_merge_threshold: -1</defaultValue>
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <hudson.model.TextParameterDefinition>
@@ -131,7 +138,7 @@ devices:
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-ad92bfc3-a75e-4178-a950-1b72de1f492c</name>
+          <name>separator-8f59b9b0-46c9-4f85-af2e-03ebe45edfda</name>
           <description></description>
           <sectionHeader>Pbench Monitoring Tools</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -178,7 +185,7 @@ devices:
         <hudson.model.StringParameterDefinition>
           <name>pidstat_interval</name>
           <description></description>
-          <defaultValue>3</defaultValue>
+          <defaultValue>30</defaultValue>
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <hudson.model.BooleanParameterDefinition>
@@ -215,7 +222,7 @@ devices:
           <trim>false</trim>
         </hudson.model.StringParameterDefinition>
         <jenkins.plugins.parameter__separator.ParameterSeparatorDefinition plugin="parameter-separator@1.0">
-          <name>separator-e46e979d-8e82-4504-a9e3-b602b681fa8d</name>
+          <name>separator-365655a5-bcbc-4ec4-9bb8-f2112f5df7c3</name>
           <description></description>
           <sectionHeader>Ceph Benchmark Tool and Analysis Settings</sectionHeader>
           <sectionHeaderStyle>color: black; background: Red; font-family: Roboto, sans-serif !important; padding: 5px; text-align: center; font-size: 20pt</sectionHeaderStyle>
@@ -272,11 +279,6 @@ benchmarks:
         </hudson.model.TextParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
-    <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
-    <com.sonyericsson.rebuild.RebuildSettings plugin="rebuild@1.28">
-      <autoRebuild>false</autoRebuild>
-      <rebuildDisabled>false</rebuildDisabled>
-    </com.sonyericsson.rebuild.RebuildSettings>
   </properties>
   <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.53">
     <script>pipeline {

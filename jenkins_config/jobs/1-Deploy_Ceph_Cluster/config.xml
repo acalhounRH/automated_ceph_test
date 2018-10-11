@@ -7,7 +7,7 @@
     <jenkins.model.BuildDiscarderProperty>
       <strategy class="hudson.tasks.LogRotator">
         <daysToKeep>-1</daysToKeep>
-        <numToKeep>5</numToKeep>
+        <numToKeep>20</numToKeep>
         <artifactDaysToKeep>-1</artifactDaysToKeep>
         <artifactNumToKeep>-1</artifactNumToKeep>
       </strategy>
@@ -62,7 +62,7 @@ ceph_repository: rhcs
 ceph_rhcs_version: 3 
 valid_ceph_repository_type:
   - iso
-ceph_rhcs_iso_path: /automated_ceph_test/ceph-linode/staging/rhcs_latest/$ceph_iso_file
+ceph_rhcs_iso_path: $HOME/automated_ceph_test/staging_area/rhcs_latest/$ceph_iso_file
 monitor_interface: eth0
 journal_size: 5120 # OSD journal size in MB
 public_network: 192.168.128.0/17
@@ -82,6 +82,19 @@ devices:
   - /dev/sdc</defaultValue>
           <trim>false</trim>
         </hudson.model.TextParameterDefinition>
+        <org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition plugin="nodelabelparameter@1.7.2">
+          <name>agentName</name>
+          <description></description>
+          <allowedSlaves/>
+          <defaultSlaves>
+            <string>master</string>
+          </defaultSlaves>
+          <triggerIfResult>multiSelectionDisallowed</triggerIfResult>
+          <allowMultiNodeSelection>false</allowMultiNodeSelection>
+          <triggerConcurrentBuilds>false</triggerConcurrentBuilds>
+          <ignoreOfflineNodes>false</ignoreOfflineNodes>
+          <nodeEligibility class="org.jvnet.jenkins.plugins.nodelabelparameter.node.AllNodeEligibility"/>
+        </org.jvnet.jenkins.plugins.nodelabelparameter.NodeParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
   </properties>
@@ -97,34 +110,49 @@ devices:
       <command>#!/bin/bash
 
 echo &quot;test test test&quot;
-script_dir=/automated_ceph_test
+script_dir=$HOME/automated_ceph_test
 inventory_file=$script_dir/ansible_inventory
 
 echo &quot;$ceph_inventory&quot; &gt; $inventory_file
+if [ -d /usr/share/ceph-ansible ]; then
+	echo &quot;purging cluster and removing previous version of ceph-ansible&quot;
+	cd /usr/share/ceph-ansible
+	ansible-playbook infrastructure-playbooks/purge-cluster.yml -i $inventory_file -e ireallymeanit=yes
+fi
+
+sudo yum remove ceph-ansible -y
 
 #clearout ceph-ansible staging area 
-mv $script_dir/staging_area/rhcs_latest/* $script_dir/staging_area/rhcs_old/
-pwd
-cd $script_dir/staging_area/rhcs_latest/
-pwd
 
+if [ ! -d $script_dir/staging_area/rhcs_latest/ ]; then
+	mkdir -p $script_dir/staging_area/rhcs_latest
+    mkdir -p $script_dir/staging_area/rhcs_old
+    chmod -R 777 $script_dir/staging_area/
+
+
+else
+	mv $script_dir/staging_area/rhcs_latest/* $script_dir/staging_area/rhcs_old/
+	pwd
+fi
+	cd $script_dir/staging_area/rhcs_latest/
+	 
 sudo rm -rf /ceph-ansible-keys
 sudo mkdir -m0777 /ceph-ansible-keys
 
 #pull iso
 if [[ $ceph_iso_file =~ &quot;RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso&quot; ]]; then
 	echo &quot;**************$ceph_iso_file&quot;
-	sudo wget -r -nd --no-parent -A &quot;$ceph_iso_file&quot; $ceph_iso_path &gt; /dev/null
+	sudo wget -r -nd --no-parent -A &quot;$ceph_iso_file&quot; $ceph_iso_path &amp;&gt; /dev/null
     new_ceph_iso_file=&quot;$(ls)&quot;
 else
-	sudo wget $ceph_iso_path/$ceph_iso_file &gt; /dev/null
+	sudo wget $ceph_iso_path/$ceph_iso_file &amp;&gt; /dev/null
 fi
+ chmod 777 $ceph_iso_file
 
-sudo yum remove ceph-ansilbe -y
 
 #mount ISO and create rhcs yum repo file 
 sudo cp $script_dir/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
-sudo mkdir -p /mnt/rhcs-latest/
+sudo mkdir -p /mnt/rhcs_latest/
 sudo umount /mnt/rhcs_latest/
 sudo mount $script_dir/staging_area/rhcs_latest/RHCEPH* /mnt/rhcs_latest/
 sudo yum clean all
@@ -133,8 +161,14 @@ sudo yum clean all
 #install ceph-ansible
 sudo yum install ceph-ansible -y
 
+#added in order to allow installation of bluestore on lVMs
+patch /usr/share/ceph-ansible/roles/ceph-osd/tasks/check_mandatory_vars.yml ~/automated_ceph_test/scripts/check_mandatory_vars.patch
+patch /usr/share/ceph-ansible/roles/ceph-osd/tasks/scenarios/lvm.yml ~/automated_ceph_test/scripts/lvm.patch
+
+
 sudo sed -i &apos;s/gpgcheck=1/gpgcheck=0/g&apos; /usr/share/ceph-ansible/roles/ceph-common/templates/redhat_storage_repo.j2
 
+mkdir -p $script_dir/staging_area/tmp
 #setup all.yml
 echo &quot;$ceph_ansible_all_config&quot; &gt; $script_dir/staging_area/tmp/all.yml
 if [[ $ceph_iso_file =~ &quot;RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso&quot; ]]; then
@@ -173,7 +207,7 @@ fi </command>
   </builders>
   <publishers/>
   <buildWrappers>
-    <org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper plugin="credentials-binding@1.15">
+    <org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper plugin="credentials-binding@1.16">
       <bindings class="empty-list"/>
     </org.jenkinsci.plugins.credentialsbinding.impl.SecretBuildWrapper>
   </buildWrappers>
