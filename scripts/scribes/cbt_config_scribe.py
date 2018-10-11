@@ -90,6 +90,8 @@ class cbt_config_transcriber:
                     
         if client_list:
             for client in client_list:
+                
+                fqdn = get_fqdn(self.remoteclient, client)
                 child = {}
                 child['service_type'] = "client"
                 child['service_pid'] = "-1"
@@ -114,7 +116,7 @@ class cbt_config_transcriber:
         
         
     def get_fqdn(self, remoteclient, host):
-        output = remoteclient.issue_command(host, "lscpu")
+        output = remoteclient.issue_command(host, "hostname -f")
         
         print output
         
