@@ -55,6 +55,7 @@ class cbt_config_transcriber:
     def get_host_type(self, host):
         
         try:
+            logger.debug("Get host info for %s" % host)
             host_info = self.get_host_info(host)
             return host_info['host_type_list']
         except:
