@@ -67,7 +67,6 @@ class cbt_config_transcriber:
         logger.debug("getting ceph node map")
         ceph_node_map = self.new_client.issue_command("node ls")
         logger.debug("getting client list")
-        print json.dumps(ceph_node_map, indent=4)
         client_list = self.config['cluster']['clients']
 
         for node_type_list in ceph_node_map:
