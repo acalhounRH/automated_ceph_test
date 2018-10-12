@@ -96,16 +96,14 @@ class cbt_config_transcriber:
             
             if len(host_role_list) > 0:
                 for role_info in host_role_list:
-                    print role_info['hostname']
+                    #print role_info['hostname']
                     host_fqdn = self.get_fqdn(self.remoteclient, role_info['hostname'])
                     
                     child = {}
                     child['service_type'] = node_type_list
+                    service_id = role_info['id']
                     child['service_id'] = service_id
-                    if "mon" in role or "mgr" in role:
-                        service_id = host_fqdn.split('.')[0]
-                    elif "osd" in role:
-                        service_id = role_info['id']
+
                         
                     child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, role, service_id)                
                     
