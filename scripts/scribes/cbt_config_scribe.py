@@ -102,9 +102,9 @@ class cbt_config_transcriber:
                     child = {}
                     child['service_type'] = node_type_list
                     
-                    if "mon" in role or "mgr" in role:
+                    if "mon" in role:
                         service_id = role_info['name']
-                    elif "osd" in role:
+                    elif "osd" in role or "mgr" in role:
                         service_id = role_info['id']
                         
                     child['service_id'] = service_id
