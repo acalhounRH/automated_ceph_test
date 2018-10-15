@@ -68,26 +68,26 @@ class cbt_config_transcriber:
         logger.debug("getting client list")
         client_list = self.config['cluster']['clients']
         
-        for node_type_list in ceph_node_map:
-            for host in ceph_node_map[node_type_list]:
-                host_fqdn = self.get_fqdn(self.remoteclient, host)
-                self.host_map[host_fqdn] = {}
-                
-                #get interface dict
-                self.host_map[host_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, host_fqdn)
-                #get cpuinfo dict
-                self.host_map[host_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, host_fqdn)
-                    
-                self.host_map[host_fqdn]['children'] = []
-                for service_id in ceph_node_map[node_type_list][host_fqdn]:
-                    child = {}
-                    child['service_type'] = node_type_list
-                    child['service_id'] = service_id
-                    if "mon" in node_type_list:
-                        service_id = host_fqdn.split('.')[0]
-                        
-                    child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, node_type_list, service_id)                
-                    self.host_map[host_fqdn]['children'].append(child)
+#         for node_type_list in ceph_node_map:
+#             for host in ceph_node_map[node_type_list]:
+#                 host_fqdn = self.get_fqdn(self.remoteclient, host)
+#                 self.host_map[host_fqdn] = {}
+#                 
+#                 #get interface dict
+#                 self.host_map[host_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, host_fqdn)
+#                 #get cpuinfo dict
+#                 self.host_map[host_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, host_fqdn)
+#                     
+#                 self.host_map[host_fqdn]['children'] = []
+#                 for service_id in ceph_node_map[node_type_list][host_fqdn]:
+#                     child = {}
+#                     child['service_type'] = node_type_list
+#                     child['service_id'] = service_id
+#                     if "mon" in node_type_list:
+#                         service_id = host_fqdn.split('.')[0]
+#                         
+#                     child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, node_type_list, service_id)                
+#                     self.host_map[host_fqdn]['children'].append(child)
         
         ceph_role_list = ['mds', 'mon', 'osd', 'mgr']
         for role in ceph_role_list:
