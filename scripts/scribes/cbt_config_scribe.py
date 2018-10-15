@@ -103,9 +103,9 @@ class cbt_config_transcriber:
                     child['service_type'] = node_type_list
                     
                     if "mon" in role:
-                        service_id = role_info['name']
+                        service_id = str(role_info['name'])
                     elif "osd" in role or "mgr" in role:
-                        service_id = role_info['id']
+                        service_id = str(role_info['id'])
                         
                     child['service_id'] = service_id
                     child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, role, service_id)                
