@@ -14,14 +14,6 @@ class pbench_transcriber:
         host = self.metadata['ceph_benchmark_test']['common']['hardware']['hostname']
         self.host_info = cbt_config_obj.get_host_info(host)
         
-    def debug_progress_logger(self, text):
-        current_log_level = logger.level
-        print current_log_level
-        if  current_log_level == 10:
-            logger.debug(text)
-            print '\x1b[80D' + '\x1b[K'+ text,
-            sys.stdout.flush()
-
     def get_service_id(self, service_pid):
         instance = -1
         for child in self.host_info['children']:
