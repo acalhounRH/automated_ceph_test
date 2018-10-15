@@ -100,7 +100,7 @@ class cbt_config_transcriber:
                     host_fqdn = self.get_fqdn(self.remoteclient, role_info['hostname'])
                     
                     child = {}
-                    child['service_type'] = node_type_list
+                    child['service_type'] = role
                     
                     if "mon" in role:
                         service_id = str(role_info['name'])
@@ -118,7 +118,8 @@ class cbt_config_transcriber:
                         #get cpuinfo dict
                         self.host_map[host_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, host_fqdn)
                         
-                    self.host_map[host_fqdn]['children'].append(child)
+                    if child not in self.host_map[host_fqdn]['children']:
+                        self.host_map[host_fqdn]['children'].append(child)
                     
         
         if client_list:
