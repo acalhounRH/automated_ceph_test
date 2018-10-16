@@ -137,7 +137,7 @@ class test_holder():
                 importdoc["_source"] = doc["_source"]
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc["_source"])).hexdigest()
                 importdoc["_source"]["comparison_ID"] = self.comparison_id
-                importdoc["source"]['series_id'] = self.series_id
+                importdoc["_source"]['series_id'] = self.series_id
                 importdoc["_source"]["date"] = str_skew_time
                 
                 index_prefix = doc["_index"]
