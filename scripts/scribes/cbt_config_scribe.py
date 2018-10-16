@@ -68,27 +68,6 @@ class cbt_config_transcriber:
         logger.debug("getting client list")
         client_list = self.config['cluster']['clients']
         
-#         for node_type_list in ceph_node_map:
-#             for host in ceph_node_map[node_type_list]:
-#                 host_fqdn = self.get_fqdn(self.remoteclient, host)
-#                 self.host_map[host_fqdn] = {}
-#                 
-#                 #get interface dict
-#                 self.host_map[host_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, host_fqdn)
-#                 #get cpuinfo dict
-#                 self.host_map[host_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, host_fqdn)
-#                     
-#                 self.host_map[host_fqdn]['children'] = []
-#                 for service_id in ceph_node_map[node_type_list][host_fqdn]:
-#                     child = {}
-#                     child['service_type'] = node_type_list
-#                     child['service_id'] = service_id
-#                     if "mon" in node_type_list:
-#                         service_id = host_fqdn.split('.')[0]
-#                         
-#                     child['service_pid'] = self.get_ceph_service_pid(self.remoteclient, host_fqdn, node_type_list, service_id)                
-#                     self.host_map[host_fqdn]['children'].append(child)
-        
         ceph_role_list = ['mds', 'mon', 'osd', 'mgr']
         for role in ceph_role_list:
             host_role_list = self.acitve_ceph_client.issue_command("%s metadata" % role)
@@ -209,8 +188,12 @@ class cbt_config_transcriber:
         importdoc["_index"] = "cbt_config-test1"
         importdoc["_type"] = "cbt_config_data"
         importdoc["_op_type"] = "create"
-        importdoc["_source"] = self.config
-        importdoc["_source"]['test_id'] = self.test_id
+        importdoc["_source"]['ceph_benchmark_test'] = { common: { test_info: { test_id: self.test_id }}, 
+                                                        ceph_config: self.host_map,
+                                                        cbt_config: self.config
+                                                        }
+        #importdoc["_source"]['ceph_benchmark_test']['cbt_config'] = self.config
+        #importdoc["_source"]['ceph_benchmark_test']['test_id'] = self.test_id
         
         file_time = os.path.getmtime(self.config_file)
         file_time = datetime.datetime.fromtimestamp(file_time)
