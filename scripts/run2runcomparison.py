@@ -7,6 +7,7 @@ import time
 import json
 import datetime
 import hashlib
+import string
 from datetime import timedelta
 from time import gmtime
 
@@ -50,16 +51,20 @@ def get_test_data(es, comparison_id, test_id_list):
     
     start_time = datetime.datetime.utcnow()
     logger.info("comparison start time - %s" % start_time)
+    series_list = list(string.ascii_uppercase)
     
+    series_count=0
     for test_id in test_id_list:
-        obj = test_holder(es, test_id, comparison_id, start_time)
+        obj = test_holder(es, test_id, comparison_id, start_time, series_list[series_count])
+        series_count += 1
         yield obj    
 
 class test_holder():
-    def __init__(self, es, test_id, comparison_id, start_time):
+    def __init__(self, es, test_id, comparison_id, start_time, series_id):
         self.test_id = test_id
         self.comparison_id = comparison_id
         self.start_datetime_stamp = start_time 
+        self.series_id = series_id
         self.offset = ""
         self.offset_map = {}
         self.es = es
@@ -132,6 +137,7 @@ class test_holder():
                 importdoc["_source"] = doc["_source"]
                 importdoc["_id"] = hashlib.md5(json.dumps(importdoc["_source"])).hexdigest()
                 importdoc["_source"]["comparison_ID"] = self.comparison_id
+                importdoc["source"]['series_id'] = self.series_id
                 importdoc["_source"]["date"] = str_skew_time
                 
                 index_prefix = doc["_index"]
