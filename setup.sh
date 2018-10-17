@@ -37,7 +37,11 @@ fi
 
 #git clone -b <branch> <remote_repo> # installing CBT version with pbench performance monitoring
 if [ ! -d cbt ]; then
-  git clone -b pbench-integration https://github.com/acalhounRH/cbt.git
+ 	git clone -b pbench-integration https://github.com/acalhounRH/cbt.git
+fi 
+
+if [ ! -d smallfile ]; then
+	git clone https://github.com/bengland2/smallfile
 fi 
 
 epel_status=`rpm -qa | grep epel`
