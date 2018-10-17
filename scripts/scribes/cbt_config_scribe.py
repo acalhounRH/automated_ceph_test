@@ -188,9 +188,9 @@ class cbt_config_transcriber:
         importdoc["_index"] = "cbt_config-test1"
         importdoc["_type"] = "cbt_config_data"
         importdoc["_op_type"] = "create"
-        importdoc["_source"]['ceph_benchmark_test'] = { common: { test_info: { test_id: self.test_id }}, 
-                                                        ceph_config: self.host_map,
-                                                        cbt_config: self.config
+        importdoc["_source"]['ceph_benchmark_test'] = { "common": { "test_info": { "test_id": self.test_id }}, 
+                                                        "ceph_config": self.host_map,
+                                                        "cbt_config": self.config
                                                         }
         #importdoc["_source"]['ceph_benchmark_test']['cbt_config'] = self.config
         #importdoc["_source"]['ceph_benchmark_test']['test_id'] = self.test_id
