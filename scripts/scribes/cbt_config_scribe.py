@@ -196,7 +196,7 @@ class cbt_config_transcriber:
                                          "test_id": self.test_id }
                                      }
                                  }, 
-                                "ceph_config": self.host_map,
+                              #  "ceph_config": self.host_map,
                                 "cbt_config": self.config
                                 }
         #importdoc["_source"]['ceph_benchmark_test']['cbt_config'] = self.config
