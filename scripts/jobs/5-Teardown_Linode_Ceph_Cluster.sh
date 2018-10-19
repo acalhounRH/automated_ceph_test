@@ -10,14 +10,16 @@
 # Jenkins will stop the pipeline immediately,
 # this makes troubleshooting a pipeline much easier for the user
 
-script_dir=$HOME/automated_ceph_test
-pip install -I urllib3
-cd $archive_dir
+(( teardown_sec = $teardown_delay_minutes * 60 ))
+echo "waiting $teardown_sec seconds before tear-down"
+sleep $teardown_sec
 
-#if cbt
-	$script_dir/scripts/index_cbt.py -t $Test_ID -h $elasticsearch_host -p $elasticsearch_port -d 
-#else if cosbench
-	#index_cosbench
-#else if 
-	#index_smallfile
-#fi
+while [ -f /tmp/suspend_teardown ] ; do
+	echo "waiting for /tmp/suspend_teardown file to be removed..."
+	sleep 60
+done
+
+cd $HOME/ceph-linode/
+virtualenv-2 linode-env && source linode-env/bin/activate && pip install linode-python
+export LINODE_API_KEY=$Linode_API_Key
+python ./linode-destroy.py
