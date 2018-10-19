@@ -60,7 +60,7 @@ echo "$Linode_Cluster_Configuration" > cluster.json
 virtualenv-2 linode-env && source linode-env/bin/activate && pip install linode-python
 export LINODE_API_KEY=$Linode_API_KEY
 
-ANSIBLE_STRATEGY=debug; ./launch.sh --ceph-ansible /usr/share/ceph-ansible
+ANSIBLE_STRATEGY=debug; /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible
 #sudo ansible -i ansible_inventory -m shell -a "ceph -s" mon-000
 
 
