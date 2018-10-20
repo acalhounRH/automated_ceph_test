@@ -5,6 +5,7 @@ Combination of Jenkins, ceph benchmarking tools and scripts that enable a user t
 ## Summary:
 
 ![alt text](https://github.com/acalhounRH/automated_ceph_test/blob/master/docs/pictures/applicaton_deployment.png)
+![alt text](https://github.com/acalhounRH/automated_ceph_test/blob/master/docs/pictures/Automated_Test_Data_Flow.png)
 
 ## Installation:
 
@@ -22,3 +23,5 @@ Agent deployment is controled via the jenkins job prepare_agent.
 - ceph_linode
 - smallfile
 - cosbench
+- Elasticsearch 
+- Grafana 
