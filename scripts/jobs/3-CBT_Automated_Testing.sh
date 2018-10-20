@@ -23,7 +23,7 @@ mkdir -p $HOME/cbt/jenkins_jobfiles/
 jobfiles_dir=$HOME/cbt/jenkins_jobfiles/
 echo "$cbt_settings" > $jobfiles_dir/automated_test.yml
 
-$script_dir/scripts/addhost_to_jobfile.sh $jobfiles_dir/automated_test.yml $inventory_file
+$script_dir/scripts/utils/addhost_to_jobfile.sh $jobfiles_dir/automated_test.yml $inventory_file
 
 echo "################Jenkins Job File################"
 cat $jobfiles_dir/automated_test.yml

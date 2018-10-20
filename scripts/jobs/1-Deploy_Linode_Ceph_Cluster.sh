@@ -65,7 +65,7 @@ ANSIBLE_STRATEGY=debug; /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-
 
 
 #Health check
-$script_dir/scripts/check_cluster_status.sh $inventory_file
+$script_dir/scripts/utils/check_cluster_status.sh $inventory_file
 exit_status=$?
 
 exit $exit_status

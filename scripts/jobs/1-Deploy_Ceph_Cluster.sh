@@ -87,7 +87,7 @@ sudo cp $script_dir/staging_area/tmp/osds.yml /usr/share/ceph-ansible/group_vars
 #copy site.yml
 sudo cp /usr/share/ceph-ansible/site.yml.sample /usr/share/ceph-ansible/site.yml
 
-$script_dir/scripts/register_host.sh $inventory_file
+$script_dir/scripts/utils/register_host.sh $inventory_file
 
 echo "Start Ceph installation"
 cd /usr/share/ceph-ansible
@@ -95,7 +95,7 @@ ANSIBLE_STRATEGY=debug; ansible-playbook site.yml -i $inventory_file
 
 
 echo "Health check"
-$script_dir/scripts/check_cluster_status.sh $inventory_file
+$script_dir/scripts/utils/check_cluster_status.sh $inventory_file
 exit_status=$?
 
 if [ "$exit_status" -eq "0" ]; then
