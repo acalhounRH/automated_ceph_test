@@ -1,4 +1,6 @@
 #! /usr/bin/python
+
+###:TODO THIS Needs to be converted into 
 # evaluateMetaPerObj.py - script written by Ben England to 
 # push results from rados_delete_create.sh script to elastic search
 # modifying version of Alex Calhoun's similar scripting for fio

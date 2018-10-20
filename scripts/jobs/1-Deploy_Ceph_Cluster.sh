@@ -64,7 +64,7 @@ sudo yum clean all
 sudo yum install ceph-ansible -y
 
 #added in order to allow installation of bluestore on lVMs
-patch /usr/share/ceph-ansible/roles/ceph-osd/tasks/check_mandatory_vars.yml ~/automated_ceph_test/scripts/check_mandatory_vars.patch
+patch /usr/share/ceph-ansible/roles/ceph-osd/tasks/check_mandatory_vars.yml ~/automated_ceph_test/scripts/patches/check_mandatory_vars.patch
 patch /usr/share/ceph-ansible/roles/ceph-osd/tasks/scenarios/lvm.yml ~/automated_ceph_test/scripts/lvm.patch
 
 
