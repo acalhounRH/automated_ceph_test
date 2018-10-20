@@ -98,5 +98,8 @@ echo "browse to http://localhost/pbench-agent for pbench webservice"
 
 #install jenkins version 110 if master flag is used.
 if [ "$master_node" == "true" ]; then
-  rpm -i https://pkg.jenkins.io/redhat/jenkins-2.110-1.1.noarch.rpm
+  #rpm -i https://pkg.jenkins.io/redhat/jenkins-2.110-1.1.noarch.rpm
+  wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+  rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+  yum install jenkins
 fi 
