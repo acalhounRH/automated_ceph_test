@@ -9,7 +9,7 @@ import getopt
 import socket
 import paramiko
 from paramiko import SSHClient
-from util.common_logging import setup_loggers
+from utils.common_logging import setup_loggers
 from elasticsearch import client
 
 logger = logging.getLogger("index_cbt")

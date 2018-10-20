@@ -12,7 +12,7 @@ from datetime import timedelta
 from time import gmtime
 
 from elasticsearch import Elasticsearch, helpers
-from util.common_logging import setup_loggers
+from utils.common_logging import setup_loggers
 from proto_py_es_bulk import *
 
 

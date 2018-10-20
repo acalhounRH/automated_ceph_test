@@ -8,7 +8,7 @@ from collections import deque
 import itertools as it
 
 from elasticsearch import Elasticsearch, helpers
-from util.common_logging import setup_loggers
+from utils.common_logging import setup_loggers
 from proto_py_es_bulk import *
 
 
