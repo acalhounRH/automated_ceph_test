@@ -1,5 +1,15 @@
 #!/bin/bash +x
 
+# this script implements the Jenkins job by the same name,
+# just call it in the "Execute shell" field 
+# in the job configuration
+# because bash doesn't throw exceptions, 
+# the script doesn't stop automatically because of a 
+# fatal error, we have to check for errors and exit 
+# with an error status if one is seen, 
+# Jenkins will stop the pipeline immediately,
+# this makes troubleshooting a pipeline much easier for the user
+
 script_dir=$HOME/automated_ceph_test/
 
 host=`grep $agent_name ~/agent_list |awk -F'=' '{print $2}'`
