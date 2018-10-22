@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash +x
 
 #TODO install ceph-linode and CBT-pbench-branch
 
@@ -74,16 +74,22 @@ fi
 ansible-playbook pbench-repo-install.yml -i localhost, -k
 wget -O /etc/yum.repos.d/pbench.repo http://pbench.perf.lab.eng.bos.redhat.com/repo/production/yum.repos.d/pbench.repo /etc/yum.repos.d/
 
-if [ "$linode_install" == "true" ]; then
-	echo "******************* install pbench agent in linode"
-	yum install yum-utils -y;
-  yum-config-manager --disable pbench;
-  yum install pbench-agent -y
-else
-	echo "******************* install pbench agent"
-	yum install pbench-agent-internal -y
-fi
+#if [ "$linode_install" == "true" ]; then
+#	echo "******************* install pbench agent in linode"
+#	yum install yum-utils -y;
+#  yum-config-manager --disable pbench;
+#  yum install pbench-agent -y
+#else
+#	echo "******************* install pbench agent"
+#	yum install pbench-agent-internal -y
+#fi
 
+#install pbench-agent
+cd /etc/yum.repos.d
+wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; 
+yum install pbench-agent -y
+
+#install pbench web server
 yum install httpd npm -y
 yum install pbench-web-server -y
 
