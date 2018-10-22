@@ -8,7 +8,6 @@ from elasticsearch import Elasticsearch, helpers
 from proto_py_es_bulk import *
 from scribes import *
 from utils.common_logging import setup_loggers
-from unify_tool_data import  *
 from analyzers import *
 
 logger = logging.getLogger("index_cbt")

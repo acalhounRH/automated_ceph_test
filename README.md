@@ -17,7 +17,10 @@ Agent deployment is controled via the jenkins job prepare_agent.
 
 ## How to Run:
 
+## Expected Results:
+
 ## Dependencies:
+
 - ceph_ansible
 - Ceph Benchmark Tool (CBT)
 - ceph_linode
@@ -25,3 +28,5 @@ Agent deployment is controled via the jenkins job prepare_agent.
 - cosbench
 - Elasticsearch 
 - Grafana 
+
+Note: elasticsearch and grafana are **NOT** installed/setup using automated_ceph_test, and should be insalled/setup prior to automated_ceph_test.
