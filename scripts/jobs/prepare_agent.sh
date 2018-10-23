@@ -12,6 +12,8 @@
 
 script_dir=$HOME/automated_ceph_test/
 
+agent_name=`echo "$agent_name" | awk '{print tolower($0)}'`
+
 if [[ `grep $agent_name ~/agent_list` ]]; then
 	echo "Agent name already in use, aborting!"
     exit 1
