@@ -105,23 +105,28 @@ if [ ! -d /var/lib/pbench-agent/tools-default-old ]; then
   sudo mkdir -p /var/lib/pbench-agent/tools-default-old;
 fi
 
-echo "******************* making tools dir"
-sudo mv /var/lib/pbench-agent/tools-default/* /var/lib/pbench-agent/tools-default-old/
-sudo chmod 777 /var/lib/pbench-agent/tools-default/
-sudo chmod 777 /var/lib/pbench-agent/pbench.log 
+
+if [ -d /var/lib/pbench-agent/tools-default ]; then
+	echo "******************* making tools dir"
+	sudo mv /var/lib/pbench-agent/tools-default/* /var/lib/pbench-agent/tools-default-old/
+	sudo chmod 777 /var/lib/pbench-agent/tools-default/
+	sudo chmod 777 /var/lib/pbench-agent/pbench.log 
+fi 
 
 echo "******************* registering tools:"
 for i in `ansible --list-host -i $inventory_file all |grep -v hosts | grep -v ":"`
         do
-        		echo "testing $i"
-                ping $i -c 1 > /dev/null 2>&1
-                exit_status=`echo $?`
-                if [ "$exit_status" -gt "0" ]; then
-                		echo "failed ping on $i"
-                		add_to_sshconfig `cat $inventory_file | grep $i | awk {'print $2'} | sed 's/.*=//'`
-                		register_tools `cat $inventory_file | grep $i | awk {'print $2'} | sed 's/.*=//'`
-                elif [ "$exit_status" -eq "0" ]; then
-                		echo "pinged $i"
+        		echo "setting up host $i"
+               # ping $i -c 1 > /dev/null 2>&1
+               # exit_status=`echo $?`
+                #need to change to linode check not ipaddress ping
+                if [ "$linode_cluster" == "true" ]; then
+                		echo "Registering tools on Linode host"
+                		IP_address=`cat $inventory_file | grep $i | awk {'print $2'} | sed 's/.*=//'`
+                		add_to_sshconfig $IP_address
+                		register_tools $IP_address
+          		else
+                		echo "Registering tools on pre-existing host"
                 		add_to_sshconfig $i
                 		register_tools $i
                 else

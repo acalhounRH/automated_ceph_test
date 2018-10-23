@@ -49,13 +49,7 @@ else
 	echo "*****************************"
 fi
 
-
-#if [[ `grep $lowercase_agent_name ~/linode_agent_list` ]]; then
-#sed -i -e "s/$lowercase_agent_name=.*/$lowercase_agent_name=$jenkins_agent/g" ~/linode_agent_list
-#else
-#add lowercase_agent_name to ipaddress maping to linode_agent_list, this should be agent_list for all agents.
 echo "$lowercase_agent_name=$jenkins_agent" >> ~/agent_list
-#fi
 
 new_host="
 	Host $jenkins_agent
