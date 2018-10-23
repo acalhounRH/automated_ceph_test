@@ -1,5 +1,14 @@
 --- launch.sh.old	2018-06-04 11:05:31.279050794 -0400
 +++ launch.sh	2018-05-31 16:01:46.348653933 -0400
+@@ -1,6 +1,7 @@
+ #!/bin/bash
+ 
+-set -ex
++set +x
++set -e
+ 
+ # may be necessary for ansible with >25 forks
+ ulimit -n 65536 || true
 @@ -19,6 +19,7 @@
      fi
      if [ "$NUKE" -gt 0 -o ! -f ansible_inventory ]; then
