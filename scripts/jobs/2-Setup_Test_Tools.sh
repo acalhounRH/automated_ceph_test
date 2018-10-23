@@ -99,7 +99,12 @@ cat $inventory_file
 	ansible -m shell -a "yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y; yum install -y yum-utils; yum-config-manager --enable epel; yum install pbench-fio -y; yum install pdsh -y;" all -i $inventory_file
     
 ansible -m copy -a "src=/etc/ceph/ceph.client.admin.keyring dest=/etc/ceph/ceph.client.admin.keyring" clients -i $inventory_file
+exit_status=`echo $?`
 
+if [ "$exit_status" -gt 0 ]
+	echo "coping client keys failed" 
+	exit 1
+fi
 
 if [ ! -d /var/lib/pbench-agent/tools-default-old ]; then
   sudo mkdir -p /var/lib/pbench-agent/tools-default-old;
@@ -110,7 +115,9 @@ if [ -d /var/lib/pbench-agent/tools-default ]; then
 	echo "******************* making tools dir"
 	sudo mv /var/lib/pbench-agent/tools-default/* /var/lib/pbench-agent/tools-default-old/
 	sudo chmod 777 /var/lib/pbench-agent/tools-default/
-	sudo chmod 777 /var/lib/pbench-agent/pbench.log 
+	sudo chmod 777 /var/lib/pbench-agent/pbench.log
+else 
+	mkdir -p /var/lib/pbench-agent/
 fi 
 
 echo "******************* registering tools:"
