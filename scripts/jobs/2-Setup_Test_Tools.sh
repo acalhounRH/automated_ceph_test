@@ -101,7 +101,7 @@ cat $inventory_file
 ansible -m copy -a "src=/etc/ceph/ceph.client.admin.keyring dest=/etc/ceph/ceph.client.admin.keyring" clients -i $inventory_file
 exit_status=`echo $?`
 
-if [ "$exit_status" -gt 0 ]
+if [ "$exit_status" -gt 0 ]; then
 	echo "coping client keys failed" 
 	exit 1
 fi
