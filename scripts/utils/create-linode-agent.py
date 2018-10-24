@@ -41,7 +41,7 @@ def main ():
 
     disk = []
     plan = filter(lambda p: p[u'LABEL'].lower().find("8") >= 0, plans)[0]
-    print plan
+#    print plan
     #for i in plans:
     #    print i
 
