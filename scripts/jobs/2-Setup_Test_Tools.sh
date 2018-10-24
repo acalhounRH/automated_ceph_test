@@ -136,7 +136,5 @@ for i in `ansible --list-host -i $inventory_file all |grep -v hosts | grep -v ":
                 		echo "Registering tools on pre-existing host"
                 		add_to_sshconfig $i
                 		register_tools $i
-                else
-                        echo "Unable to register tools on $i"
                 fi
 done
