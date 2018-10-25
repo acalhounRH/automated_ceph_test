@@ -40,7 +40,7 @@ else
 	virtualenv linode-env && source linode-env/bin/activate && pip install linode-python
     ###:TODO need to add a check that linode_api_key is not null
 	export LINODE_API_KEY=$Linode_API_key
-	jenkins_agent=`python2 ./scripts/utils/create-linode-agent.py`
+	jenkins_agent=`python2 ./scripts/utils/create_linode_agent.py`
 
 	if [ "$jenkins_agent" == "jenkins agent already created" ]; then
     	echo "Linode Jenkins agent already exists!"
