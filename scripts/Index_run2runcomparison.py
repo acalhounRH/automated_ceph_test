@@ -17,7 +17,7 @@ from proto_py_es_bulk import *
 
 
 
-logger = logging.getLogger("index_cbt")
+logger = logging.getLogger("index_run2runcomparison")
 
 es_log = logging.getLogger("elasticsearch")
 es_log.setLevel(logging.CRITICAL)
@@ -182,7 +182,7 @@ def argument_handler():
         if opt in ('-d', '--debug'):
             log_level = logging.DEBUG
                        
-    setup_loggers(log_level)    
+    setup_loggers("index_run2runcomparison", log_level)    
     
     if host and comparison_id and esport:
         logger.info("Comparison_id: %s - Comparing %s " % (comparison_id, test_list))

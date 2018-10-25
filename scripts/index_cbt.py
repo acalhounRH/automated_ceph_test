@@ -69,7 +69,7 @@ def argument_handler():
         if opt in ('-d', '--debug'):
             log_level = logging.DEBUG
                        
-    setup_loggers(log_level)    
+    setup_loggers("index_cbt", log_level)    
     
     if host and test_id and esport:
         logger.info("Test ID: %s, Elasticsearch host and port: %s:%s " % (test_id, host, esport))
