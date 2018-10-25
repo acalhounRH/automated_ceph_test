@@ -41,6 +41,11 @@ else
     ###:TODO need to add a check that linode_api_key is not null
 	export LINODE_API_KEY=$Linode_API_key
 	jenkins_agent=`python2 ./scripts/utils/create_linode_agent.py`
+	
+	if [ -Z $jenkins_agent ]; then
+		echo "Failed to retrive agent hostname"
+		exit 1
+	fi
 
 	if [ "$jenkins_agent" == "jenkins agent already created" ]; then
     	echo "Linode Jenkins agent already exists!"
