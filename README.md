@@ -19,6 +19,10 @@ Agent deployment is controled via the jenkins job prepare_agent.
 
 ## Expected Results:
 
+### Ceph Benchmark Test (CBT)
+### CosBench
+### Smallfile
+
 ## Dependencies:
 
 - ceph_ansible
