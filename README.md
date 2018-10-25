@@ -16,7 +16,11 @@ On the Control node navigate to the automated_ceph_test directory and run setup.
 Agent deployment is controled via the jenkins job prepare_agent.
 
 ## How to Run:
-
+![alt text](https://github.com/acalhounRH/automated_ceph_test/blob/master/docs/pictures/how-to-1.png)
+![alt text](https://github.com/acalhounRH/automated_ceph_test/blob/master/docs/pictures/how-to-2.png)
+![alt text](https://github.com/acalhounRH/automated_ceph_test/blob/master/docs/pictures/how-to-3.png)
+![alt text](https://github.com/acalhounRH/automated_ceph_test/blob/master/docs/pictures/how-to-4.png)
+![alt text](https://github.com/acalhounRH/automated_ceph_test/blob/master/docs/pictures/how-to-5.png)
 ## Expected Results:
 
 ### Ceph Benchmark Test (CBT)
