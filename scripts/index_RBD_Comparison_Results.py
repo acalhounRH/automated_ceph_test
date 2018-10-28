@@ -99,26 +99,25 @@ def compare_result(test1, test2, headerdoc):
     result_doc["_source"]['test1'] = test1
     result_doc["_source"]['test2'] = test2
     
-        actions = []
-        for operation in operations_array:
-            for object_size in object_size_array:
-                rdelta = round(((test_doc_list[1][operation][object_size] - test1_doc[0][operation][object_size]) / test1_doc[0][operation][object_size]) * 100, 3)
-                c_results = copy.deepcopy(result_doc)
-                c_results['_source']['operation'] = operation
-                c_results['_source']['%sKB' % object_size] = rdelta
+    actions = []
+    for operation in operations_array:
+        for object_size in object_size_array:
+            rdelta = round(((test_doc_list[1][operation][object_size] - test1_doc[0][operation][object_size]) / test1_doc[0][operation][object_size]) * 100, 3)
+            c_results = copy.deepcopy(result_doc)
+            c_results['_source']['operation'] = operation
+            c_results['_source']['%sKB' % object_size] = rdelta
 
-         #   if rdelta > -5:
-         #       print ("PASS: %s %s %s" % (operation, object_size, rdelta))
-         #   elif rdelta < -5 and rdelta > -10:
-         #       print ("WARN: %s %s %s" % (operation, object_size, rdelta))
-         #   elif rdelta < -10:
-         #       print ("FAILED: %s %s %s" % (operation, object_size, rdelta))
+     #   if rdelta > -5:
+     #       print ("PASS: %s %s %s" % (operation, object_size, rdelta))
+     #   elif rdelta < -5 and rdelta > -10:
+     #       print ("WARN: %s %s %s" % (operation, object_size, rdelta))
+     #   elif rdelta < -10:
+     #       print ("FAILED: %s %s %s" % (operation, object_size, rdelta))
 
-        #print json.dumps(c_results, indent=1)
-            a = copy.deepcopy(c_results)
-            actions.append(a)
-
-  #  deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=1, request_timeout=60), maxlen=0)
+    #print json.dumps(c_results, indent=1)
+        a = copy.deepcopy(c_results)
+        actions.append(a)
+        yield a 
 
 
 class test_holder():
