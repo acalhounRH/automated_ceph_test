@@ -12,7 +12,9 @@
 
 script_dir=$HOME/automated_ceph_test/
 
-if [[ `grep $agent_name ~/agent_list` ]]; then
+lowercase_agent_name=`echo "$agent_name" | awk '{print tolower($0)}'`
+
+if [[ `grep $lowercase_agent_name ~/agent_list` ]]; then
 	echo "Agent name already in use, aborting!"
     exit 1
 fi
@@ -38,7 +40,12 @@ else
 	virtualenv linode-env && source linode-env/bin/activate && pip install linode-python
     ###:TODO need to add a check that linode_api_key is not null
 	export LINODE_API_KEY=$Linode_API_key
-	jenkins_agent=`python2 ./scripts/create-linode-agent.py`
+	jenkins_agent=`python2 ./scripts/utils/create_linode_agent.py`
+	
+	if [ -Z $jenkins_agent ]; then
+		echo "Failed to retrive agent hostname"
+		exit 1
+	fi
 
 	if [ "$jenkins_agent" == "jenkins agent already created" ]; then
     	echo "Linode Jenkins agent already exists!"
@@ -47,13 +54,7 @@ else
 	echo "*****************************"
 fi
 
-
-#if [[ `grep $agent_name ~/linode_agent_list` ]]; then
-#sed -i -e "s/$agent_name=.*/$agent_name=$jenkins_agent/g" ~/linode_agent_list
-#else
-#add agent_name to ipaddress maping to linode_agent_list, this should be agent_list for all agents.
-echo "$agent_name=$jenkins_agent" >> ~/agent_list
-#fi
+echo "$lowercase_agent_name=$jenkins_agent" >> ~/agent_list
 
 new_host="
 	Host $jenkins_agent
@@ -84,7 +85,7 @@ for i in {0..101}; do #allows for about 100 agents, dont expect this to happen.
     #then break out of loop.
     
 	if [[ ! `grep $port_range ~/agent_port_range` ]]; then
-    	echo "$agent_name=$port_range" >> ~/agent_port_range
+    	echo "$lowercase_agent_name=$port_range" >> ~/agent_port_range
     	break
     else
 		#increment all three ports by three
@@ -139,4 +140,4 @@ ssh $jenkins_agent "
     "
 #start a background headless jenkins swam agent
 #DO NOT CHANGE FROM localhost
-ssh $jenkins_agent "nohup java -jar swarm-client-3.9.jar -master http://localhost:8080 -disableClientsUniqueId -name $agent_name -labels $agent_name -executors 5 & " &
+ssh $jenkins_agent "nohup java -jar swarm-client-3.9.jar -master http://localhost:8080 -disableClientsUniqueId -name $lowercase_agent_name -labels $lowercase_agent_name -executors 5 & " &

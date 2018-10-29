@@ -1,1 +1,1 @@
-__all__ = ["cbt_config_scribe", "cbt_fiojson_scribe", "cbt_fiolog_scribe", "cbt_pbench_scribe", "cbt_rados_scribe"]
+__all__ = ["cbt_config_scribe", "cbt_fiojson_scribe", "cbt_fiolog_scribe", "cbt_pbench_scribe", "cbt_rados_scribe", "cosbench_scribe"]

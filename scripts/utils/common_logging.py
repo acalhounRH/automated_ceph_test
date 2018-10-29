@@ -49,8 +49,8 @@ class ColoredFormatter(logging.Formatter):
         return res
 
 
-def setup_loggers(def_level=logging.DEBUG, log_fname=None):
-    logger = logging.getLogger('index_cbt')
+def setup_loggers(logger_name, def_level=logging.DEBUG, log_fname=None):
+    logger = logging.getLogger(logger_name)
     logger.setLevel(def_level)
     sh = logging.StreamHandler()
     sh.setLevel(def_level)
