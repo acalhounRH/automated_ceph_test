@@ -64,6 +64,17 @@ ANSIBLE_STRATEGY=debug; /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-
 #sudo ansible -i ansible_inventory -m shell -a "ceph -s" mon-000
 
 sleep 30
+for i in `ansible --list-host -i $inventory_file all |grep -v hosts | grep -v ":"`
+    do
+    	clientname=$i
+    	break
+done
+
+ansible -m fetch -a "src=/etc/ceph/ceph.conf dest=/etc/ceph/ceph.conf.d" $clientname -i $inventory_file
+cp /etc/ceph/ceph.conf.d/$clientname/etc/ceph/ceph.conf /etc/ceph/ceph.conf
+
+ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
+cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
 
 #Health check
 $script_dir/scripts/utils/check_cluster_status.sh $inventory_file

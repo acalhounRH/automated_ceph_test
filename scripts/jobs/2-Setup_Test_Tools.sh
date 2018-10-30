@@ -91,9 +91,9 @@ yum install ceph-common -y
 ###:TODO This will not work in non-linode deployments 
 #ansible -m fetch -a "src=/etc/ceph/ceph.conf dest=/etc/ceph/ceph.conf.d" client-000 -i $inventory_file
 #cp /etc/ceph/ceph.conf.d/client-000/etc/ceph/ceph.conf /etc/ceph/ceph.conf
-
-ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
-cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
+#
+#ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
+#cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
 
 
 cd /etc/yum.repos.d
@@ -146,3 +146,5 @@ for i in `ansible --list-host -i $inventory_file all |grep -v hosts | grep -v ":
 	    		register_tools $i
 	    fi
 done
+
+#if cosbench
