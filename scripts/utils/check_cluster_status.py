@@ -15,7 +15,7 @@ def main():
     
     print json.dumps(ceph_status, indent=4)
     checks_status = ceph_status['health']['checks']
-    
+    print checks_status
     if ceph_status['health']['status'] is "HEALTH_OK":
         logger.info("Cluster health OK")
         sys.exit(0)
