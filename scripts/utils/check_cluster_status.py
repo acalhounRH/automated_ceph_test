@@ -16,12 +16,14 @@ def main():
     
     health_status = ceph_status['health']
     
-    for k, v in health_status.items():
-        if "status" in k:
-            health_stat = v
-            
-        if "message" in k:
-            health_message = v
+    health_stat = _finditem(health_status, "status")
+    health_message = _finditem(health_status, "message")
+#     for k, v in health_status.items():
+#         if "status" in k:
+#             health_stat = v
+#             
+#         if "message" in k:
+#             health_message = v
         
     print health_stat, health_message
     if health_stat is "HEALTH_OK":
@@ -39,6 +41,14 @@ def main():
         sys.exit(1)
     
     print json.dumps(ceph_status, indent=4)
+    
+def _finditem(obj, key):
+   if key in obj: 
+       return obj[key]
+   for k, v in obj.items():
+       if isinstance(v,dict):
+           return _finditem(v, key)
+           
 class ceph_client():
     def __init__(self):
         
