@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-import rados, os, logging, json
+import rados, os, logging, json, sys
 from common_logging import setup_loggers
 
 logger = logging.getLogger("check_cluster_status")
@@ -14,6 +14,20 @@ def main():
     ceph_status = new_client.issue_command("status")
     
     print json.dumps(ceph_status, indent=4)
+    
+    if ceph_status['health']['status'] is "HEALTH_OK":
+        logger.info("Cluster health OK")
+        sys.exit(0)
+    elif ceph_status['health']['status'] is "HEALTH_WARN":
+        if "too few PGs per OSD" in ceph_status['health']['checks']['summary']:
+             logger.warn(ceph_status['health']['checks']['summary']['message'])
+             sys.exit(0)
+        else:
+            logger.error("HEALTH_WARN - %s" % ceph_status['health']['checks']['summary']['message'])
+            sys.exit(1)
+    else:
+        logger.error(ceph_status['health']['status'] ceph_status['health']['checks']['summary']['message'])
+        sys.exit(1)
     
 
 class ceph_client():
