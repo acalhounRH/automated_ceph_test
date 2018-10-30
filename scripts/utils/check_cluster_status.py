@@ -29,7 +29,7 @@ def main():
             logger.error("HEALTH_WARN - %s" % checks_status['summary']['message'])
             sys.exit(1)
     else:
-        logger.error("%s - %s" % (ceph_status['health']['status'], ceph_status['health']['checks']['summary']['message']))
+        logger.error("%s - %s" % (ceph_status['health']['status'], checks_status['summary']['message'])
         sys.exit(1)
     
 
