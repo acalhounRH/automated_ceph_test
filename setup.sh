@@ -59,6 +59,7 @@ pip install pyyaml
 pip install elasticsearch 
 pip install urllib3==1.23
 pip install statistics
+pip install xmltodict
 
 if [ -d perf-dept ]; then
   cd perf-dept

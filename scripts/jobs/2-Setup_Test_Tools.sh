@@ -13,6 +13,7 @@
 script_dir=$HOME/automated_ceph_test
 source /etc/profile.d/pbench-agent.sh
 
+#set inventory file
 if [ "$linode_cluster" == "true" ]; then
 	echo "setting up for linode"
 	inventory_file=$HOME/ceph-linode/ansible_inventory_tmp
@@ -21,7 +22,7 @@ else
 	inventory_file=$script_dir/ansible_inventory
 fi 
 
-
+#function to add host to 
 function add_to_sshconfig {
 	# if user have predefined users, it is their responsibility to setup ssh keys user register_host.sh
 	if [ "$linode_cluster" == "true" ]; then
@@ -35,6 +36,7 @@ function add_to_sshconfig {
 	fi 
 }
 
+#Based on user input register pbench monitoring tools
 function register_tools {
 
 	if [ "$sar" = "true" ]; then
@@ -64,11 +66,14 @@ function register_tools {
     #done
 }
 
+
+#define pbench service as a collection of ceph-ansible groups
 service_inventory="
 [servers:children]
 osds
 mons
 mgrs
+rgws
 clients
 "
 
@@ -82,21 +87,27 @@ echo "$service_inventory" >> $inventory_file
 #Setup and install pbench on all linode host
 cat $inventory_file
 
-	yum install ceph-common -y
-	ansible -m fetch -a "src=/etc/ceph/ceph.conf dest=/etc/ceph/ceph.conf.d" client-000 -i $inventory_file
-    cp /etc/ceph/ceph.conf.d/client-000/etc/ceph/ceph.conf /etc/ceph/ceph.conf
-    ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
-	cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
-    cd /etc/yum.repos.d
-    yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y 
-    yum install -y yum-utils; yum-config-manager --enable epel
-	wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; yum install pbench-agent -y
-    yum install pbench-fio -y
-	yum install pdsh -y
-	echo "******************* install pbench agent in linode"
-	ansible -m shell -a "yum install wget -y; cd /etc/yum.repos.d; wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; yum install pbench-agent -y" -i $inventory_file all
-    echo "*******************install pbench-fio and pdsh for CBT"
-	ansible -m shell -a "yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y; yum install -y yum-utils; yum-config-manager --enable epel; yum install pbench-fio -y; yum install pdsh -y;" all -i $inventory_file
+yum install ceph-common -y
+###:TODO This will not work in non-linode deployments 
+#ansible -m fetch -a "src=/etc/ceph/ceph.conf dest=/etc/ceph/ceph.conf.d" client-000 -i $inventory_file
+#cp /etc/ceph/ceph.conf.d/client-000/etc/ceph/ceph.conf /etc/ceph/ceph.conf
+
+ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
+cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
+
+
+cd /etc/yum.repos.d
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y 
+yum install -y yum-utils; yum-config-manager --enable epel
+wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; yum install pbench-agent -y
+yum install pbench-fio -y
+yum install pdsh -y
+
+echo "******************* install pbench agent in linode"
+ansible -m shell -a "yum install wget -y; cd /etc/yum.repos.d; wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; yum install pbench-agent -y" -i $inventory_file all
+
+echo "*******************install pbench-fio and pdsh for CBT"
+ansible -m shell -a "yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y; yum install -y yum-utils; yum-config-manager --enable epel; yum install pbench-fio -y; yum install pdsh -y;" all -i $inventory_file
     
 ansible -m copy -a "src=/etc/ceph/ceph.client.admin.keyring dest=/etc/ceph/ceph.client.admin.keyring" clients -i $inventory_file
 exit_status=`echo $?`
@@ -122,19 +133,16 @@ fi
 
 echo "******************* registering tools:"
 for i in `ansible --list-host -i $inventory_file all |grep -v hosts | grep -v ":"`
-        do
-        		echo "setting up host $i"
-               # ping $i -c 1 > /dev/null 2>&1
-               # exit_status=`echo $?`
-                #need to change to linode check not ipaddress ping
-                if [ "$linode_cluster" == "true" ]; then
-                		echo "Registering tools on Linode host"
-                		IP_address=`cat $inventory_file | grep $i | awk {'print $2'} | sed 's/.*=//'`
-                		add_to_sshconfig $IP_address
-                		register_tools $IP_address
-          		else
-                		echo "Registering tools on pre-existing host"
-                		add_to_sshconfig $i
-                		register_tools $i
-                fi
+    do
+		echo "setting up host $i"
+	    if [ "$linode_cluster" == "true" ]; then
+	    		echo "Registering tools on Linode host"
+	    		IP_address=`cat $inventory_file | grep $i | awk {'print $2'} | sed 's/.*=//'`
+	    		add_to_sshconfig $IP_address
+	    		register_tools $IP_address
+		else
+	    		echo "Registering tools on pre-existing host"
+	    		add_to_sshconfig $i
+	    		register_tools $i
+	    fi
 done
