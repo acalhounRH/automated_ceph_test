@@ -6,7 +6,9 @@ def main():
     new_client = ceph_client()
     
     
-    ceph_node_map = new_client.issue_command("status")
+    ceph_status = new_client.issue_command("status")
+    
+    print json.dumps(ceph_status, indent=4)
 
 class ceph_client():
     def __init__(self):
