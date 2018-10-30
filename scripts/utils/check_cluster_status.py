@@ -19,11 +19,14 @@ def main():
         logger.info("Cluster health OK")
         sys.exit(0)
     elif ceph_status['health']['status'] is "HEALTH_WARN":
-        if "too few PGs per OSD" in ceph_status['health']['checks']['summary']:
-             logger.warn(ceph_status['health']['checks']['summary']['message'])
+        checks_status = ceph_status['health']['checks']
+        print checks_status
+        if ceph_status['health']['checks']['TOO_FEW_PGS']:
+             logger.warn(ceph_status['health']['checks']['summary']['TOO_FEW_PGS']['message'])
              sys.exit(0)
         else:
-            logger.error("HEALTH_WARN - %s" % ceph_status['health']['checks']['summary']['message'])
+            checks_status = ceph_status['health']['checks'] 
+            logger.error("HEALTH_WARN - %s" % checks_status['summary']['message'])
             sys.exit(1)
     else:
         logger.error("%s - %s" % (ceph_status['health']['status'], ceph_status['health']['checks']['summary']['message']))
