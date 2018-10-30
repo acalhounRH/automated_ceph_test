@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 import rados, os, logging, json
-from utils.common_logging import setup_loggers
+from common_logging import setup_loggers
 
 logger = logging.getLogger("check_cluster_status")
 
