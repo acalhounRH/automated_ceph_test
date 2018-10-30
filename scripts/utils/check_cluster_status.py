@@ -14,12 +14,13 @@ def main():
     ceph_status = new_client.issue_command("status")
     
     print json.dumps(ceph_status, indent=4)
+    checks_status = ceph_status['health']['checks']
     
     if ceph_status['health']['status'] is "HEALTH_OK":
         logger.info("Cluster health OK")
         sys.exit(0)
     elif ceph_status['health']['status'] is "HEALTH_WARN":
-        checks_status = ceph_status['health']['checks']
+        
         print checks_status
         if ceph_status['health']['checks']['TOO_FEW_PGS']:
              logger.warn(ceph_status['health']['checks']['summary']['TOO_FEW_PGS']['message'])
