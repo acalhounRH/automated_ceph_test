@@ -13,16 +13,17 @@ def main():
     
     ceph_status = new_client.issue_command("status")
     
-    print json.dumps(ceph_status, indent=4)
+    
     health_status = ceph_status['health']
     
     for k, v in health_status.items():
         if "status" in k:
             health_stat = v
+            
         if "message" in k:
             health_message = v
         
-     
+    print health_stat, health_message
     if health_stat is "HEALTH_OK":
         logger.info("Cluster health OK")
         sys.exit(0)
@@ -37,7 +38,7 @@ def main():
         logger.error("%s - %s" % (health_stat, health_message))
         sys.exit(1)
     
-
+    print json.dumps(ceph_status, indent=4)
 class ceph_client():
     def __init__(self):
         
