@@ -14,23 +14,27 @@ def main():
     ceph_status = new_client.issue_command("status")
     
     print json.dumps(ceph_status, indent=4)
-    checks_status = ceph_status['health']['checks']
-    print checks_status
-    if ceph_status['health']['status'] is "HEALTH_OK":
+    health_status = ceph_status['health']
+    
+    for k, v in health_status.items():
+        if "status" in k:
+            health_stat = v
+        if "message" in k:
+            health_message = v
+        
+     
+    if health_stat is "HEALTH_OK":
         logger.info("Cluster health OK")
         sys.exit(0)
-    elif ceph_status['health']['status'] is "HEALTH_WARN":
-        
-        print checks_status
-        if ceph_status['health']['checks']['TOO_FEW_PGS']:
-             logger.warn(ceph_status['health']['checks']['summary']['TOO_FEW_PGS']['message'])
+    elif health_stat is "HEALTH_WARN":
+        if "too few PGs Per OSD" in health_message:
+             logger.warn("%s - %s" % (health_stat, health_message))
              sys.exit(0)
         else:
-            checks_status = ceph_status['health']['checks'] 
-            logger.error("HEALTH_WARN - %s" % checks_status['summary']['message'])
+            logger.error("%s - %s" % (health_stat, health_message))
             sys.exit(1)
     else:
-        logger.error("%s - %s" % (ceph_status['health']['status'], checks_status['summary']['message']))
+        logger.error("%s - %s" % (health_stat, health_message))
         sys.exit(1)
     
 
