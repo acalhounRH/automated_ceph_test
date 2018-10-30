@@ -27,9 +27,11 @@ def main():
         
     print health_stat, health_message
     if health_stat is "HEALTH_OK":
+        print "debug0"
         logger.info("Cluster health OK")
         sys.exit(0)
     elif "HEALTH_WARN" in health_stat:
+        print "debug1"
         if "too few PGs Per OSD" in health_message:
              logger.warn("%s - %s" % (health_stat, health_message))
              sys.exit(0)
@@ -37,6 +39,7 @@ def main():
             logger.error("%s - %s" % (health_stat, health_message))
             sys.exit(1)
     else:
+        print "debug2"
         logger.error("%s - %s" % (health_stat, health_message))
         sys.exit(1)
     
