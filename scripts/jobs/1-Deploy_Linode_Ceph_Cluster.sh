@@ -77,7 +77,7 @@ ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/c
 cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
 
 #Health check
-$script_dir/scripts/utils/check_cluster_status.sh $inventory_file
+$script_dir/scripts/utils/check_cluster_status.py
 exit_status=$?
 
 exit $exit_status
