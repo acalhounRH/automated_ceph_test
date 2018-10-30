@@ -63,6 +63,7 @@ export LINODE_API_KEY=$Linode_API_KEY
 ANSIBLE_STRATEGY=debug; /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible
 #sudo ansible -i ansible_inventory -m shell -a "ceph -s" mon-000
 
+sleep 30
 
 #Health check
 $script_dir/scripts/utils/check_cluster_status.sh $inventory_file
