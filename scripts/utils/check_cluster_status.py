@@ -19,7 +19,7 @@ def main():
 class ceph_client():
     def __init__(self):
         
-        if not os.path.exist("/etc/ceph/ceph.conf"):
+        if not os.path.exists("/etc/ceph/ceph.conf"):
             logger.error("/etc/ceph/ceph.conf does not exist")
         
             
