@@ -1,8 +1,13 @@
 #! /usr/bin/python
 
-import rados
+import rados, os, logging, json
+from utils.common_logging import setup_loggers
+
+logger = logging.getLogger("check_cluster_status")
 
 def main():
+    
+    setup_loggers("check_cluster_status", logging.DEBUG)
     new_client = ceph_client()
     
     
@@ -13,6 +18,11 @@ def main():
 
 class ceph_client():
     def __init__(self):
+        
+        if not os.path.exist("/etc/ceph/ceph.conf"):
+            logger.error("/etc/ceph/ceph.conf does not exist")
+        
+            
         self.cluster = rados.Rados(conffile="/etc/ceph/ceph.conf",
                       conf=dict(keyring='/etc/ceph/ceph.client.admin.keyring'),
                       )
