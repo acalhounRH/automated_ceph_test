@@ -20,10 +20,12 @@ urllib3_log.setLevel(logging.CRITICAL)
 def main():
     #es, test_id, test_mode = argument_handler()
     arguments = argument_handler()
-    if arguments.test_mode: 
+    if arguments.test_mode:
+        logger.info("*********** TEST MODE **********")
         for i in process_data_generator(arguments.test_id):
             if arguments.verbose:
                 logger.debug(json.dumps(i, indent=4))
+        logger.info("*********** TEST MODE **********")
     else:
         try:
             res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(arguments.es, process_data_generator(arguments.test_id))

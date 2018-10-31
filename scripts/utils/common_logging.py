@@ -64,6 +64,11 @@ def setup_loggers(logger_name, def_level=logging.DEBUG, log_fname=None):
     logger.addHandler(sh)
 
     if log_fname is not None:
+        #add check for existing file with same name if so move old log to .old.
+        #will only preserve a single .old file.
+        if os.path.exist(log_fname):
+            backup = "%s.old" % log_fname
+            os.rename(log_fname, backup)
         fh = logging.FileHandler(log_fname)
         formatter = logging.Formatter(log_format, datefmt=FMT)
         fh.setFormatter(formatter)
