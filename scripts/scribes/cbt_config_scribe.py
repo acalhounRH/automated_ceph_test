@@ -14,10 +14,10 @@ class cbt_config_transcriber:
         self.config_file = cbt_yaml_config
         self.host_map = {}
         
-        try:
-            self.acitve_ceph_client = ceph_client()
-        except:
-            logger.warn("Unable to establish a connection to ceph")   
+        #try:
+        self.acitve_ceph_client = ceph_client()
+        #except:
+        #    logger.warn("Unable to establish a connection to ceph")   
          
         if self.acitve_ceph_client.Connection_status:   
             self.remoteclient = ssh_remote_command()
@@ -247,7 +247,7 @@ class ceph_client():
                                        conf=dict(keyring='/etc/ceph/ceph.client.admin.keyring'),
                                        )
             try:
-                self.cluster.connect()
+                self.cluster.connect(timeout=5)
                 self.Connection_status = True
             except Exception as e:
                 logger.exception("Connection error: %s" % e.strerror )
