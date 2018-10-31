@@ -140,9 +140,9 @@ class argument_handler():
             exit (1)
     
         self.es = Elasticsearch(
-            [host],
+            [self.host],
             scheme="http",
-            port=esport,
+            port=self.esport,
             )
     
     #return es, test_id, test_mode
