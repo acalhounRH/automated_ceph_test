@@ -20,6 +20,7 @@ urllib3_log.setLevel(logging.CRITICAL)
 def main():
     #es, test_id, test_mode = argument_handler()
     arguments = argument_handler()
+    print arguments.test_mode
     if arguments.test_mode:
         logger.info("*********** TEST MODE **********")
         for i in process_data_generator(arguments.test_id):
