@@ -126,11 +126,11 @@ class argument_handler():
             if opt in ('-o', '--output_file'):
                 self.output_file = arg
             if opt in ('-d', '--debug'):
-                self.log_level = logging.DEBUG
+                self.log_level = self.logging.DEBUG
             if opt in ('-v', '--verbose'):
                 self.verbose = True
                            
-        setup_loggers("index_cbt", log_level)    
+        setup_loggers("index_cbt", self.log_level)    
         
         if self.host and self.test_id and self.esport:
             logger.info("Test ID: %s, Elasticsearch host and port: %s:%s " % (self.test_id, self.host, self.esport))
