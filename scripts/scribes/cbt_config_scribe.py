@@ -264,7 +264,7 @@ class ceph_client():
                                        conf=dict(keyring='/etc/ceph/ceph.client.admin.keyring'),
                                        )
             try:
-                self.cluster.connect(timeout=5)
+                self.cluster.connect(timeout=5s)
                 self.Connection_status = True
             except Exception as e:
                 logger.warn("Connection error: %s" % e.message )
