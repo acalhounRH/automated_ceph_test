@@ -126,7 +126,7 @@ class argument_handler():
             if opt in ('-o', '--output_file'):
                 self.output_file = arg
             if opt in ('-d', '--debug'):
-                self.log_level = self.logging.DEBUG
+                self.log_level = logging.DEBUG
             if opt in ('-v', '--verbose'):
                 self.verbose = True
                            
