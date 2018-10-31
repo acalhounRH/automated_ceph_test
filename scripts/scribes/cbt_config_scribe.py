@@ -239,6 +239,8 @@ class ssh_remote_command():
 class ceph_client():
     def __init__(self):
         
+        self.Connection_status = False
+        
         if os.path.exists("/etc/ceph/ceph.conf"):
             logger.warn("/etc/ceph/ceph.conf not found!")
         elif os.path.exists("/etc/ceph/ceph.client.admin.keyring"):
@@ -251,7 +253,6 @@ class ceph_client():
                 self.cluster.connect()
                 self.Connection_status = True
             except Exception as e:
-                self.Connection_status = False
                 logger.exception("Connection error: %s" % e.strerror )
                 
             self.osd_host_list = []
