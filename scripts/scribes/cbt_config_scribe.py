@@ -41,17 +41,18 @@ class cbt_config_transcriber:
             self.host_map[host]['host_type_list'] = host_type_list
     
     def get_host_info(self, hostname_or_ip):
+        
+        empty_dict = {}
         if self.acitve_ceph_client.Connection_status:
-                host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)
+            host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)
             if host_fqdn is not None:
                 for host in self.host_map:
                     if host_fqdn in host:
                         return self.host_map[host]
             else: 
-                return None               
+                return empty_dict               
         else:
-            empty_dict = {}
-            return None
+            return empty_dict
         
     def get_host_type(self, host):
         
