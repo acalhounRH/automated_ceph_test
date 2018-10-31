@@ -98,7 +98,7 @@ def argument_handler():
     
     usage = """ 
             Usage:
-                evaluatecosbench_pushes.py -t <test id> -h <host> -p <port>
+                index_cbt.py -t <test id> -h <host> -p <port>
                 
                 -t or --test_id - test identifier
                 -h or --host - Elasticsearch host ip or hostname
@@ -106,7 +106,7 @@ def argument_handler():
                 -d or --debug - enables debug (verbose) logging output
             """
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:o:d', ['output_file', 'test_id=', 'host=', 'port=', 'debug'])
+        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:o:d', ['output_file', 'test_id=', 'host=', 'port=', 'debug', 'test_mode'])
     except getopt.GetoptError:
         print usage 
         exit(1)
