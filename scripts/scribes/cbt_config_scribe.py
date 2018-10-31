@@ -62,7 +62,6 @@ class cbt_config_transcriber:
                 host_info = self.get_host_info(host_fqdn)
                 return host_info['host_type_list']
             except:
-                logger.warn("Unable to get host type list for %s" % host_fqdn)
                 return "UNKNOWN"
         else:
             return "UNKOWN"
@@ -249,7 +248,7 @@ class ssh_remote_command():
             return formated_output
         
         except Exception as e:
-            logger.error("Connection Failed: %s" % e)
+            logger.warn("Connection Failed: %s" % e)
     
 class ceph_client():
     def __init__(self):
