@@ -3,6 +3,7 @@ import yaml, os, time, json, hashlib, paramiko
 import socket, datetime, logging, rados, ipaddress
 from paramiko import SSHClient
 from elasticsearch.client.remote import RemoteClient
+from numpy import empty
 
 logger = logging.getLogger("index_cbt")
 
@@ -12,7 +13,8 @@ class cbt_config_transcriber:
         self.test_id = test_id 
         self.config = yaml.load(open(cbt_yaml_config))   
         self.config_file = cbt_yaml_config
-        self.acitve_ceph_client = ""
+        self.host_map = {}
+        
         try:
             self.acitve_ceph_client = ceph_client()
         except:
@@ -21,7 +23,7 @@ class cbt_config_transcriber:
         if self.acitve_ceph_client.Connection_status:   
             self.remoteclient = ssh_remote_command()
     
-            self.host_map = {}
+            
             self.make_host_map()
         else:
             logger.warn("Ceph host to role mapping was not performed.")
@@ -40,22 +42,15 @@ class cbt_config_transcriber:
             self.host_map[host]['host_type_list'] = host_type_list
     
     def get_host_info(self, hostname_or_ip):
-           
-        host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)   
-#         try: #check if string is an ip
-#             ipaddress.ip_address(hostname_or_ip)
-#             for host in self.host_map:
-#                 for interface in self.host_map[host]['interfaces']:
-#                     for address in self.host_map[host]['interfaces'][interface]:
-#                         if hostname_or_ip in address:
-#                             return self.host_map[host]
-#                         
-#             
-#         except: # treat string as hostname 
-        for host in self.host_map:
-            if host_fqdn in host:
-                return self.host_map[host]               
-    
+        if self.acitve_ceph_client.Connection_status: 
+            host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)   
+            for host in self.host_map:
+                if host_fqdn in host:
+                    return self.host_map[host]               
+        else:
+            empty_dict = {}
+            return empty_dict
+        
     def get_host_type(self, host):
         
         if self.acitve_ceph_client.Connection_status:
