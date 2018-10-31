@@ -12,16 +12,19 @@ class cbt_config_transcriber:
         self.test_id = test_id 
         self.config = yaml.load(open(cbt_yaml_config))   
         self.config_file = cbt_yaml_config
-
+        self.acitve_ceph_client = ""
         try:
             self.acitve_ceph_client = ceph_client()
         except:
             logger.warn("Unable to establish a connection to ceph")   
-            
-        self.remoteclient = ssh_remote_command()
-
-        self.host_map = {}
-        self.make_host_map()
+         
+        if self.acitve_ceph_client:   
+            self.remoteclient = ssh_remote_command()
+    
+            self.host_map = {}
+            self.make_host_map()
+        else:
+            logger.warn("Ceph host to role mapping was not performed.")
 
             
     def set_host_type_list(self):
@@ -258,4 +261,4 @@ class ceph_client():
             _, output, _ = self.cluster.mon_command(cmd, b'', timeout=6)
             return json.loads(output)
         except Exception as e:
-            logger.exception("Error issuing command")
+            logger.error("Error issuing command, %s" % command)
