@@ -112,7 +112,7 @@ class argument_handler():
                     -d or --debug - enables debug (verbose) logging output
                 """
         try:
-            opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:o:dv', ['output_file', 'test_id=', 'host=', 'port=', 'debug', 'test_mode', 'verbose'])
+            opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:o:dvm', ['output_file', 'test_id=', 'host=', 'port=', 'debug', 'test_mode', 'verbose'])
         except getopt.GetoptError:
             print usage 
             exit(1)
@@ -124,7 +124,7 @@ class argument_handler():
                 self.host = arg
             if opt in ('-p', '--port'):
                 self.esport = arg
-            if opt in ('--test_mode'):
+            if opt in ('-m', '--test_mode'):
                 print "setting test mode"
                 self.test_mode = True
             if opt in ('-o', '--output_file'):
