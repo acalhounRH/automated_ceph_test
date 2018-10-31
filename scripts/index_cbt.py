@@ -21,7 +21,7 @@ def main():
     #es, test_id, test_mode = argument_handler()
     arguments = argument_handler()
     if arguments.test_mode: 
-        for i in process_data_generator(self.test_id):
+        for i in process_data_generator(arguments.test_id):
             if arguments.verbose:
                 logger.debug(json.dumps(i, indent=4))
     else:
