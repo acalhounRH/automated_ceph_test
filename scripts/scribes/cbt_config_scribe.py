@@ -42,14 +42,13 @@ class cbt_config_transcriber:
     
     def get_host_info(self, hostname_or_ip):
         if self.acitve_ceph_client.Connection_status:
-            try:
                 host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)
-            except:
-                return None
-            
-            for host in self.host_map:
-                if host_fqdn in host:
-                    return self.host_map[host]               
+            if host_fqdn is not None:
+                for host in self.host_map:
+                    if host_fqdn in host:
+                        return self.host_map[host]
+            else: 
+                return None               
         else:
             empty_dict = {}
             return None
