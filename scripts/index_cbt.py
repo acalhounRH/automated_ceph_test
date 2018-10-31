@@ -125,6 +125,7 @@ class argument_handler():
             if opt in ('-p', '--port'):
                 self.esport = arg
             if opt in ('--test_mode'):
+                print "setting test mode"
                 self.test_mode = True
             if opt in ('-o', '--output_file'):
                 self.output_file = arg
