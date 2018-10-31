@@ -18,7 +18,7 @@ class cbt_config_transcriber:
         except:
             logger.warn("Unable to establish a connection to ceph")   
          
-        if self.acitve_ceph_client:   
+        if self.acitve_ceph_client.Connection_status:   
             self.remoteclient = ssh_remote_command()
     
             self.host_map = {}
@@ -249,7 +249,9 @@ class ceph_client():
                                        )
             try:
                 self.cluster.connect()
+                self.Connection_status = True
             except Exception as e:
+                self.Connection_status = False
                 logger.exception("Connection error: %s" % e.strerror )
                 
             self.osd_host_list = []
