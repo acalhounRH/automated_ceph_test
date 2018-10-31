@@ -130,7 +130,7 @@ class cbt_config_transcriber:
                     
                     
                         
-                self.host_map[client_fqdn]['children'].append(child)
+                    self.host_map[client_fqdn]['children'].append(child)
         self.set_host_type_list()
         
         #print json.dumps(self.host_map, indent=4)
