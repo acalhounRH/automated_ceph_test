@@ -48,7 +48,7 @@ class cbt_config_transcriber:
                     return self.host_map[host]               
         else:
             empty_dict = {}
-            return empty_dict
+            return None
         
     def get_host_type(self, host):
         
