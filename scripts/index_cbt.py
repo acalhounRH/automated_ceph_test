@@ -20,7 +20,6 @@ urllib3_log.setLevel(logging.CRITICAL)
 def main():
     #es, test_id, test_mode = argument_handler()
     arguments = argument_handler()
-    print arguments.test_mode
     if arguments.test_mode:
         logger.info("*********** TEST MODE **********")
         for i in process_data_generator(arguments.test_id):
@@ -112,7 +111,7 @@ class argument_handler():
                     -d or --debug - enables debug (verbose) logging output
                 """
         try:
-            opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:o:dvm', ['output_file', 'test_id=', 'host=', 'port=', 'debug', 'test_mode', 'verbose'])
+            opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:o:dvT', ['output_file', 'test_id=', 'host=', 'port=', 'debug', 'test_mode', 'verbose'])
         except getopt.GetoptError:
             print usage 
             exit(1)
@@ -124,8 +123,7 @@ class argument_handler():
                 self.host = arg
             if opt in ('-p', '--port'):
                 self.esport = arg
-            if opt in ('-m', '--test_mode'):
-                print "setting test mode"
+            if opt in ('-T', '--test_mode'):
                 self.test_mode = True
             if opt in ('-o', '--output_file'):
                 self.output_file = arg
