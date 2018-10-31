@@ -110,21 +110,23 @@ class cbt_config_transcriber:
             for client in client_list:
                 
                 client_fqdn = self.get_fqdn(self.remoteclient, client)
-                child = {}
-                child['service_type'] = "client"
-                child['service_pid'] = "-1"
-                child['service_id'] = -1
-                    
-                if client_fqdn not in self.host_map:
-                    self.host_map[client_fqdn] = {}                
-                    self.host_map[client_fqdn]['children'] = []
-                    try:
-                        #get interface dict
-                        self.host_map[client_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, client_fqdn)
-                        #get cpuinfo dict
-                        self.host_map[client_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, client_fqdn)
-                    except:
-                        logger.debug("unable to reach client - %s" % client_fqdn) 
+                
+                if client_fqdn is not None:
+                    child = {}
+                    child['service_type'] = "client"
+                    child['service_pid'] = "-1"
+                    child['service_id'] = -1
+                        
+                    if client_fqdn not in self.host_map:
+                        self.host_map[client_fqdn] = {}                
+                        self.host_map[client_fqdn]['children'] = []
+                        try:
+                            #get interface dict
+                            self.host_map[client_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, client_fqdn)
+                            #get cpuinfo dict
+                            self.host_map[client_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, client_fqdn)
+                        except:
+                            logger.debug("unable to reach client - %s" % client_fqdn) 
                     
                     
                         
@@ -134,9 +136,12 @@ class cbt_config_transcriber:
         #print json.dumps(self.host_map, indent=4)
         
     def get_fqdn(self, remoteclient, host):
-        output = remoteclient.issue_command(host, "hostname -f")
-        output = output[0].strip()
-        return output
+        try:
+            output = remoteclient.issue_command(host, "hostname -f")
+            output = output[0].strip()
+            return output
+        except:
+            return None
         
     def get_cpu_info(self, remoteclient, host):
         cpu_info_dict = {}
