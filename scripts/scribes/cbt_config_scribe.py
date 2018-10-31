@@ -259,4 +259,3 @@ class ceph_client():
             return json.loads(output)
         except Exception as e:
             logger.exception("Error issuing command")
-            sys.exit(1)
