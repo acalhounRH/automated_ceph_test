@@ -45,7 +45,8 @@ class cbt_config_transcriber:
             try:
                 host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)
             except:
-                return None   
+                return None
+            
             for host in self.host_map:
                 if host_fqdn in host:
                     return self.host_map[host]               
