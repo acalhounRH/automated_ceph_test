@@ -18,14 +18,15 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main():
-    es, test_id, test_mode = argument_handler()
-    
-    if test_mode: 
+    #es, test_id, test_mode = argument_handler()
+    arguments = argument_handler()
+    if arguments.test_mode: 
         for i in process_data_generator(test_id):
-            logger.debug(json.dumps(i, indent=4))
+            if arguments.verbose:
+                logger.debug(json.dumps(i, indent=4))
     else:
         try:
-            res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, process_data_generator(test_id))
+            res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(arguments.es, process_data_generator(arguments.test_id))
                
             FMT = '%Y-%m-%dT%H:%M:%SGMT'
             start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
@@ -88,59 +89,63 @@ def process_data(test_id):
                     for rados_obj in analyze_cbt_rados_results_generator:
                         yield rados_obj
 
-def argument_handler():
-    test_id = ""
-    host = ""
-    port = ""
-    log_level = logging.INFO
-    test_mode = False
-    output_file=None
+class argument_handler():
+    def __init__(self):
+        self.test_id = ""
+        self.host = ""
+        self.port = ""
+        self.log_level = logging.INFO
+        self.test_mode = False
+        self.output_file=None
+        self.verbose=False
+        
+        usage = """ 
+                Usage:
+                    index_cbt.py -t <test id> -h <host> -p <port>
+                    
+                    -t or --test_id - test identifier
+                    -h or --host - Elasticsearch host ip or hostname
+                    -p or --port - Elasticsearch port (elasticsearch default is 9200)
+                    -d or --debug - enables debug (verbose) logging output
+                """
+        try:
+            opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:o:dv', ['output_file', 'test_id=', 'host=', 'port=', 'debug', 'test_mode', 'verbose'])
+        except getopt.GetoptError:
+            print usage 
+            exit(1)
     
-    usage = """ 
-            Usage:
-                index_cbt.py -t <test id> -h <host> -p <port>
-                
-                -t or --test_id - test identifier
-                -h or --host - Elasticsearch host ip or hostname
-                -p or --port - Elasticsearch port (elasticsearch default is 9200)
-                -d or --debug - enables debug (verbose) logging output
-            """
-    try:
-        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:o:d', ['output_file', 'test_id=', 'host=', 'port=', 'debug', 'test_mode'])
-    except getopt.GetoptError:
-        print usage 
-        exit(1)
-
-    for opt, arg in opts:
-        if opt in ('-t', '--test_id'):
-            test_id = arg
-        if opt in ('-h', '--host'):
-            host = arg
-        if opt in ('-p', '--port'):
-            esport = arg
-        if opt in ('--test_mode'):
-            test_mode = True
-        if opt in ('-o', '--output_file'):
-            output_file = arg
-        if opt in ('-d', '--debug'):
-            log_level = logging.DEBUG
-                       
-    setup_loggers("index_cbt", log_level)    
+        for opt, arg in opts:
+            if opt in ('-t', '--test_id'):
+                self.test_id = arg
+            if opt in ('-h', '--host'):
+                self.host = arg
+            if opt in ('-p', '--port'):
+                self.esport = arg
+            if opt in ('--test_mode'):
+                self.test_mode = True
+            if opt in ('-o', '--output_file'):
+                self.output_file = arg
+            if opt in ('-d', '--debug'):
+                self.log_level = logging.DEBUG
+            if opt in ('-v', '--verbose'):
+                self.verbose = True
+                           
+        setup_loggers("index_cbt", log_level)    
+        
+        if self.host and self.test_id and self.esport:
+            logger.info("Test ID: %s, Elasticsearch host and port: %s:%s " % (self.test_id, self.host, self.esport))
+        else:
+            logger.error(usage)
+    #        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
+            exit (1)
     
-    if host and test_id and esport:
-        logger.info("Test ID: %s, Elasticsearch host and port: %s:%s " % (test_id, host, esport))
-    else:
-        logger.error(usage)
-#        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
-        exit ()
-
-    es = Elasticsearch(
-        [host],
-        scheme="http",
-        port=esport,
-        )
+        self.es = Elasticsearch(
+            [host],
+            scheme="http",
+            port=esport,
+            )
     
-    return es, test_id, test_mode
+    #return es, test_id, test_mode
 
 
   
