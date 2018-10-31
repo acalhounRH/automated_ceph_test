@@ -133,8 +133,6 @@ class cbt_config_transcriber:
         output = output[0].strip()
         return output
         
-        
-        
     def get_cpu_info(self, remoteclient, host):
         output = remoteclient.issue_command(host, "lscpu")
         cpu_info_dict = {}
@@ -237,18 +235,23 @@ class ssh_remote_command():
     
 class ceph_client():
     def __init__(self):
-        self.cluster = rados.Rados(conffile="/etc/ceph/ceph.conf",
-                      conf=dict(keyring='/etc/ceph/ceph.client.admin.keyring'),
-                      )
-        try:
-            self.cluster.connect()
-        except Exception as e:
-            logger.exception("Connection error: %s" % e.strerror )
-            sys.exit(1)
-            
-        self.osd_host_list = []
-        self.osd_list = []
-    
+        
+        if os.path.exists("/etc/ceph/ceph.conf"):
+            logger.warn("/etc/ceph/ceph.conf not found!")
+        elif os.path.exists("/etc/ceph/ceph.client.admin.keyring"):
+            logger.warn("/etc/ceph/ceph.client.admin.keyring not found!")
+        else:
+            self.cluster = rados.Rados(conffile="/etc/ceph/ceph.conf",
+                                       conf=dict(keyring='/etc/ceph/ceph.client.admin.keyring'),
+                                       )
+            try:
+                self.cluster.connect()
+            except Exception as e:
+                logger.exception("Connection error: %s" % e.strerror )
+                
+            self.osd_host_list = []
+            self.osd_list = []
+        
     def issue_command(self, command):
         cmd = json.dumps({"prefix": command, "format": "json"})
         try:
