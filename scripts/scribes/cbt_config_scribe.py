@@ -58,13 +58,16 @@ class cbt_config_transcriber:
     
     def get_host_type(self, host):
         
-        try:
-            host_fqdn = self.get_fqdn(self.remoteclient, host)
-            host_info = self.get_host_info(host_fqdn)
-            return host_info['host_type_list']
-        except:
-            logger.warn("Unable to get host type list for %s" % host_fqdn)
-    
+        if self.acitve_ceph_client.Connection_status:
+            try:
+                host_fqdn = self.get_fqdn(self.remoteclient, host)
+                host_info = self.get_host_info(host_fqdn)
+                return host_info['host_type_list']
+            except:
+                logger.warn("Unable to get host type list for %s" % host_fqdn)
+        else:
+            return "UNKOWN"
+        
     def make_host_map(self):
         logger.debug("getting ceph node map")
         ceph_node_map = self.acitve_ceph_client.issue_command("node ls")
