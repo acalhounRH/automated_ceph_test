@@ -26,7 +26,7 @@ class cbt_config_transcriber:
             self.make_host_map()
         else:
             logger.warn("Ceph host to role mapping was not performed.")
-
+            
             
     def set_host_type_list(self):
         
@@ -41,8 +41,11 @@ class cbt_config_transcriber:
             self.host_map[host]['host_type_list'] = host_type_list
     
     def get_host_info(self, hostname_or_ip):
-        if self.acitve_ceph_client.Connection_status: 
-            host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)   
+        if self.acitve_ceph_client.Connection_status:
+            try:
+                host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)
+            except:
+                return None   
             for host in self.host_map:
                 if host_fqdn in host:
                     return self.host_map[host]               
@@ -59,6 +62,7 @@ class cbt_config_transcriber:
                 return host_info['host_type_list']
             except:
                 logger.warn("Unable to get host type list for %s" % host_fqdn)
+                return "UNKNOWN"
         else:
             return "UNKOWN"
         
@@ -134,10 +138,11 @@ class cbt_config_transcriber:
         return output
         
     def get_cpu_info(self, remoteclient, host):
-        output = remoteclient.issue_command(host, "lscpu")
         cpu_info_dict = {}
         
-        for line in output:
+        try:
+            output = remoteclient.issue_command(host, "lscpu")
+            for line in output:
             #print line
             seperated_line = line.split(":")
             #print seperated_line
@@ -152,25 +157,32 @@ class cbt_config_transcriber:
             elif "Flags" not in cpu_prop:
                 cpu_info_dict[cpu_prop] = cpu_prop_value  
         
+        except:
+            logger.warn("Unable to retrive cpu info for %s" % host)
+        
         return cpu_info_dict    
     
     def get_interfaces(self, remoteclient, host):
-        output = remoteclient.issue_command(host, "ip a")
         interface_dict = {}
-        for line in output:
-            seperated_line = line.split(" ")
+        
+        try:
+            output = remoteclient.issue_command(host, "ip a")
             
-            #Get interface name
-            if seperated_line[0].strip(":").isdigit():
-                interface_name = seperated_line[1]
-                interface_dict[interface_name] = []
-            
-            #Get IPv4 for interface 
-            if "inet" in line and not "inet6" in line:
-                ipindex = seperated_line.index("inet") + 1
-                ip_address = seperated_line[ipindex]
-                interface_dict[interface_name].append(ip_address)
-            
+            for line in output:
+                seperated_line = line.split(" ")
+                
+                #Get interface name
+                if seperated_line[0].strip(":").isdigit():
+                    interface_name = seperated_line[1]
+                    interface_dict[interface_name] = []
+                
+                #Get IPv4 for interface 
+                if "inet" in line and not "inet6" in line:
+                    ipindex = seperated_line.index("inet") + 1
+                    ip_address = seperated_line[ipindex]
+                    interface_dict[interface_name].append(ip_address)
+        except:
+            logger.warn("Unable to retrive network in for %s" % host)    
         #return a dict of all interfaces:IPaddresses
         return interface_dict
 
