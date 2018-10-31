@@ -250,7 +250,7 @@ class ceph_client():
                 self.cluster.connect(timeout=5)
                 self.Connection_status = True
             except Exception as e:
-                logger.exception("Connection error: %s" % e.strerror )
+                logger.error("Connection error: %s" % e.strerror )
                 
             self.osd_host_list = []
             self.osd_list = []
