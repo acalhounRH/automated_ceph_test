@@ -238,9 +238,9 @@ class ceph_client():
         
         self.Connection_status = False
         
-        if os.path.exists("/etc/ceph/ceph.conf"):
+        if os.path.isfile("/etc/ceph/ceph.conf"):
             logger.warn("/etc/ceph/ceph.conf not found!")
-        elif os.path.exists("/etc/ceph/ceph.client.admin.keyring"):
+        elif os.path.isfile("/etc/ceph/ceph.client.admin.keyring"):
             logger.warn("/etc/ceph/ceph.client.admin.keyring not found!")
         else:
             self.cluster = rados.Rados(conffile="/etc/ceph/ceph.conf",
