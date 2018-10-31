@@ -3,7 +3,6 @@ import yaml, os, time, json, hashlib, paramiko
 import socket, datetime, logging, rados, ipaddress
 from paramiko import SSHClient
 from elasticsearch.client.remote import RemoteClient
-from numpy import empty
 
 logger = logging.getLogger("index_cbt")
 
