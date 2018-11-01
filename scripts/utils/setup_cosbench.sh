@@ -2,7 +2,7 @@
 
 #pull in ansible inventory file
 inventory_file=$1
-$linode_cluster="true"
+linode_cluster="true"
 
 #install cosbench on localhost
 cd ~/
@@ -26,7 +26,7 @@ for i in `ansible --list-host -i $inventory_file clients |grep -v hosts | grep -
 	    	$driver_name=$IP_address
 	    #handle non ceph-linode seting, i.e. known host
 		else
- 	   		$driver_name=$i
+ 	   		driver_name=$i
 	    fi
 	    
 	driver_temptlate="
