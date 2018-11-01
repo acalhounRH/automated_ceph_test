@@ -53,7 +53,7 @@ cat driver.tmp >> controller.conf.tmp
 
 
 #install cosbench on all clients 
-ansible -m shell -a "git clone https://github.com/intel-cloud/cosbench.git; cd cosbench; chmod +x *.sh" -i $inventory_file clients
+ansible -m shell -a "yum install git -y; git clone https://github.com/intel-cloud/cosbench.git; cd cosbench; chmod +x *.sh" -i $inventory_file clients
 
 #setup driver conf file
 remotedriver_template="
