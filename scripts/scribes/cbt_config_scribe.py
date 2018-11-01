@@ -12,17 +12,21 @@ class cbt_config_transcriber:
         self.test_id = test_id 
         self.config = yaml.load(open(cbt_yaml_config))   
         self.config_file = cbt_yaml_config
-
-        try:
-            self.acitve_ceph_client = ceph_client()
-        except:
-            logger.warn("Unable to establish a connection to ceph")   
-            
-        self.remoteclient = ssh_remote_command()
-
         self.host_map = {}
-        self.make_host_map()
-
+        
+        #try:
+        self.acitve_ceph_client = ceph_client()
+        #except:
+        #    logger.warn("Unable to establish a connection to ceph")   
+         
+        if self.acitve_ceph_client.Connection_status:   
+            self.remoteclient = ssh_remote_command()
+    
+            
+            self.make_host_map()
+        else:
+            logger.warn("Ceph host to role mapping was not performed.")
+            
             
     def set_host_type_list(self):
         
@@ -37,31 +41,31 @@ class cbt_config_transcriber:
             self.host_map[host]['host_type_list'] = host_type_list
     
     def get_host_info(self, hostname_or_ip):
-           
-        host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)   
-#         try: #check if string is an ip
-#             ipaddress.ip_address(hostname_or_ip)
-#             for host in self.host_map:
-#                 for interface in self.host_map[host]['interfaces']:
-#                     for address in self.host_map[host]['interfaces'][interface]:
-#                         if hostname_or_ip in address:
-#                             return self.host_map[host]
-#                         
-#             
-#         except: # treat string as hostname 
-        for host in self.host_map:
-            if host_fqdn in host:
-                return self.host_map[host]               
-    
+        
+        empty_dict = {}
+        if self.acitve_ceph_client.Connection_status:
+            host_fqdn = self.get_fqdn(self.remoteclient, hostname_or_ip)
+            if host_fqdn is not None:
+                for host in self.host_map:
+                    if host_fqdn in host:
+                        return self.host_map[host]
+            else: 
+                return empty_dict               
+        else:
+            return empty_dict
+        
     def get_host_type(self, host):
         
-        try:
-            host_fqdn = self.get_fqdn(self.remoteclient, host)
-            host_info = self.get_host_info(host_fqdn)
-            return host_info['host_type_list']
-        except:
-            logger.warn("Unable to get host type list for %s" % host_fqdn)
-    
+        if self.acitve_ceph_client.Connection_status:
+            try:
+                host_fqdn = self.get_fqdn(self.remoteclient, host)
+                host_info = self.get_host_info(host_fqdn)
+                return host_info['host_type_list']
+            except:
+                return "UNKNOWN"
+        else:
+            return "UNKOWN"
+        
     def make_host_map(self):
         logger.debug("getting ceph node map")
         ceph_node_map = self.acitve_ceph_client.issue_command("node ls")
@@ -105,74 +109,85 @@ class cbt_config_transcriber:
             for client in client_list:
                 
                 client_fqdn = self.get_fqdn(self.remoteclient, client)
-                child = {}
-                child['service_type'] = "client"
-                child['service_pid'] = "-1"
-                child['service_id'] = -1
-                    
-                if client_fqdn not in self.host_map:
-                    self.host_map[client_fqdn] = {}                
-                    self.host_map[client_fqdn]['children'] = []
-                    try:
-                        #get interface dict
-                        self.host_map[client_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, client_fqdn)
-                        #get cpuinfo dict
-                        self.host_map[client_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, client_fqdn)
-                    except:
-                        logger.debug("unable to reach client - %s" % client_fqdn) 
+                
+                if client_fqdn is not None:
+                    child = {}
+                    child['service_type'] = "client"
+                    child['service_pid'] = "-1"
+                    child['service_id'] = -1
+                        
+                    if client_fqdn not in self.host_map:
+                        self.host_map[client_fqdn] = {}                
+                        self.host_map[client_fqdn]['children'] = []
+                        try:
+                            #get interface dict
+                            self.host_map[client_fqdn]['interfaces'] = self.get_interfaces(self.remoteclient, client_fqdn)
+                            #get cpuinfo dict
+                            self.host_map[client_fqdn]['cpu_info'] = self.get_cpu_info(self.remoteclient, client_fqdn)
+                        except:
+                            logger.debug("unable to reach client - %s" % client_fqdn) 
                     
                     
                         
-                self.host_map[client_fqdn]['children'].append(child)
+                    self.host_map[client_fqdn]['children'].append(child)
         self.set_host_type_list()
         
         #print json.dumps(self.host_map, indent=4)
         
     def get_fqdn(self, remoteclient, host):
-        output = remoteclient.issue_command(host, "hostname -f")
-        output = output[0].strip()
-        return output
-        
-        
+        try:
+            output = remoteclient.issue_command(host, "hostname -f")
+            output = output[0].strip()
+            return output
+        except:
+            return None
         
     def get_cpu_info(self, remoteclient, host):
-        output = remoteclient.issue_command(host, "lscpu")
         cpu_info_dict = {}
         
-        for line in output:
-            #print line
-            seperated_line = line.split(":")
-            #print seperated_line
-            cpu_prop = seperated_line[0].strip()
-            cpu_prop_value = seperated_line[1].strip()
-            
-            if "NUMA node" in cpu_prop and "CPU(s)" in cpu_prop:
-                cpu_info_dict[cpu_prop] = []
-                split_values = cpu_prop_value.split(",")
-                for value in split_values:
-                    cpu_info_dict[cpu_prop].append(value)
-            elif "Flags" not in cpu_prop:
-                cpu_info_dict[cpu_prop] = cpu_prop_value  
+        try:
+            output = remoteclient.issue_command(host, "lscpu")
+            for line in output:
+                #print line
+                seperated_line = line.split(":")
+                #print seperated_line
+                cpu_prop = seperated_line[0].strip()
+                cpu_prop_value = seperated_line[1].strip()
+                
+                if "NUMA node" in cpu_prop and "CPU(s)" in cpu_prop:
+                    cpu_info_dict[cpu_prop] = []
+                    split_values = cpu_prop_value.split(",")
+                    for value in split_values:
+                        cpu_info_dict[cpu_prop].append(value)
+                elif "Flags" not in cpu_prop:
+                    cpu_info_dict[cpu_prop] = cpu_prop_value  
+        
+        except:
+            logger.warn("Unable to retrive cpu info for %s" % host)
         
         return cpu_info_dict    
     
     def get_interfaces(self, remoteclient, host):
-        output = remoteclient.issue_command(host, "ip a")
         interface_dict = {}
-        for line in output:
-            seperated_line = line.split(" ")
+        
+        try:
+            output = remoteclient.issue_command(host, "ip a")
             
-            #Get interface name
-            if seperated_line[0].strip(":").isdigit():
-                interface_name = seperated_line[1]
-                interface_dict[interface_name] = []
-            
-            #Get IPv4 for interface 
-            if "inet" in line and not "inet6" in line:
-                ipindex = seperated_line.index("inet") + 1
-                ip_address = seperated_line[ipindex]
-                interface_dict[interface_name].append(ip_address)
-            
+            for line in output:
+                seperated_line = line.split(" ")
+                
+                #Get interface name
+                if seperated_line[0].strip(":").isdigit():
+                    interface_name = seperated_line[1]
+                    interface_dict[interface_name] = []
+                
+                #Get IPv4 for interface 
+                if "inet" in line and not "inet6" in line:
+                    ipindex = seperated_line.index("inet") + 1
+                    ip_address = seperated_line[ipindex]
+                    interface_dict[interface_name].append(ip_address)
+        except:
+            logger.warn("Unable to retrive network in for %s" % host)    
         #return a dict of all interfaces:IPaddresses
         return interface_dict
 
@@ -222,38 +237,46 @@ class ssh_remote_command():
             self.sshclient.connect(host, username="root", key_filename=key_path)
             stdin, stdout, stderr = self.sshclient.exec_command(command)
             
-            #SSprint stdin.readlines()
-            
             output = stdout.readlines()
             #remove trailing \n
             formated_output = []
             for i in output:
                 formated_output.append(i.strip('\n'))
-                
+            
+            self.sshclient.close()
             return formated_output
         
         except Exception as e:
-            logger.error("Connection Failed: %s" % e)
+            self.sshclient.close()
+            logger.warn("Connection Failed: %s" % e)
     
 class ceph_client():
     def __init__(self):
-        self.cluster = rados.Rados(conffile="/etc/ceph/ceph.conf",
-                      conf=dict(keyring='/etc/ceph/ceph.client.admin.keyring'),
-                      )
-        try:
-            self.cluster.connect()
-        except Exception as e:
-            logger.exception("Connection error: %s" % e.strerror )
-            sys.exit(1)
+        
+        self.Connection_status = False
+        
+        if not os.path.isfile("/etc/ceph/ceph.conf"):
+            logger.warn("/etc/ceph/ceph.conf not found!")
+        elif not os.path.isfile("/etc/ceph/ceph.client.admin.keyring"):
+            logger.warn("/etc/ceph/ceph.client.admin.keyring not found!")
+        else:
+            self.cluster = rados.Rados(conffile="/etc/ceph/ceph.conf",
+                                       conf=dict(keyring='/etc/ceph/ceph.client.admin.keyring'),
+                                       )
+            try:
+                self.cluster.connect(timeout=1)
+                self.Connection_status = True
+            except Exception as e:
+                logger.warn("Connection error: %s" % e.message )
             
-        self.osd_host_list = []
-        self.osd_list = []
-    
+                
+            self.osd_host_list = []
+            self.osd_list = []
+        
     def issue_command(self, command):
         cmd = json.dumps({"prefix": command, "format": "json"})
         try:
             _, output, _ = self.cluster.mon_command(cmd, b'', timeout=6)
             return json.loads(output)
         except Exception as e:
-            logger.exception("Error issuing command")
-            sys.exit(1)
+            logger.error("Error issuing command, %s" % command)

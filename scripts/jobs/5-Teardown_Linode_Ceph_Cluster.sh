@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash +x
 
 # this script implements the Jenkins job by the same name,
 # just call it in the "Execute shell" field 

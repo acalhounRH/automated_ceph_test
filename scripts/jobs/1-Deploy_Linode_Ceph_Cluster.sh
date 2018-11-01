@@ -63,9 +63,22 @@ export LINODE_API_KEY=$Linode_API_KEY
 ANSIBLE_STRATEGY=debug; /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible
 #sudo ansible -i ansible_inventory -m shell -a "ceph -s" mon-000
 
+sleep 30
+#save off the first client in the inventory list, used to fetch ceph.conf file for agent host. 
+for i in `ansible --list-host -i $inventory_file clients |grep -v hosts | grep -v ":"`
+    do
+    	clientname=$i
+    	break
+done
+
+ansible -m fetch -a "src=/etc/ceph/ceph.conf dest=/etc/ceph/ceph.conf.d" $clientname -i $inventory_file
+cp /etc/ceph/ceph.conf.d/$clientname/etc/ceph/ceph.conf /etc/ceph/ceph.conf
+
+ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
+cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
 
 #Health check
-$script_dir/scripts/utils/check_cluster_status.sh $inventory_file
+$script_dir/scripts/utils/check_cluster_status.py
 exit_status=$?
 
 exit $exit_status
