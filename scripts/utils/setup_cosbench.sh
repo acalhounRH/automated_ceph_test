@@ -5,9 +5,11 @@ inventory_file=$1
 
 #install cosbench on localhost
 cd ~/
-git clone https://github.com/intel-cloud/cosbench.git
-cd cosbench
-chmod +x *.sh
+if [ ! -d cosbench ]; then
+	git clone https://github.com/intel-cloud/cosbench.git
+	cd cosbench
+	chmod +x *.sh
+fi 
 
 #create cosbench configuration file. 
 #controler.
@@ -33,7 +35,7 @@ for i in `ansible --list-host -i $inventory_file clients |grep -v hosts | grep -
 	"
 	#append new client driver info to temp configuration file
 	echo >> driver.tmp
-	driver_counter=$((driver_counter+1)
+	driver_counter=$((driver_counter+1))
 done
 
 #setup templates for cosbench controller and drivers
