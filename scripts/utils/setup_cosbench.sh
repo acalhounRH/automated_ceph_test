@@ -23,7 +23,7 @@ for i in `ansible --list-host -i $inventory_file clients |grep -v hosts | grep -
     	#handle using ceph-linode
 		if [ "$linode_cluster" == "true" ]; then
 	    	IP_address=`cat $inventory_file | grep $i | awk {'print $2'} | sed 's/.*=//'`
-	    	$driver_name=$IP_address
+	    	driver_name=$IP_address
 	    #handle non ceph-linode seting, i.e. known host
 		else
  	   		driver_name=$i
