@@ -2,6 +2,7 @@
 
 #pull in ansible inventory file
 inventory_file=$1
+$linode_cluster="true"
 
 #install cosbench on localhost
 cd ~/
