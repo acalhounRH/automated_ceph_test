@@ -64,4 +64,4 @@ remotedriver_template="
 
 #make driver.conf file and copy it to all client host 
 echo > driver.conf
-ansible -m copy -a "src=driver.conf des=/cosbench/release/conf/driver.conf" -i $inventory_file clients
+ansible -m copy -a "src=driver.conf dest=/cosbench/release/conf/driver.conf" -i $inventory_file clients
