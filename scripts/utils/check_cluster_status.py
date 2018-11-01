@@ -19,7 +19,7 @@ def main():
     health_stat = _finditem(health_status, "status")
     health_message = _finditem(health_status, "message")
         
-    if health_stat is "HEALTH_OK":
+    if "HEALTH_OK" in health_stat:
         logger.info("Cluster health OK")
         sys.exit(0)
     elif "HEALTH_WARN" in health_stat:
