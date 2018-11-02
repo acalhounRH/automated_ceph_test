@@ -5,6 +5,8 @@ inventory_file=$1
 linode_cluster="true"
 
 #install cosbench on localhost
+
+yum install nc -y
 cd ~/
 if [ ! -d cosbench ]; then
 	mkdir cosbench; cd cosbench
