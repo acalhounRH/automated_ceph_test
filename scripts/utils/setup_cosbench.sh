@@ -7,8 +7,10 @@ linode_cluster="true"
 #install cosbench on localhost
 cd ~/
 if [ ! -d cosbench ]; then
-	git clone https://github.com/intel-cloud/cosbench.git
-	cd cosbench
+	mkdir cosbnech; cd cosbench
+	wget https://github.com/ekaynar/Benchmarks/raw/master/cosbench/v0.4.2.tar.gz
+	tar xzvf v0.4.2.tar.gz
+	cd v0.4.2
 	chmod +x *.sh
 fi 
 
@@ -35,33 +37,39 @@ for i in `ansible --list-host -i $inventory_file clients |grep -v hosts | grep -
     url = http://${driver_name}:18088/driver
 	"
 	#append new client driver info to temp configuration file
-	echo >> driver.tmp
+	echo "$driver_template" >> driver.tmp
 	driver_counter=$((driver_counter+1))
 done
 
 #setup templates for cosbench controller and drivers
 controller_template="
 	[controller]
-    drivers = 2
+    drivers = $driver_counter
     log_level = INFO
     log_file = log/system.log
     archive_dir = archive
 "
-echo controller_template > controller.conf.tmp
+echo "$controller_template" > controller.conf.tmp
 
-cat driver.tmp >> controller.conf.tmp
+cat "$driver.tmp" >> controller.conf.tmp
 
 
-#install cosbench on all clients 
-ansible -m shell -a "yum install git -y; git clone https://github.com/intel-cloud/cosbench.git; cd cosbench; chmod +x *.sh" -i $inventory_file clients
+#install cosbench on all clients
+ansible -m shell -a "yum install wget -y; yum install java -y; yum install nc -y" -i $inventory_file clients
 
-#setup driver conf file
-remotedriver_template="
-	[driver]
-    log_level = INFO
-    url = http://127.0.0.1:18088/driver
-"
+ansible -m shell -a "mkdir cosbench; \
+					cd cosbench; \
+					wget https://github.com/ekaynar/Benchmarks/raw/master/cosbench/v0.4.2.tar.gz; \
+					tar xzvf v0.4.2.tar.gz; \
+					cd v0.4.2; chmod +x *.sh " -i $inventory_file clients
 
-#make driver.conf file and copy it to all client host 
-echo > driver.conf
-ansible -m copy -a "src=driver.conf dest=/cosbench/release/conf/driver.conf" -i $inventory_file clients
+##setup driver conf file
+#remotedriver_template="
+#	[driver]
+#    log_level = INFO
+#    url = http://127.0.0.1:18088/driver
+#"
+#
+##make driver.conf file and copy it to all client host 
+#echo > driver.conf
+#ansible -m copy -a "src=driver.conf dest=/cosbench/release/conf/driver.conf" -i $inventory_file clients
