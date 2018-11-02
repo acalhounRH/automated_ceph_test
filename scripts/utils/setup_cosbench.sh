@@ -10,7 +10,7 @@ yum install nc -y
 cd ~/
 if [ ! -d cosbench ]; then
 	mkdir cosbench; cd cosbench
-	wget https://github.com/ekaynar/Benchmarks/raw/master/cosbench/v0.4.2.tar.gz
+	wget https://github.com/ekaynar/Benchmarks/raw/master/cosbench/v0.4.2.tar.gz 2>&1 > /dev/null
 	tar xzf v0.4.2.tar.gz
 	cd ~/cosbench/v0.4.2/
 	chmod +x *.sh
@@ -44,8 +44,7 @@ for i in `ansible --list-host -i $inventory_file clients |grep -v hosts | grep -
 done
 
 #setup templates for cosbench controller and drivers
-controller_template="
-	[controller]
+controller_template="[controller]
     drivers = $driver_counter
     log_level = INFO
     log_file = log/system.log
@@ -61,7 +60,7 @@ ansible -m shell -a "yum install wget -y; yum install java -y; yum install nc -y
 
 ansible -m shell -a "mkdir cosbench; \
 					cd cosbench; \
-					wget https://github.com/ekaynar/Benchmarks/raw/master/cosbench/v0.4.2.tar.gz; \
+					wget https://github.com/ekaynar/Benchmarks/raw/master/cosbench/v0.4.2.tar.gz 2>&1 > /dev/null; \
 					tar xzf v0.4.2.tar.gz; \
 					cd v0.4.2; chmod +x *.sh " -i $inventory_file clients
 
