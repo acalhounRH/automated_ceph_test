@@ -24,6 +24,7 @@ driver_counter=0
 #loop through all client host in inventory file
 for i in `ansible --list-host -i $inventory_file clients |grep -v hosts | grep -v ":"`
     do
+    	driver_counter=$((driver_counter+1))
     	#handle using ceph-linode
 		if [ "$linode_cluster" == "true" ]; then
 	    	IP_address=`cat $inventory_file | grep $i | awk {'print $2'} | sed 's/.*=//'`
@@ -33,18 +34,17 @@ for i in `ansible --list-host -i $inventory_file clients |grep -v hosts | grep -
  	   		driver_name=$i
 	    fi
 	    
-	driver_template="
-	[driver${driver_counter}]
+	driver_template="	[driver${driver_counter}]
     name = driver${driver_counter}
     url = http://${driver_name}:18088/driver
 	"
 	#append new client driver info to temp configuration file
 	echo "$driver_template" >> driver.tmp
-	driver_counter=$((driver_counter+1))
+	
 done
 
 #setup templates for cosbench controller and drivers
-controller_template="[controller]
+controller_template="	[controller]
     drivers = $driver_counter
     log_level = INFO
     log_file = log/system.log
@@ -56,7 +56,9 @@ cat driver.tmp >> conf/controller.conf
 echo > driver.tmp
 
 #install cosbench on all clients
-ansible -m shell -a "yum install wget -y; yum install java -y; yum install nc -y" -i $inventory_file clients
+ansible -m shell -a "yum install wget -y; \
+					 yum install java -y; \
+					 yum install nc -y " -i $inventory_file clients
 
 ansible -m shell -a "mkdir cosbench; \
 					cd cosbench; \
