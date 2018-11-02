@@ -64,6 +64,7 @@ ANSIBLE_STRATEGY=debug; /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-
 #sudo ansible -i ansible_inventory -m shell -a "ceph -s" mon-000
 
 sleep 30
+yum install ceph-common -y
 #save off the first mon in the inventory list, used to fetch ceph.conf file for agent host. 
 for i in `ansible --list-host -i $inventory_file mons |grep -v hosts | grep -v ":"`
     do
