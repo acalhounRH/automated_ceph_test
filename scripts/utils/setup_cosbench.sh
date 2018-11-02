@@ -12,7 +12,7 @@ if [ ! -d cosbench ]; then
 	mkdir cosbench; cd cosbench
 	wget https://github.com/ekaynar/Benchmarks/raw/master/cosbench/v0.4.2.tar.gz
 	tar xzf v0.4.2.tar.gz
-	cd v0.4.2
+	cd ~/cosbench/v0.4.2/
 	chmod +x *.sh
 fi 
 
@@ -51,8 +51,8 @@ controller_template="
     log_file = log/system.log
     archive_dir = archive
 "
-echo "$controller_template" > conf/controller.conf
 
+echo "$controller_template" > conf/controller.conf
 cat driver.tmp >> conf/controller.conf
 echo > driver.tmp
 
@@ -65,7 +65,8 @@ ansible -m shell -a "mkdir cosbench; \
 					tar xzf v0.4.2.tar.gz; \
 					cd v0.4.2; chmod +x *.sh " -i $inventory_file clients
 
-ansible -m shell -a "cd cosbench/v0.4.2/; ./start-driver.sh" -i $inventory_file clients
+ansible -m shell -a "cd ~/cosbench/v0.4.2/; ./start-driver.sh" -i $inventory_file clients
+
 
 ./start-controller.sh
 
