@@ -51,7 +51,7 @@ controller_template="
     log_file = log/system.log
     archive_dir = archive
 "
-
+cd ~/cosbench/v0.4.2/
 echo "$controller_template" > conf/controller.conf
 cat driver.tmp >> conf/controller.conf
 echo > driver.tmp
@@ -67,7 +67,7 @@ ansible -m shell -a "mkdir cosbench; \
 
 ansible -m shell -a "cd ~/cosbench/v0.4.2/; ./start-driver.sh" -i $inventory_file clients
 
-
+cd ~/cosbench/v0.4.2/
 ./start-controller.sh
 
 ##setup driver conf file
