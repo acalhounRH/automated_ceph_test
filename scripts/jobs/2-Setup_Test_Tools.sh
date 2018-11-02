@@ -87,7 +87,7 @@ echo "$service_inventory" >> $inventory_file
 #Setup and install pbench on all linode host
 cat $inventory_file
 
-yum install ceph-common -y
+
 ###:TODO This will not work in non-linode deployments 
 #ansible -m fetch -a "src=/etc/ceph/ceph.conf dest=/etc/ceph/ceph.conf.d" client-000 -i $inventory_file
 #cp /etc/ceph/ceph.conf.d/client-000/etc/ceph/ceph.conf /etc/ceph/ceph.conf
