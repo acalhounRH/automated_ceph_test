@@ -7,9 +7,9 @@ linode_cluster="true"
 #install cosbench on localhost
 cd ~/
 if [ ! -d cosbench ]; then
-	mkdir cosbnech; cd cosbench
+	mkdir cosbench; cd cosbench
 	wget https://github.com/ekaynar/Benchmarks/raw/master/cosbench/v0.4.2.tar.gz
-	tar xzvf v0.4.2.tar.gz
+	tar xzf v0.4.2.tar.gz
 	cd v0.4.2
 	chmod +x *.sh
 fi 
@@ -31,7 +31,7 @@ for i in `ansible --list-host -i $inventory_file clients |grep -v hosts | grep -
  	   		driver_name=$i
 	    fi
 	    
-	driver_temptlate="
+	driver_template="
 	[driver${driver_counter}]
     name = driver${driver_counter}
     url = http://${driver_name}:18088/driver
@@ -49,10 +49,10 @@ controller_template="
     log_file = log/system.log
     archive_dir = archive
 "
-echo "$controller_template" > controller.conf.tmp
+echo "$controller_template" > conf/controller.conf
 
-cat "$driver.tmp" >> controller.conf.tmp
-
+cat driver.tmp >> conf/controller.conf
+echo > driver.tmp
 
 #install cosbench on all clients
 ansible -m shell -a "yum install wget -y; yum install java -y; yum install nc -y" -i $inventory_file clients
@@ -60,8 +60,12 @@ ansible -m shell -a "yum install wget -y; yum install java -y; yum install nc -y
 ansible -m shell -a "mkdir cosbench; \
 					cd cosbench; \
 					wget https://github.com/ekaynar/Benchmarks/raw/master/cosbench/v0.4.2.tar.gz; \
-					tar xzvf v0.4.2.tar.gz; \
+					tar xzf v0.4.2.tar.gz; \
 					cd v0.4.2; chmod +x *.sh " -i $inventory_file clients
+
+ansible -m shell -a "cd cosbench/v0.4.2/; ./start-driver.sh" -i $inventory_file clients
+
+./start-controller.sh
 
 ##setup driver conf file
 #remotedriver_template="
