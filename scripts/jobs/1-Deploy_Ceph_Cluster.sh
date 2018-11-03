@@ -10,8 +10,6 @@
 # Jenkins will stop the pipeline immediately,
 # this makes troubleshooting a pipeline much easier for the user
 
-
-echo "test test test"
 script_dir=$HOME/automated_ceph_test
 inventory_file=$script_dir/ansible_inventory
 
@@ -93,15 +91,36 @@ echo "Start Ceph installation"
 cd /usr/share/ceph-ansible
 ANSIBLE_STRATEGY=debug; ansible-playbook site.yml -i $inventory_file
 
+sleep 30
+yum install ceph-common -y
+#save off the first mon in the inventory list, used to fetch ceph.conf file for agent host. 
+for i in `ansible --list-host -i $inventory_file mons |grep -v hosts | grep -v ":"`
+    do
+    	monname=$i
+    	break
+done
 
-echo "Health check"
-$script_dir/scripts/utils/check_cluster_status.sh $inventory_file
+ansible -m fetch -a "src=/etc/ceph/ceph.conf dest=/etc/ceph/ceph.conf.d" $monname -i $inventory_file
+cp /etc/ceph/ceph.conf.d/$monname/etc/ceph/ceph.conf /etc/ceph/ceph.conf
+
+ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
+cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
+
+#Health check
+$script_dir/scripts/utils/check_cluster_status.py
 exit_status=$?
 
-if [ "$exit_status" -eq "0" ]; then
-	#copy client key to all clients
-	ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
-	ansible -m copy -a "src=$ceph_client_key dest=/etc/ceph/ceph.client.admin.keyring" clients -i $inventory_file 
-else
-	exit 1
-fi
+exit $exit_status
+
+
+#echo "Health check"
+#$script_dir/scripts/utils/check_cluster_status.sh $inventory_file
+#exit_status=$?
+#
+#if [ "$exit_status" -eq "0" ]; then
+#	#copy client key to all clients
+#	ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
+#	ansible -m copy -a "src=$ceph_client_key dest=/etc/ceph/ceph.client.admin.keyring" clients -i $inventory_file 
+#else
+#	exit 1
+#fi
