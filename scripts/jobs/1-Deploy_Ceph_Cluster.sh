@@ -40,7 +40,7 @@ sudo rm -rf /ceph-ansible-keys
 sudo mkdir -m0777 /ceph-ansible-keys
 
 #pull iso
-if [[ $ceph_iso_file =~ "RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso" ]]; then
+if [[ $ceph_iso_file =~ "RHCEPH-*-x86_64-dvd.iso" ]]; then
 	echo "**************$ceph_iso_file"
 	sudo wget -r -nd --no-parent -A "$ceph_iso_file" $ceph_iso_path &> /dev/null
     new_ceph_iso_file="$(ls)"
