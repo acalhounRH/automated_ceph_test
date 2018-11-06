@@ -94,7 +94,7 @@ exit_status=$?
 
 if [ "$exit_status" -gt "0" ]; then
 	echo "ceph-ansible install failed"
-	exit exit_status
+	exit $exit_status
 fi
 	
 sleep 30
