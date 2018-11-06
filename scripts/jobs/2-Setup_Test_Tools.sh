@@ -11,7 +11,6 @@
 # this makes troubleshooting a pipeline much easier for the user
 
 script_dir=$HOME/automated_ceph_test
-source /etc/profile.d/pbench-agent.sh
 
 #set inventory file
 if [ "$linode_cluster" == "true" ]; then
@@ -73,7 +72,6 @@ service_inventory="
 osds
 mons
 mgrs
-rgws
 clients
 "
 
@@ -100,14 +98,22 @@ cd /etc/yum.repos.d
 yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y 
 yum install -y yum-utils; yum-config-manager --enable epel
 wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; yum install pbench-agent -y
+source /etc/profile.d/pbench-agent.sh
 yum install pbench-fio -y
 yum install pdsh -y
 
 echo "******************* install pbench agent in linode"
-ansible -m shell -a "yum install wget -y; cd /etc/yum.repos.d; wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; yum install pbench-agent -y" -i $inventory_file all
+ansible -m shell -a "yum install wget -y; \
+					 cd /etc/yum.repos.d; \
+					 wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; \
+					 yum install pbench-agent -y" -i $inventory_file all
 
 echo "*******************install pbench-fio and pdsh for CBT"
-ansible -m shell -a "yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y; yum install -y yum-utils; yum-config-manager --enable epel; yum install pbench-fio -y; yum install pdsh -y;" all -i $inventory_file
+ansible -m shell -a "yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y; \
+                     yum install -y yum-utils; \
+                     yum-config-manager --enable epel; \
+                     yum install pbench-fio -y; \
+                     yum install pdsh -y;" all -i $inventory_file
     
 ansible -m copy -a "src=/etc/ceph/ceph.client.admin.keyring dest=/etc/ceph/ceph.client.admin.keyring" clients -i $inventory_file
 exit_status=`echo $?`
