@@ -71,7 +71,7 @@ sudo sed -i 's/gpgcheck=1/gpgcheck=0/g' /usr/share/ceph-ansible/roles/ceph-commo
 mkdir -p $script_dir/staging_area/tmp
 #setup all.yml
 echo "$ceph_ansible_all_config" > $script_dir/staging_area/tmp/all.yml
-if [[ $ceph_iso_file =~ "RHCEPH-3.0-RHEL-7-*-x86_64-dvd.iso" ]]; then
+if [[ $ceph_iso_file =~ "RHCEPH-*-x86_64-dvd.iso" ]]; then
 	sed -i "s/RHCEPH.*$/$new_ceph_iso_file/g" $script_dir/staging_area/tmp/all.yml
 fi
 sudo cp $script_dir/staging_area/tmp/all.yml /usr/share/ceph-ansible/group_vars/all.yml
