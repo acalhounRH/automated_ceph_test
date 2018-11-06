@@ -90,7 +90,13 @@ $script_dir/scripts/utils/register_host.sh $inventory_file
 echo "Start Ceph installation"
 cd /usr/share/ceph-ansible
 ANSIBLE_STRATEGY=debug; ansible-playbook -vvv site.yml -i $inventory_file
+exit_status=$?
 
+if [ "$exit_status" -gt "0" ]; then
+	echo "ceph-ansible install failed"
+	exit exit_status
+fi
+	
 sleep 30
 yum install ceph-common -y
 #save off the first mon in the inventory list, used to fetch ceph.conf file for agent host. 
