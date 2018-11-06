@@ -89,7 +89,7 @@ $script_dir/scripts/utils/register_host.sh $inventory_file
 
 echo "Start Ceph installation"
 cd /usr/share/ceph-ansible
-ANSIBLE_STRATEGY=debug; ansible-playbook -vvv site.yml -i $inventory_file
+ANSIBLE_STRATEGY=debug; ansible-playbook -v site.yml -i $inventory_file
 exit_status=$?
 
 if [ "$exit_status" -gt "0" ]; then
