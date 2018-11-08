@@ -57,7 +57,7 @@ def setup_loggers(logger_name, def_level=logging.DEBUG, log_fname=None):
 
     FMT = "%Y-%m-%dT%H:%M:%SZ"
     
-    log_format = '%(asctime)s - %(levelname)s - %(module)s: %(message)s'
+    log_format = '%(asctime)s - %(levelname)s - %(processName)s - %(module)s: %(message)s'
     colored_formatter = ColoredFormatter(log_format, datefmt=FMT)
 
     sh.setFormatter(colored_formatter)

@@ -15,6 +15,7 @@ from elasticsearch import Elasticsearch, helpers
 from utils.common_logging import setup_loggers
 from proto_py_es_bulk import *
 
+import multiprocessing as mp
 
 
 logger = logging.getLogger("index_run2runcomparison")
@@ -27,7 +28,34 @@ urllib3_log.setLevel(logging.CRITICAL)
 def main(): 
     es, comparison_id, test_list = argument_handler() 
     
-    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(es, comparison_id, test_list))
+    output = mp.Queue()
+    start_time = datetime.datetime.utcnow()
+    logger.info("comparison start time - %s" % start_time)
+    series_list = list(string.ascii_uppercase)
+    
+    series_count=0
+    
+    process_list = []
+    for test in test_list:
+        process = mp.Process(target=index_wrapper, args=(es, comparison_id, test, start_time, series_list[series_count]))
+        process_list.append(process)
+        series_count += 1
+    
+    # Run processes
+    for p in process_list:
+        p.start()
+    
+    for p in process_list:
+        p.join()
+    
+#     for p in process_list:
+#         results = output.get()
+# 
+#         logger.info(resuldts)
+    
+def index_wrapper(es, comparison_id, test_id, start_time, series):
+    
+    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(es, comparison_id, test_id, start_time, series))
        
     FMT = '%Y-%m-%dT%H:%M:%SGMT'
     start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
@@ -38,26 +66,12 @@ def main():
     tdelta = end_t - start_t
     logger.info("Duration of indexing - %s" % tdelta)
     logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
-     
 
-def test_data_generator(es, com_id, test_id_list):
-    object_generator = get_test_data(es, com_id, test_id_list)
+def test_data_generator(es, comparison_id, test_id, start_time, series):
 
-    for obj in object_generator:
-        for action in obj.emit_actions(): 
-            yield action
-            
-def get_test_data(es, comparison_id, test_id_list):
-    
-    start_time = datetime.datetime.utcnow()
-    logger.info("comparison start time - %s" % start_time)
-    series_list = list(string.ascii_uppercase)
-    
-    series_count=0
-    for test_id in test_id_list:
-        obj = test_holder(es, test_id, comparison_id, start_time, series_list[series_count])
-        series_count += 1
-        yield obj    
+    obj = test_holder(es, test_id, comparison_id, start_time, series)
+    for action in obj.emit_actions(): 
+        yield action 
 
 class test_holder():
     def __init__(self, es, test_id, comparison_id, start_time, series_id):
