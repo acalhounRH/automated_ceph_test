@@ -42,16 +42,12 @@ def main():
         series_count += 1
     
     # Run processes
+
     for p in process_list:
         p.start()
-    
+
     for p in process_list:
         p.join()
-    
-#     for p in process_list:
-#         results = output.get()
-# 
-#         logger.info(resuldts)
     
 def index_wrapper(es, comparison_id, test_id, start_time, series):
     
@@ -106,7 +102,7 @@ class test_holder():
         
         index_list=""
         for i in indices:
-            if "run2run" not in i:
+            if "run2run" not in i or "pbench" not in i:
                 if index_list: 
                     index_list = "%s,%s" % (index_list, i)
                 else:
