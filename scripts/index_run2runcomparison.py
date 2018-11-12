@@ -102,7 +102,7 @@ class test_holder():
         
         index_list=""
         for i in indices:
-            if "run2run" not in i or "pbench" not in i:
+            if "run2run" not in i and "pbench" not in i:
                 if index_list: 
                     index_list = "%s,%s" % (index_list, i)
                 else:
