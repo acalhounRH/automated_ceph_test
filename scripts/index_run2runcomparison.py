@@ -26,7 +26,7 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 def main(): 
-    es, comparison_id, test_list = argument_handler() 
+    arguments = argument_handler()
     
     output = mp.Queue()
     start_time = datetime.datetime.utcnow()
@@ -36,8 +36,8 @@ def main():
     series_count=0
     
     process_list = []
-    for test in test_list:
-        process = mp.Process(target=index_wrapper, args=(es, comparison_id, test, start_time, series_list[series_count]))
+    for test in arguments.test_list:
+        process = mp.Process(target=index_wrapper, args=(arguments.es, arguments.comparison_id, test, start_time, arguments.test_mode, arguments.verbose, series_list[series_count]))
         process_list.append(process)
         series_count += 1
     
@@ -49,19 +49,31 @@ def main():
     for p in process_list:
         p.join()
     
-def index_wrapper(es, comparison_id, test_id, start_time, series):
+def index_wrapper(es, comparison_id, test_id, start_time, test_mode, verbose, series):
     
-    res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(es, comparison_id, test_id, start_time, series))
-       
-    FMT = '%Y-%m-%dT%H:%M:%SGMT'
-    start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
-    end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
-       
-    start_t = datetime.datetime.strptime(start_t, FMT)
-    end_t = datetime.datetime.strptime(end_t, FMT)
-    tdelta = end_t - start_t
-    logger.info("Duration of indexing - %s" % tdelta)
-    logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
+    if test_mode:
+        logger.info("********************************")
+        logger.info("*********** TEST MODE **********")
+        logger.info("********************************")
+        for i in test_data_generator(es, comparison_id, test_id, start_time, series):
+            if "cbt_config" in i:
+                logger.debug(json.dumps(i, indent=4))
+        logger.info("********************************")
+        logger.info("*********** TEST MODE **********")
+        logger.info("********************************")
+    else:
+        logger.info("%%%%%%%%%%%%%%%%%%%%%%REALSTUFF%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(es, comparison_id, test_id, start_time, series))
+           
+        FMT = '%Y-%m-%dT%H:%M:%SGMT'
+        start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
+        end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
+           
+        start_t = datetime.datetime.strptime(start_t, FMT)
+        end_t = datetime.datetime.strptime(end_t, FMT)
+        tdelta = end_t - start_t
+        logger.info("Duration of indexing - %s" % tdelta)
+        logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
 
 def test_data_generator(es, comparison_id, test_id, start_time, series):
 
@@ -102,7 +114,7 @@ class test_holder():
         
         index_list=""
         for i in indices:
-            if "run2run" not in i and "pbench" not in i:
+            if "run2run" not in i and "pbench" not in i and "metricbeat" not in i and ".monitoring-" not in i and ".kibana" not in i:
                 logger.debug("adding %s to index list" % i)
                 if index_list:
                     index_list = "%s,%s" % (index_list, i)
@@ -159,57 +171,68 @@ class test_holder():
                 importdoc["_op_type"] = "create"
                 yield importdoc
 
-def argument_handler():
-    comparison_id = ""
-    test_list = ""
-    host = ""
-    esport = ""
-    log_level = logging.INFO
-    usage = """ 
-            Usage:
-                run2runcomparison.py -t <title> -tl <test1,test2,test3> -h <host> -p <port> 
+class argument_handler():
+    def __init__(self):
+        self.comparison_id = ""
+        self.test_list = ""
+        self.host = ""
+        self.esport = ""
+        self.log_level = logging.INFO
+        self.test_mode = False
+        self.output_file=None
+        self.verbose=False
+        
+        self.usage = """ 
+                Usage:
+                    run2runcomparison.py -t <title> -tl <test1,test2,test3> -h <host> -p <port> 
+                    
+                    -t or --title - test identifier
+                    -l or --test-list - comma seperated list of all test to be comparted
+                    -h or --host - Elasticsearch host ip or hostname
+                    -p or --port - Elasticsearch port (elasticsearch default is 9200)
+                    -d or --debug - enables debug (verbose) logging output
+                """
                 
-                -t or --title - test identifier
-                -l or --test-list - comma seperated list of all test to be comparted
-                -h or --host - Elasticsearch host ip or hostname
-                -p or --port - Elasticsearch port (elasticsearch default is 9200)
-                -d or --debug - enables debug (verbose) logging output
-            """
-    try:
-        opts, _ = getopt.getopt(sys.argv[1:], 't:l::h:p:d', ['title=', 'test-list=', 'host=', 'port=', 'debug'])
-    except getopt.GetoptError:
-        print usage 
-        exit(1)
-
-    for opt, arg in opts:
-        if opt in ('-t', '--title'):
-            comparison_id = arg
-        if opt in ('-l', '--test-list'):
-            test_list = arg.split(',')
-        if opt in ('-h', '--host'):
-            host = arg
-        if opt in ('-p', '--port'):
-            esport = arg
-        if opt in ('-d', '--debug'):
-            log_level = logging.DEBUG
-                       
-    setup_loggers("index_run2runcomparison", log_level)    
+        try:
+            opts, _ = getopt.getopt(sys.argv[1:], 't:l:h:p:o:dTv', ['title=', 'test-list=', 'host=', 'port=', 'debug', "output_file", "test_mode", "verbose"])
+        except getopt.GetoptError:
+            print self.usage 
+            exit(1)
     
-    if host and comparison_id and esport:
-        logger.info("Comparison_id: %s - Comparing %s " % (comparison_id, test_list))
-        logger.info("Using Elasticsearch host and port: %s:%s " % (host, esport))
-    else:
-        print host, comparison_id, esport
-        logger.error(usage)
-        exit ()
-
-    es = Elasticsearch(
-        [host],
-        scheme="http",
-        port=esport,
-        )
+        for opt, arg in opts:
+            if opt in ('-t', '--title'):
+                self.comparison_id = arg
+            if opt in ('-l', '--test-list'):
+                self.test_list = arg.split(',')
+            if opt in ('-h', '--host'):
+                self.host = arg
+            if opt in ('-p', '--port'):
+                self.esport = arg
+            if opt in ('-d', '--debug'):
+                self.log_level = logging.DEBUG
+            if opt in ('-T', '--test_mode'):
+                self.test_mode = True
+            if opt in ('-o', '--output_file'):
+                self.output_file = arg
+            if opt in ('-v', '--verbose'):
+                self.verbose = True
+                           
+        setup_loggers("index_run2runcomparison", self.log_level)    
+        
+        if self.host and self.comparison_id and self.esport:
+            logger.info("Comparison_id: %s - Comparing %s " % (self.comparison_id, self.test_list))
+            logger.info("Using Elasticsearch host and port: %s:%s " % (self.host, self.esport))
+        else:
+            print self.host, self.comparison_id, self.esport
+            logger.error(self.usage)
+            exit ()
     
-    return es, comparison_id, test_list
+        self.es = Elasticsearch(
+            [self.host],
+            scheme="http",
+            port=self.esport,
+            )
+        
 
 if __name__ == '__main__':
     main()

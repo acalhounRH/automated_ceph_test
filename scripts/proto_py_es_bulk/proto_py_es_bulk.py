@@ -46,19 +46,42 @@ def streaming_bulk(es, actions):
     actions_retry_deque = deque()
     retries_tracker = Counter()
     def actions_tracking_closure(cl_actions):
+        ##get start_time
+        start_time = time.time()
+        ## actions counter = 0 
+        actions_counter = 0
         for cl_action in cl_actions:
             assert '_id' in cl_action
             assert '_index' in cl_action
             assert '_type' in cl_action
             assert _op_type == cl_action['_op_type']
             actions_deque.append((0, cl_action))   # Append to the right side ...
+            ## number of actions que counter ++
+            actions_counter += 1
+
             yield cl_action
+            
+            if len(actions_deque) = 0:
+            ##resp returned
+            ## get new stop time
+                stop_time = time.time()
+                processing_duration = start_time - stop_time
+            ## log output counter(number of actions) duration stop and start time
+                logger.debug("Response Returned - started at %s, finished at %s" % (start_time, stop_time))
+                logger.debug("%s objects, with a processing duration of %s." % (actions_counter, processing_duration))
+            ## get new start time
+                start_time = time.time() 
+            ## set to actions que counter = 0
+                actions_counter = 0  
+            
             # if after yielding an action some actions appear on the retry deque
             # start yielding those actions until we drain the retry queue.
             backoff = 1
             while len(actions_retry_deque) > 0:
                 time.sleep(calc_backoff_sleep(backoff))
                 retries_tracker['retries'] += 1
+                ## log ouput retries_tracker['retries']
+                logger.debug(json.dumps(retries_tracker['retries'], indent=1))
                 retry_actions = []
                 # First drain the retry deque entirely so that we know when we
                 # have cycled through the entire list to be retried.
