@@ -7,6 +7,35 @@ mon_port=6789
 mountpoint=/mnt/cephfs
 NOTOK=1
 
+# this subroutine installs software from github
+# if it's a branch rather than master, you
+# have to do a couple of extra steps
+
+clone_branch() {
+	cd
+	git_url=$1
+	echo $git_url | grep '/tree/'
+	if [ $? = 0 ] ; then
+		git_branch_name=`basename $git_url`
+		git_branch_tree=`dirname $git_url`
+		git_site=`dirname $git_branch_tree`
+	else
+		git_site=$git_url
+	fi
+	git_dirname=`basename $git_site`
+	rm -rf $git_dirname
+	git clone $git_site
+	cd $git_dirname
+	if [ -n "$git_branch_name" ] ; then
+		git fetch $git_site $git_branch_name
+		git checkout $git_branch_name
+	fi
+	rm -rf .git
+	cd
+	ansible -m shell -a "rm -rf ~/$git_dirname" clients
+	ansible -m synchronize -a "src=~/$git_dirname delete=yes dest=./" clients
+}
+
 hostname | grep -q linode.com
 if [ $? = 0 ]; then
         inventory_file=$HOME/ceph-linode/ansible_inventory
@@ -15,33 +44,30 @@ else
 fi
 export ANSIBLE_INVENTORY=$inventory_file
 
+rm -rf $archive_dir
 mkdir -v $archive_dir
 
-# prepare smallfile parameters in a YAML file
+ansible -m shell -a 'yum install -y rsync' clients || exit 1
+
+clone_branch $cbt_url
+clone_branch $smallfile_url
+
+# CBT doesn't know where you put smallfile
+# so it expects it to be in PATH
+ln -svf ~/smallfile/smallfile_cli.py /usr/local/bin
+ansible -m shell -a "ln -svf ~/smallfile/smallfile_remote.py /usr/local/bin/" clients
 
 echo "$smallfile_settings" | tee $archive_dir/automated_test.yml
 
-# ensure smallfile up to date on all client machines
-
-smf_git_repo='https://github.com/distributed-system-analysis/smallfile'
-ansible -m shell -a "yum install -y git ; git clone $smf_git_repo || (cd smallfile ; git pull)" clients
-
-# get list of client hosts to feed to smallfile
-
-rm -fv smf-clients.list
-ln -sv $archive_dir/smf-clients.list .
-ansible -m shell -a hostname clients 2>&1 | \
-  grep -v SUCCESS | tee $archive_dir/smf-clients.list
-  
 # get monitor IP address, we'll need that to mount Cephfs
 
 mon_ip=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["ansible_ssh_host"] }}' localhost | grep -v localhost`
 
-# fetch and distribute client.admin key to Cephfs clients in expected format
+# distribute client key to Cephfs clients in expected format
 
-(scp $mon_ip:/etc/ceph/ceph.client.admin.keyring /tmp/ceph.client.admin.keyring && \
- awk '/==/{ print $NF }' /tmp/ceph.client.admin.keyring > /tmp/cephfs.key && \
- ansible -m copy -a 'src=/tmp/cephfs.key dest=/etc/' clients) \
+(rm -f /etc/ceph/cephfs.key && \
+ awk '/==/{ print $NF }' /etc/ceph/ceph.client.admin.keyring > /etc/ceph/cephfs.key && \
+ ansible -m copy -a 'src=/etc/ceph/cephfs.key dest=/etc/ceph/' clients) \
   || exit $NOTOK
 
 # it's ok if unmounting fails because it's not already mounted
@@ -51,26 +77,36 @@ ansible -m shell -a "umount -v $mountpoint" clients
 # if we can't mount Cephfs, bail out right away
 
 ansible -m shell -a \
- "mkdir -pv $mountpoint && mkdir -pv $mountpoint/smf && mount -v -t ceph -o name=admin,secretfile=/etc/cephfs.key $mon_ip:$mon_port:/ $mountpoint && mkdir -pv $mountpoint/smf" clients \
+ "mkdir -pv $mountpoint && mount -v -t ceph -o name=admin,secretfile=/etc/ceph/cephfs.key $mon_ip:$mon_port:/ $mountpoint && mkdir -pv $mountpoint/smf" clients \
    || exit $NOTOK
 
 # must mount cephfs from test driver as well
 
 umount $mountpoint
 (mkdir -pv $mountpoint && \
- mount -v -t ceph -o name=admin,secretfile=/tmp/cephfs.key $mon_ip:$mon_port:/ $mountpoint && \
+ mount -v -t ceph -o name=admin,secretfile=/etc/ceph/cephfs.key $mon_ip:$mon_port:/ $mountpoint && \
  mkdir -pv $mountpoint/smf ) \
  || exit $NOTOK
 
 # run the test and save results in archive_dir
 
 source /etc/profile.d/pbench-agent.sh
-pbench-user-benchmark -- python $HOME/smallfile/smallfile_cli.py \
-  --yaml-input-file $archive_dir/automated_test.yml 2>&1 | \
-  tee $archive_dir/smf.log
-# since this is the agent, don't leave Cephfs mounted here 
-# because servers will go away
+rm -rf $archive_dir/cbt_results
+mkdir -pv $archive_dir/cbt_results
+benchyaml=$archive_dir/benchmark.yaml
+echo "$cbt_smallfile_settings" > $benchyaml
+# need to get indentation right for YAML, next cmd copies indentation
+grep 'operation:' $benchyaml | sed 's#operation:.*$#top: /mnt/cephfs/smf#' >> $benchyaml
+$script_dir/scripts/utils/addhost_to_jobfile.sh $archive_dir/benchmark.yaml $ANSIBLE_INVENTORY
+echo "################ CBT YAML input ################"
+cat $archive_dir/benchmark.yaml
+# CBT uses localhost in "head" role so we need password-less 
+# ssh access to localhost, this command fixes known_hosts to allow it
+ssh -o StrictHostKeyChecking=no localhost pwd
+
+pbench-user-benchmark -- python ~/cbt/cbt.py -a $archive_dir/cbt_results $archive_dir/benchmark.yaml
+rc=$?
 umount -v $mountpoint
-rm -fv /tmp/cephfs.key smf-clients.list 
-# if smallfile fails, then next command fails and so job fails
-mv -v result.json $archive_dir/
+rm -fv /etc/ceph/cephfs.key /etc/ceph/ceph.client.admin.keyring smf-clients.list /etc/ceph/ceph.conf
+
+exit $rc
