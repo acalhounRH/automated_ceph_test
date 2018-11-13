@@ -11,14 +11,15 @@
 # this makes troubleshooting a pipeline much easier for the user
 
 echo "test test test"
+NOTOK=1   # process exit status indicating failure
 systemctl stop firewalld 
 systemctl stop iptables
 script_dir=$HOME/automated_ceph_test
 inventory_file=$HOME/ceph-linode/ansible_inventory
 
-rm -fv $inventory_file $HOME/ceph-linode/LINODE_GROUP
 
-sudo yum remove -y ceph-ansible ansible
+# clean house, so we don't have previous version of Ceph interfering
+sudo yum remove ceph-base ceph-ansible librados2 -y
 rm -rf /usr/share/ceph-ansible
 yum-config-manager --disable epel
 
@@ -71,26 +72,56 @@ echo "$Linode_Cluster_Configuration" > cluster.json
 virtualenv-2 linode-env && source linode-env/bin/activate && pip install linode-python
 export LINODE_API_KEY=$Linode_API_KEY
 
-ANSIBLE_STRATEGY=debug; /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible
-#sudo ansible -i ansible_inventory -m shell -a "ceph -s" mon-000
+export ANSIBLE_INVENTORY=$inventory_file
+first_mon=`ansible --list-host mons |grep -v hosts | grep -v ":" | head -1`
+first_mon_ip=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["ansible_ssh_host"] }}' localhost | grep -v localhost`
 
-sleep 30
-yum install ceph-common -y
-#save off the first mon in the inventory list, used to fetch ceph.conf file for agent host. 
-for i in `ansible --list-host -i $inventory_file mons |grep -v hosts | grep -v ":"`
-    do
-    	monname=$i
-    	break
-done
+try_ceph_install() {
+  /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible && \
+  ansible -m script -a \
+     "$script_dir/scripts/utils/check_cluster_status.py" $first_mon
+}
 
-ansible -m fetch -a "src=/etc/ceph/ceph.conf dest=/etc/ceph/ceph.conf.d" $monname -i $inventory_file
-cp /etc/ceph/ceph.conf.d/$monname/etc/ceph/ceph.conf /etc/ceph/ceph.conf
+try_ceph_install
 
-ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
-cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
+# if it fails and we have a version adjustment repo, 
+# use that and retry ceph-ansible
+# this is a hack to work around the lack of correct ansible version and/or
+# and lack of latest versions of selinux-policy RPMs in centos
+# when a new RHEL version is released.
+# it only is used if ceph-ansible fails.  This isn't so bad because
+# running it again doesn't take as long the 2nd time.
+# the extra repo we insert is given by version_adjust_repo URL parameter
+# also passed to preceding job
 
-#Health check
-$script_dir/scripts/utils/check_cluster_status.py
-exit_status=$?
+if [ $? != 0 -a -n "$version_adjust_repo" ] ; then 
+    version_adjust_name=`basename $version_adjust_repo`
+	yum clean all
+	yum install -y libselinux-python || yum upgrade -y libselinux-python
+    ansible -m shell -a "rm -rf $version_adjust_name" all
+	ansible -m copy -a "src=~/$version_adjust_name dest=./" all
+    ansible -m shell -a \
+      "ln -svf ~/$version_adjust_name/version_adjust.repo /etc/yum.repos.d/" all
+    ansible -m shell -a \
+      'yum clean all ; yum install -y libselinux-python || yum upgrade -y libselinux-python' all
+    try_ceph_install || exit $NOTOK
+fi
 
-exit $exit_status
+# rsync is useful for the ansible synchronize module, 
+# which makes it fast to copy directory trees
+# ceph-fuse enables cephfs testing
+
+(yum install ceph-fuse ceph-common rsync -y && 
+ ansible -m shell -a 'yum install -y rsync' clients) \
+  || exit $NOTOK
+
+# make everyone in the cluster able to run ceph -s
+# make agent able to access Ceph cluster as client
+
+(scp $first_mon_ip:/etc/ceph/ceph.conf /etc/ceph/ && \
+ scp $first_mon_ip:/etc/ceph/ceph.client.admin.keyring /etc/ceph/ && \
+ ansible -m copy -a 'src=/etc/ceph/ceph.client.admin.keyring dest=/etc/ceph/' clients) \
+ || exit $NOTOK
+
+ceph -s
+

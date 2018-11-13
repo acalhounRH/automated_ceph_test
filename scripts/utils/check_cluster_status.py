@@ -1,24 +1,16 @@
 #! /usr/bin/python
 
 import rados, os, logging, json, sys
-from common_logging import setup_loggers
-
-logger = logging.getLogger("check_cluster_status")
+import logging as logger
 
 def main():
     
-    setup_loggers("check_cluster_status", logging.DEBUG)
+    logger.basicConfig(level=logging.DEBUG)
     new_client = ceph_client()
-    
-    
     ceph_status = new_client.issue_command("status")
-    
-    
     health_status = ceph_status['health']
-    
     health_stat = _finditem(health_status, "status")
     health_message = _finditem(health_status, "message")
-        
     if "HEALTH_OK" in health_stat:
         logger.info("Cluster health OK")
         sys.exit(0)
@@ -72,3 +64,4 @@ class ceph_client():
             
 if __name__ == '__main__':
     main()
+

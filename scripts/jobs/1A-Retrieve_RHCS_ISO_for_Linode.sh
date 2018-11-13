@@ -52,3 +52,43 @@ scp $new_ceph_iso_file $agenthostname:~/automated_ceph_test/staging_area/rhcs_la
 
 cd ../
 rm -rf iso_holder
+
+# version_adjust_repo allows user to specify a URL containing a repo
+# that plugs gap between what new RHCS release requires 
+# and what is available in centos
+
+if [ -n "$version_adjust_repo" ] ; then
+  version_adjust_dir=~/automated_ceph_test/version_adjust_repo
+  version_adjust_name=`basename $version_adjust_repo`
+  # FIXME: we could eliminate copy after first time, by using
+  # correct wget parameters that only copy if file at source is more recent
+  rm -rf $version_adjust_dir
+  mkdir $version_adjust_dir
+  pushd $version_adjust_dir || exit 1
+  wget -q --no-parent --recursive --level=4 $version_adjust_repo/ || exit 1
+  # wget inserts intermediate directories above target repo
+  target_subdir=`find *redhat.com -name $version_adjust_name`
+  mv -v $target_subdir .
+  # since repo is assumed to be internal, it
+  # always comes from redhat.com
+  rm -rfv *.redhat.com
+  ls -lR $version_adjust_name || exit 1
+  popd
+
+  # WISH THIS WORKED!
+  # FIXME: only copy changes to remote agent
+  #echo $USER $LOGNAME
+  #(rsync -rac -vvv --del $version_adjust_dir/$version_adjust_name $agenthostname: && \
+  #ssh $agenthostname 'ln -svf $version_adjust_name/version_adjust.repo /etc/yum.repos.d/') \
+  #  || exit 1
+
+  # either all these commands work or the job exits with failure status
+
+  (ssh $agenthostname "rm -rf $version_adjust_name" && \
+   scp -r $version_adjust_dir/$version_adjust_name $agenthostname: && \
+   ssh $agenthostname "ln -svf \$HOME/$version_adjust_name/version_adjust.repo /etc/yum.repos.d/") \
+     || exit 1
+else
+  ssh $agenthostname "rm -fv /etc/yum.repos.d/version_adjust.repo"
+fi
+ssh $agenthostname 'yum clean all'
