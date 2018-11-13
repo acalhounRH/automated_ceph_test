@@ -61,7 +61,7 @@ def streaming_bulk(es, actions):
 
             yield cl_action
             
-            if len(actions_deque) = 0:
+            if len(actions_deque) == 0:
             ##resp returned
             ## get new stop time
                 stop_time = time.time()
