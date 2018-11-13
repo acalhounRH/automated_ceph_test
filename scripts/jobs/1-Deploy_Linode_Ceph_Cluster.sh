@@ -23,14 +23,6 @@ sudo yum remove ceph-base ceph-ansible librados2 -y
 rm -rf /usr/share/ceph-ansible
 yum-config-manager --disable epel
 
-# install precise ansible version if necessary
-if [ -n "$ansible_version" ] ; then
-	yum install ansible-$ansible_version
-else
-	yum install ansible
-fi
-
-
 cd $script_dir/staging_area/rhcs_latest/
 new_ceph_iso_file="$(ls)"
 
@@ -41,9 +33,15 @@ sudo mkdir -m0777 /ceph-ansible-keys
 sudo cp $script_dir/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
 sudo mkdir -p /mnt/rhcs_latest/
 sudo umount /mnt/rhcs_latest/
-sudo mount $script_dir/staging_area/rhcs_latest/RHCEPH* /mnt/rhcs_latest/
+sudo mount $script_dir/staging_area/rhcs_latest/RHCEPH* /mnt/rhcs_latest/ || exit $NOTOK
 sudo yum clean all
 
+# install precise ansible version if necessary
+if [ -n "$ansible_version" ] ; then
+	yum install -y ansible-$ansible_version
+else
+	yum install -y ansible
+fi
 
 #install ceph-ansible
 sudo yum install ceph-ansible -y
@@ -73,11 +71,11 @@ virtualenv-2 linode-env && source linode-env/bin/activate && pip install linode-
 export LINODE_API_KEY=$Linode_API_KEY
 
 export ANSIBLE_INVENTORY=$inventory_file
-first_mon=`ansible --list-host mons |grep -v hosts | grep -v ":" | head -1`
-first_mon_ip=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["ansible_ssh_host"] }}' localhost | grep -v localhost`
 
 try_ceph_install() {
-  /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible && \
+  /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible || return $NOTOK
+  export first_mon=`ansible --list-host mons |grep -v hosts | grep -v ":" | head -1`
+  export first_mon_ip=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["ansible_ssh_host"] }}' localhost | grep -v localhost`
   ansible -m script -a \
      "$script_dir/scripts/utils/check_cluster_status.py" $first_mon
 }
