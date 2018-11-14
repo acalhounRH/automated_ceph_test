@@ -65,7 +65,7 @@ def streaming_bulk(es, actions):
             yield cl_action
             
             logger.debug("*************** %s *************** %s" % (actions_counter, len(actions_deque)))
-            if not actions_deque:
+            if len(actions_deque) == 1:
             ##resp returned
             ## get new stop time
                 stop_time = time.time()
