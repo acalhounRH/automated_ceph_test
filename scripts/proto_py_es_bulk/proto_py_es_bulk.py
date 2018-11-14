@@ -116,7 +116,7 @@ def streaming_bulk(es, actions):
     #streaming_bulk_generator = helpers.streaming_bulk(
     #setting max chunk bytes to 5MB documentations says try 5MB-15MB
     streaming_bulk_generator = helpers.parallel_bulk(
-           es, generator,chunk_size=100000, max_chunk_bytes=262144, raise_on_error=False, #using .25MB for mac chunk bytes
+           es, generator,chunk_size=100000, max_chunk_bytes=5242880, thread_count=8, raise_on_error=False,
            raise_on_exception=False, request_timeout=_request_timeout)
 
     for ok, resp_payload in streaming_bulk_generator:
