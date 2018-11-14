@@ -47,6 +47,7 @@ def streaming_bulk(es, actions):
     retries_tracker = Counter()
     def actions_tracking_closure(cl_actions):
         ##get start_time
+        logger.debug("WE ARE IN ACTIONS TRACKING CLOSUREs")
         start_time = time.time()
         ## actions counter = 0 
         actions_counter = 0
@@ -58,7 +59,7 @@ def streaming_bulk(es, actions):
             actions_deque.append((0, cl_action))   # Append to the right side ...
             ## number of actions que counter ++
             actions_counter += 1
-            if actions_counter > 100000:
+            if actions_counter >= 100000:
                 logger.debug(actions_counter)
 
             yield cl_action
