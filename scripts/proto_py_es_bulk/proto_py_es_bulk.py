@@ -67,7 +67,7 @@ def streaming_bulk(es, actions):
                 actions_counter = 0
             
             if first_time:
-                first_time = false  
+                first_time = False  
                 
             actions_deque.append((0, cl_action))   # Append to the right side ...
             ## number of actions que counter ++
