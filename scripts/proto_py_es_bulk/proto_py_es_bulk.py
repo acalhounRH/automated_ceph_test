@@ -51,19 +51,23 @@ def streaming_bulk(es, actions):
         start_time = time.time()
         ## actions counter = 0 
         actions_counter = 0
+        first_time=True
         for cl_action in cl_actions:
             assert '_id' in cl_action
             assert '_index' in cl_action
             assert '_type' in cl_action
             assert _op_type == cl_action['_op_type']
                        
-            if len(actions_deque) == 1:
+            if len(actions_deque) == 1 and not first_time:
                 stop_time = time.time()
-                processing_duration = start_time - stop_time
-                logger.debug("Response Returned - started at %s, finished at %s" % (start_time, stop_time))
+                processing_duration = stop_time - start_time
+                logger.debug("Response Returned - started at %s, finished at %s" % (time.ctime(int(start_time)), time.ctime(int(stop_time))))
                 logger.debug("%s objects, with a processing duration of %s." % (actions_counter, processing_duration))
                 start_time = time.time() 
-                actions_counter = 0  
+                actions_counter = 0
+            
+            if first_time:
+                first_time = false  
                 
             actions_deque.append((0, cl_action))   # Append to the right side ...
             ## number of actions que counter ++
@@ -101,7 +105,7 @@ def streaming_bulk(es, actions):
     failures = 0
      # Create the generator that closes over the external generator, "actions"
     generator = actions_tracking_closure(actions)
-    streaming_bulk_generator = helpers.streaming_bulk(
+    streaming_bulk_generator = helpers.parallel_bulk(
            es, generator, chunk_size=100000, max_chunk_bytes=1048576, raise_on_error=False,
            raise_on_exception=False, request_timeout=_request_timeout)
 
