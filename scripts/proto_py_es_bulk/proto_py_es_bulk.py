@@ -72,7 +72,7 @@ def streaming_bulk(es, actions):
                 
                 logger.debug("Response Returned - started at %s, finished at %s" % (time.ctime(int(start_time)), time.ctime(int(stop_time))))
                 logger.debug("%s objects, with a processing duration of %s." % (actions_counter, processing_duration))
-                logger.debug("Average object count %s, Average Processing Duration %s" %s (average_object_count, average_processing_duration))
+                logger.debug("Average object count %s, Average Processing Duration %s" % (average_object_count, average_processing_duration))
                 start_time = time.time()
                 actions_counter = 0
             
