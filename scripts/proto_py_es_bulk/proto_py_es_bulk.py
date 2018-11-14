@@ -105,7 +105,8 @@ def streaming_bulk(es, actions):
     failures = 0
      # Create the generator that closes over the external generator, "actions"
     generator = actions_tracking_closure(actions)
-    streaming_bulk_generator = helpers.streaming_bulk(
+    #streaming_bulk_generator = helpers.streaming_bulk(
+    streaming_bulk_generator = helpers.parallel_bulk(
            es, generator, chunk_size=100000, max_chunk_bytes=1048576, raise_on_error=False,
            raise_on_exception=False, request_timeout=_request_timeout)
 
