@@ -56,6 +56,7 @@ def streaming_bulk(es, actions):
             assert '_index' in cl_action
             assert '_type' in cl_action
             assert _op_type == cl_action['_op_type']
+            logger.debug("*************** %s *************** %s" % (actions_counter, len(actions_deque)))
             actions_deque.append((0, cl_action))   # Append to the right side ...
             ## number of actions que counter ++
             actions_counter += 1
@@ -64,18 +65,12 @@ def streaming_bulk(es, actions):
 
             yield cl_action
             
-            logger.debug("*************** %s *************** %s" % (actions_counter, len(actions_deque)))
             if len(actions_deque) == 1:
-            ##resp returned
-            ## get new stop time
                 stop_time = time.time()
                 processing_duration = start_time - stop_time
-            ## log output counter(number of actions) duration stop and start time
                 logger.debug("Response Returned - started at %s, finished at %s" % (start_time, stop_time))
                 logger.debug("%s objects, with a processing duration of %s." % (actions_counter, processing_duration))
-            ## get new start time
                 start_time = time.time() 
-            ## set to actions que counter = 0
                 actions_counter = 0  
             
             # if after yielding an action some actions appear on the retry deque
