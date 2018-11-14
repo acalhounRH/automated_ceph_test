@@ -67,6 +67,7 @@ def streaming_bulk(es, actions):
                 actions_counter = 0
             
             if first_time:
+                
                 first_time = False  
                 
             actions_deque.append((0, cl_action))   # Append to the right side ...
@@ -105,7 +106,7 @@ def streaming_bulk(es, actions):
     failures = 0
      # Create the generator that closes over the external generator, "actions"
     generator = actions_tracking_closure(actions)
-    streaming_bulk_generator = helpers.parallel_bulk(
+    streaming_bulk_generator = helpers.streaming_bulk(
            es, generator, chunk_size=100000, max_chunk_bytes=1048576, raise_on_error=False,
            raise_on_exception=False, request_timeout=_request_timeout)
 
