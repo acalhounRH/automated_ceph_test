@@ -58,10 +58,12 @@ def streaming_bulk(es, actions):
             actions_deque.append((0, cl_action))   # Append to the right side ...
             ## number of actions que counter ++
             actions_counter += 1
+            if actions_counter > 100000:
+                logger.debug(actions_counter)
 
             yield cl_action
             
-            if len(actions_deque) == 0:
+            if not actions_deque:
             ##resp returned
             ## get new stop time
                 stop_time = time.time()
