@@ -68,7 +68,7 @@ def streaming_bulk(es, actions):
             
             if first_time and len(actions_deque) > 1:
                 first_time = False  
-                
+            logger.debug("***************** %s ********************** %s" % (actions_counter, len(actions_deque)))
             actions_deque.append((0, cl_action))   # Append to the right side ...
             ## number of actions que counter ++
             actions_counter += 1
