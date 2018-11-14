@@ -61,7 +61,7 @@ def streaming_bulk(es, actions):
             assert _op_type == cl_action['_op_type']
             new_length = len(actions_deque)
             len_diff = new_length - previous_length
-            logger.debug("******* %s ******* %s ****** %s" % (len_diff, new_length, previous_length)
+            logger.debug("******* %s ******* %s ****** %s" % (len_diff, new_length, previous_length))
             if len(actions_deque) == 1 and not first_time:
                 stop_time = time.time()
                 processing_duration = stop_time - start_time
