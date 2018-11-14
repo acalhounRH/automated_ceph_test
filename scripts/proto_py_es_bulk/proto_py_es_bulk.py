@@ -61,19 +61,18 @@ def streaming_bulk(es, actions):
             assert _op_type == cl_action['_op_type']
             new_length = len(actions_deque)
             len_diff = new_length - previous_length
-            logger.debug("******* %s ******* %s ****** %s" % (len_diff, new_length, previous_length))
-            if len(actions_deque) == 1 and not first_time:
+            #logger.debug("******* %s ******* %s ****** %s" % (len_diff, new_length, previous_length))
+            if len_diff < 0:
                 stop_time = time.time()
                 processing_duration = stop_time - start_time
                 logger.debug("Response Returned - started at %s, finished at %s" % (time.ctime(int(start_time)), time.ctime(int(stop_time))))
                 logger.debug("%s objects, with a processing duration of %s." % (actions_counter, processing_duration))
                 start_time = time.time() 
                 actions_counter = 0
-                len_diff = 0
             
             if first_time and len(actions_deque) > 1:
                 first_time = False  
-            logger.debug("***************** %s ********************** %s" % (actions_counter, len(actions_deque)))
+            #logger.debug("***************** %s ********************** %s" % (actions_counter, len(actions_deque)))
             actions_deque.append((0, cl_action))   # Append to the right side ...
             previous_length = len(actions_deque)
             ## number of actions que counter ++
