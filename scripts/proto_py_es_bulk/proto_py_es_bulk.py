@@ -58,7 +58,7 @@ def streaming_bulk(es, actions):
             assert '_type' in cl_action
             assert _op_type == cl_action['_op_type']
                        
-            if len(actions_deque) == 1 and not first_time:
+            if len(actions_deque) == 0 and not first_time:
                 stop_time = time.time()
                 processing_duration = stop_time - start_time
                 logger.debug("Response Returned - started at %s, finished at %s" % (time.ctime(int(start_time)), time.ctime(int(stop_time))))
