@@ -2,3 +2,5 @@ linode-env/
 /.project
 /.pydevproject
 /.README.md.html
+*.pyc
+*.pyo
