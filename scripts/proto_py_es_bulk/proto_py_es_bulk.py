@@ -52,12 +52,16 @@ def streaming_bulk(es, actions):
         ## actions counter = 0 
         actions_counter = 0
         first_time=True
+        len_diff = 0
+        previous_length = 0
         for cl_action in cl_actions:
             assert '_id' in cl_action
             assert '_index' in cl_action
             assert '_type' in cl_action
             assert _op_type == cl_action['_op_type']
-                       
+            new_length = len(actions_deque)
+            len_diff = new_length - previous_length
+            logger.debug("******* %s ******* %s ****** %s" % (len_diff, new_length, previous_length)
             if len(actions_deque) == 1 and not first_time:
                 stop_time = time.time()
                 processing_duration = stop_time - start_time
@@ -65,18 +69,18 @@ def streaming_bulk(es, actions):
                 logger.debug("%s objects, with a processing duration of %s." % (actions_counter, processing_duration))
                 start_time = time.time() 
                 actions_counter = 0
+                len_diff = 0
             
             if first_time and len(actions_deque) > 1:
                 first_time = False  
             logger.debug("***************** %s ********************** %s" % (actions_counter, len(actions_deque)))
             actions_deque.append((0, cl_action))   # Append to the right side ...
+            previous_length = len(actions_deque)
             ## number of actions que counter ++
             actions_counter += 1
-            if actions_counter >= 100000:
-                logger.debug(actions_counter)
 
             yield cl_action
- 
+        
             
             # if after yielding an action some actions appear on the retry deque
             # start yielding those actions until we drain the retry queue.
