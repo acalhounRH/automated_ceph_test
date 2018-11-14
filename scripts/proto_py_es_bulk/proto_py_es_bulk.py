@@ -53,8 +53,8 @@ def streaming_bulk(es, actions):
         actions_counter = 0
         len_diff = 0
         previous_length = 0
-        object_list= []
-        processing_duration_list [] 
+        object_list = []
+        processing_duration_list = [] 
         for cl_action in cl_actions:
             assert '_id' in cl_action
             assert '_index' in cl_action
