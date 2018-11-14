@@ -35,7 +35,8 @@ ceph_benchmark_test:
     "mode": "randwrite"
   test_data:                   #from actual data file (csv/json)
     pbench: 
-      <tool>:
-        <file_name|metric_type>:
-          metric_stat: #(csv header for column, allows user to break down data to specific device or metric status)
-          metric_value: #(csv data cell for specific line/column intersect
+      sar:
+          device: #item in header col. 
+          <filename>: metric_value #item in cell at row/col intersection
+          <filename>: metric_value #item in cell at row/col intersection
+          <filename>: metric_value #item in cell at row/col intersection     

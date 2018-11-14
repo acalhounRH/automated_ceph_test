@@ -7,8 +7,8 @@ logger = logging.getLogger("index_cbt")
 
 class pbench_transcriber:
 
-    def __init__(self, csv_file, metadata, cbt_config_obj):
-        self.csv_file = csv_file
+    def __init__(self, csv_file_list, metadata, cbt_config_obj):
+        self.csv_file_list = csv_file_list
         self.metadata = metadata
         
         host = self.metadata['ceph_benchmark_test']['common']['hardware']['hostname']
@@ -41,10 +41,11 @@ class pbench_transcriber:
             }
         
         #logger.debug("Indexing %s" % self.csv_file)
-        with open(self.csv_file) as csvfile:
-            readCSV = csv.reader(csvfile, delimiter=',')
-            first_row = True
-            col_ary = []
+        for csv_file in self.csv_file_list:
+            with open(self.csv_file) as csvfile:
+                readCSV = csv.reader(csvfile, delimiter=',')
+                first_row = True
+                col_ary = []
             
             for row in readCSV:
                 if first_row:
