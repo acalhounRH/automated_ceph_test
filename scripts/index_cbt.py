@@ -85,7 +85,7 @@ def process_data(test_id):
             }
         }
                         
-    factory =  analyzer_factory
+    factory =  analyzer_factory.analyzer_factory
     
     #parse cbt achive dir and call process method
     for dirpath, dirs, files in os.walk("."):
