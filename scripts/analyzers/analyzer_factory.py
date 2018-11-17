@@ -6,11 +6,11 @@ import logging
 
 logger = logging.getLogger("index_cbt")
 
-class analyzer_factory():
-    
-    def __init__(self):
-        _analyzer_mapping = {"librbdfio" : cbt_fio_analyzer.analyze_cbt_fio_results,
+_analyzer_mapping = {"librbdfio" : cbt_fio_analyzer.analyze_cbt_fio_results,
                           "rados": cbt_rados_analyzer.analyze_cbt_rados_results}
+
+class analyzer_factory():
+        
     @staticmethod
     def factory(self, benchmark_name, **kwargs):
         try:
