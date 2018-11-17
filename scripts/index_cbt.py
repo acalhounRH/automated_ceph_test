@@ -99,7 +99,7 @@ def process_data(test_id):
 #                 args = (dirpath, cbt_config_gen, test_metadata, "archive")
 #                 analyzer_obj = factory.factory(benchmark_name, args)
                 
-                return analyzer_obj             
+                #return analyzer_obj             
 #                 yield cbt_config_gen
 #             
 #                 #if rbd test, process json data 
