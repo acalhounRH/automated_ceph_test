@@ -96,7 +96,7 @@ def process_data(test_id):
                 logger.info("Gathering cbt configuration settings...")
                 cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)
                 benchmark_name = cbt_config_gen.config['benchmarks']
-                analyzer_obj = factory.factory(dirpath, cbt_config_gen, test_metadata, "archive")
+                analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "archive")
                 
                 return analyzer_obj             
 #                 yield cbt_config_gen
@@ -136,7 +136,7 @@ def process_data(test_id):
                     time_wo_unit = time_w_unit
                     test_metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
                     
-                analyzer_obj = factory.factory(dirpath, cbt_config_gen, test_metadata, "benchmark")
+                analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "benchmark")
                 return analyzer_obj
 
 class argument_handler():
