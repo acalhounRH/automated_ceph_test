@@ -121,7 +121,7 @@ def process_data(test_id):
                 benchmark_data = yaml.load(open(fname))
                 test_metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
                 benchmark_name = test_metadata['ceph_benchmark_test']['test_config']['benchmark']
-            
+                
                 op_size_bytes = test_metadata['ceph_benchmark_test']['test_config']['op_size']
                 time_w_unit = test_metadata['ceph_benchmark_test']['test_config']['time']
                 
