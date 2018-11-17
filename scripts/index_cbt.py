@@ -2,13 +2,14 @@
 
 import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
-import datetime, socket, getopt
+import datetime, getopt, multiprocessing
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 from proto_py_es_bulk import *
 from scribes import *
 from utils.common_logging import setup_loggers
 from analyzers import *
+
 
 logger = logging.getLogger("index_cbt")
 
@@ -17,23 +18,41 @@ es_log.setLevel(logging.CRITICAL)
 urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
+_max_subprocesses = multiprocessing.cpu_count() / 2
+
 def main():
     #es, test_id, test_mode = argument_handler()
     arguments = argument_handler()
+    
+    pool = multiprocessing.Pool(processes = _max_subprocesses)
+    try:
+        for analyzer_obj in process_data(arguments.test_id):
+            pool.apply_async(indexer_wrapper, args=(analyzer_obj,arguments,))
+        pool.close()
+        pool.join()    
+    except Exception as e:
+        if "NoneType" in e.message:
+            logger.error("No data Found!")
+        else:
+            logger.error(e.message)
+            
+
+def indexer_wrapper(analyzer_obj, arguments):
+    
     if arguments.test_mode:
         logger.info("*********** TEST MODE **********")
-        for i in process_data_generator(arguments.test_id):
+        for i in process_data_generator(analyzer_obj):
             if arguments.verbose:
                 logger.debug(json.dumps(i, indent=4))
         logger.info("*********** TEST MODE **********")
     else:
         try:
-            res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(arguments.es, process_data_generator(arguments.test_id))
-               
+            res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(arguments.es, process_data_generator(analyzer_obj))
+                
             FMT = '%Y-%m-%dT%H:%M:%SGMT'
             start_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_beg))
             end_t = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime(res_end))
-               
+                
             start_t = datetime.datetime.strptime(start_t, FMT)
             end_t = datetime.datetime.strptime(end_t, FMT)
             tdelta = end_t - start_t
@@ -43,30 +62,30 @@ def main():
             logger.error(e.message)
             sys.exit(1)
 
-def process_data_generator(test_id):
+def process_data_generator(analyzer_obj):
     
-    object_generator = process_data(test_id)
-
-    for obj in object_generator:
-        for action in obj.emit_actions():
-            #generate index name and id 
-            #I.E add elasticsearch specific information to emitted data. 
+    for scribe in analyzer_obj.emit_scribes:
+        for action in scribe.emit_actions():
             yield action
 
 def process_data(test_id):
-    test_metadata = {}
-    test_metadata['ceph_benchmark_test'] = {
-        "application_config": {
-            "ceph_config": {}
-            },
-        "common": {
-            "hardware": {},
-            "test_info": {}
-            },
-        "test_config": {}
+    #test_metadata = {}
+    test_metadata = { 
+        "ceph_benchmark_test": {
+            "application_config": { 
+                "ceph_config": {} 
+                },
+            "common": {
+                "hardware": {}, 
+                "test_info": {
+                    "test_id": test_id 
+                    }
+                },
+            "test_config": {}
+            }
         }
-    
-    test_metadata['ceph_benchmark_test']['common']['test_info']['test_id'] = test_id
+                        
+    factory =  analyzer_factory
     
     #parse cbt achive dir and call process method
     for dirpath, dirs, files in os.walk("."):
@@ -75,21 +94,50 @@ def process_data(test_id):
             #capture cbt configuration 
             if 'cbt_config.yaml' in fname:
                 logger.info("Gathering cbt configuration settings...")
-                cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)             
-                yield cbt_config_gen
+                cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)
+                benchmark_name = cbt_config_gen.config['benchmarks']
+                analyzer_obj = factory(dirpath, cbt_config_gen, test_metadata, "archive")
+                
+                return analyzer_obj             
+#                 yield cbt_config_gen
+#             
+#                 #if rbd test, process json data 
+#                 ##instead of creating a analyzer for a specific type of benchmark 
+#                 ##create a benchmark processor that can be spun off as a seperate subprocess
+#                 if "librbdfio" in cbt_config_gen.config['benchmarks']:
+#                     analyze_cbt_fio_results_generator = cbt_fio_analyzer.analyze_cbt_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
+#                     for fiojson_obj in analyze_cbt_fio_results_generator:
+#                         yield fiojson_obj
+#                
+#                 #if radons bench test, process data 
+#                 if "radosbench" in cbt_config_gen.config['benchmarks']:
+#                     logger.warn("rados bench is under development")
+#                     analyze_cbt_rados_results_generator = cbt_rados_analyzer.analyze_cbt_rados_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
+#                     for rados_obj in analyze_cbt_rados_results_generator:
+#                         yield rados_obj
+
+            if 'benchmark_config.yaml' in fname:
+                benchmark_data = yaml.load(open(fname))
+                test_metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
+                benchmark_name = test_metadata['ceph_benchmark_test']['test_config']['benchmark']
             
-                #if rbd test, process json data 
-                if "librbdfio" in cbt_config_gen.config['benchmarks']:
-                    analyze_cbt_fio_results_generator = cbt_fio_analyzer.analyze_cbt_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
-                    for fiojson_obj in analyze_cbt_fio_results_generator:
-                        yield fiojson_obj
-               
-                #if radons bench test, process data 
-                if "radosbench" in cbt_config_gen.config['benchmarks']:
-                    logger.warn("rados bench is under development")
-                    analyze_cbt_rados_results_generator = cbt_rados_analyzer.analyze_cbt_rados_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
-                    for rados_obj in analyze_cbt_rados_results_generator:
-                        yield rados_obj
+                op_size_bytes = test_metadata['ceph_benchmark_test']['test_config']['op_size']
+                time_w_unit = test_metadata['ceph_benchmark_test']['test_config']['time']
+                
+                if op_size_bytes: 
+                     op_size_kb = int(op_size_bytes) / 1024
+                     test_metadata['ceph_benchmark_test']['test_config']['op_size'] = op_size_kb
+                
+                try:
+                    if "S" in time_w_unit:  
+                        time_wo_unit = time_w_unit.strip("S")
+                        time_wo_unit = int(time_wo_unit)
+                except:
+                    time_wo_unit = time_w_unit
+                    test_metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
+                    
+                analyzer_obj = factory(dirpath, cbt_config_gen, test_metadata, "benchmark")
+                return analyzer_obj
 
 class argument_handler():
     def __init__(self):
@@ -146,11 +194,6 @@ class argument_handler():
             scheme="http",
             port=self.esport,
             )
-    
-    #return es, test_id, test_mode
-
-
-  
  
 if __name__ == '__main__':
     main()
