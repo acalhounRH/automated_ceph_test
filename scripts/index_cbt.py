@@ -34,7 +34,7 @@ def main():
         if "NoneType" in e.message:
             logger.error("No data Found!")
         else:
-            logger.error(e.message)
+            logger.exception(e.message)
             
 
 def indexer_wrapper(analyzer_obj, arguments):
@@ -59,7 +59,7 @@ def indexer_wrapper(analyzer_obj, arguments):
             logger.info("Duration of indexing - %s" % tdelta)
             logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
         except e as exception:
-            logger.exception(e.message)
+            logger.error(e.message)
             sys.exit(1)
 
 def process_data_generator(analyzer_obj):
