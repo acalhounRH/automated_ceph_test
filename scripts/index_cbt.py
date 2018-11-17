@@ -123,7 +123,7 @@ def process_data(test_id):
                 
                 benchmark_name = test_metadata['ceph_benchmark_test']['test_config']['benchmark']
                 
-                logger.debug(json.dumps(benchmark_name), indent=4)
+                logger.debug(json.dumps(benchmark_name, indent=4))
                 
                 op_size_bytes = test_metadata['ceph_benchmark_test']['test_config']['op_size']
                 time_w_unit = test_metadata['ceph_benchmark_test']['test_config']['time']
