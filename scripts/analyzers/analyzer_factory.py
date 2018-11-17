@@ -16,7 +16,7 @@ class analyzer_factory():
         try:
             logger.debug(benchmark_name)
             logger.debug("")
-            logger.debug(**kwargs)
+         #   logger.debug(**kwargs)
             return _analyzer_mapping[benchmark_name](**kwargs)
         except KeyError:
             raise FactoryError(benchmark_name, "Unkown benchmark")
