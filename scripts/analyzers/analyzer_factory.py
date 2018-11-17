@@ -14,6 +14,7 @@ class analyzer_factory():
     @staticmethod
     def factory(self, benchmark_name, **kwargs):
         try:
+            logger.debug(benchmark_name, **kwargs)
             return _analyzer_mapping[benchmark_name](**kwargs)
         except KeyError:
             raise FactoryError(benchmark_name, "Unkown benchmark")
