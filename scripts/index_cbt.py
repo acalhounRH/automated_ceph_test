@@ -26,12 +26,11 @@ def main():
     
 #     pool = multiprocessing.Pool(processes = _max_subprocesses)
     pool = multiprocessing.Pool(processes = 2)
-
     try:
         processed_analyzer_list = process_data(arguments.test_id)
         
         for analyzer_obj in processed_analyzer_list:
-            print analyzer_obj
+            tester(analyzer_obj, arguments)
 #             pool.apply_async(tester, args=(analyzer_obj, 2))
 #         pool.close()
 #         pool.join()    
