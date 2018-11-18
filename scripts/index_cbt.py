@@ -31,7 +31,7 @@ def main():
         processed_analyzer_list = process_data(arguments.test_id)
         
         for analyzer_obj in processed_analyzer_list:
-            pool.apply_async(indexer_wrapper, args=(analyzer_obj, arguments,))
+            pool.apply_async(tester, args=(analyzer_obj, arguments,))
         pool.close()
         pool.join()    
     except Exception as e:
@@ -41,6 +41,10 @@ def main():
             logger.exception(e.message)
             
 
+
+def tester(obj1, obj2):
+    logger.info("This is just a test")
+    
 def indexer_wrapper(analyzer_obj, arguments):
     
     if arguments.test_mode:
