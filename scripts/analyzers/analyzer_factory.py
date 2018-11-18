@@ -12,12 +12,12 @@ _analyzer_mapping = {"librbdfio" : cbt_fio_analyzer.analyze_cbt_fio_results,
 class analyzer_factory():
         
     @staticmethod
-    def factory(self, **kwargs):
+    def factory(self, benchmark_name, *args):
         try:
             logger.debug(benchmark_name)
             logger.debug("")
          #   logger.debug(**kwargs)
-            return _analyzer_mapping[benchmark_name](**kwargs)
+            return _analyzer_mapping[benchmark_name](args)
         except KeyError:
             raise FactoryError(benchmark_name, "Unkown benchmark")
             
