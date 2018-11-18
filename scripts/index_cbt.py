@@ -32,7 +32,7 @@ def main():
         
         for analyzer_obj in processed_analyzer_list:
             #indexer_wrapper(analyzer_obj, arguments)
-            process = multiprocessing.Process(target=indexer_wrapper, args=(analyzer_obj,))
+            process = multiprocessing.Process(target=indexer_wrapper, args=(analyzer_obj,arguments))
             process_list.append(process)
 #             pool.apply_async(indexer_wrapper, args=(analyzer_obj))
         for process in process_list:
@@ -53,7 +53,7 @@ def main():
 def tester(obj1, obj2):
     logger.info("This is just a test")
     
-def indexer_wrapper(analyzer_obj):
+def indexer_wrapper(analyzer_obj,arguments):
     
     if True:
         logger.info("*********** TEST MODE **********")
