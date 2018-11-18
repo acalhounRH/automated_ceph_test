@@ -26,7 +26,7 @@ def main():
     
     pool = multiprocessing.Pool(processes = _max_subprocesses)
     try:
-        processed_analyzer_list =  process_data(arguments.test_id):
+        processed_analyzer_list = process_data(arguments.test_id)
         
         for analyzer_obj in processed_analyzer_list:
             pool.apply_async(indexer_wrapper, args=(analyzer_obj, arguments,))
