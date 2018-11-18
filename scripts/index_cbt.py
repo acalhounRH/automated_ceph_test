@@ -31,7 +31,7 @@ def main():
         
         for analyzer_obj in processed_analyzer_list:
             #indexer_wrapper(analyzer_obj, copy.deepcopy(arguments))
-            pool.apply_async(tester, args=(analyzer_obj, copy.deepcopy(arguments)))
+            pool.apply_async(tester, args=(analyzer_obj, arguments))
         pool.close()
         pool.join()    
     except Exception as e:
