@@ -28,7 +28,7 @@ class analyze_cbt_fio_results():
         metadata = {}
         metadata = self.metadata          
         if "benchmark" in self.analysis_type:            
-            analyze_cbt_fiologs_generator = analyze_cbt_fiologs(self.target_dir, self.cbt_config, copy.deepcopy(self.metadata))
+            analyze_cbt_fiologs_generator = self.analyze_cbt_fiologs(self.target_dir, self.cbt_config, copy.deepcopy(self.metadata))
             for fiolog_obj in analyze_cbt_fiologs_generator:
                 yield fiolog_transcriber_generator_obj
                                       
