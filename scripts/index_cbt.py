@@ -55,6 +55,7 @@ def main():
                 process.start()
                 
             for process in process_list:
+                process.terminate()
                 process.join()
                 
             logger.info("Done with current processes")
