@@ -19,8 +19,7 @@ class analyzer_factory():
             obj = _analyzer_mapping[benchmark_name](dirpath, cbt_config_gen, test_metadata, type)
             return obj
         except KeyError:
-            raise FactoryError(benchmark_name, "Unkown benchmark")
-            
+            raise FactoryError(benchmark_name, "Unkown benchmark") 
         
     def register(self, benchmark_name, analyzer_object):
         _analyzer_mapping[benchmark_name] = analyzer_object

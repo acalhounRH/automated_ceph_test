@@ -26,8 +26,10 @@ def main():
     
     pool = multiprocessing.Pool(processes = _max_subprocesses)
     try:
-        for analyzer_obj in process_data(arguments.test_id):
-            pool.apply_async(indexer_wrapper, args=(analyzer_obj,arguments,))
+        processed_analyzer_list =  process_data(arguments.test_id):
+        
+        for analyzer_obj in processed_analyzer_list:
+            pool.apply_async(indexer_wrapper, args=(analyzer_obj, arguments,))
         pool.close()
         pool.join()    
     except Exception as e:
@@ -86,7 +88,7 @@ def process_data(test_id):
         }
                         
     factory =  analyzer_factory.analyzer_factory
-    
+    analyzer_obj_list = []
     #parse cbt achive dir and call process method
     for dirpath, dirs, files in os.walk("."):
         for filename in files:
@@ -142,7 +144,9 @@ def process_data(test_id):
                     
                 args = (dirpath, cbt_config_gen, test_metadata, "benchmark")
                 analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "benchmark")
-                return analyzer_obj
+                analyzer_obj_list.append(analyzer_obj)
+                
+        return analyzer_obj_list
 
 class argument_handler():
     def __init__(self):

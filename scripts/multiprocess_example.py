@@ -15,11 +15,15 @@ def main():
     test_list = [1,2,3,4,5,6,7,8,9]
     
     pool = multiprocessing.Pool(processes = _max_subprocesses)
-    for i in test_list:
+    for i in test_list_generator:
         pool.apply_async(f, args=(i,))
     pool.close()
     pool.join()
      
+
+def test_list_generator():
+    for i in xrange(0, 10):
+        return i
 
 def f(name):
     logger.debug('hello %s' % name)
