@@ -24,7 +24,9 @@ def main():
     #es, test_id, test_mode = argument_handler()
     arguments = argument_handler()
     
-    pool = multiprocessing.Pool(processes = _max_subprocesses)
+#     pool = multiprocessing.Pool(processes = _max_subprocesses)
+    pool = multiprocessing.Pool(processes = 2)
+
     try:
         processed_analyzer_list = process_data(arguments.test_id)
         
