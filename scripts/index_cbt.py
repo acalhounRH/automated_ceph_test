@@ -31,7 +31,7 @@ def main():
         
         for analyzer_obj in processed_analyzer_list:
             #indexer_wrapper(analyzer_obj, copy.deepcopy(arguments))
-            pool.apply_async(indexer_wrapper, args=(analyzer_obj, arguments))
+            pool.apply_async(indexer_wrapper, args=(analyzer_obj))
         pool.close()
         pool.join()    
     except Exception as e:
@@ -45,9 +45,9 @@ def main():
 def tester(obj1, obj2):
     logger.info("This is just a test")
     
-def indexer_wrapper(analyzer_obj, arguments):
+def indexer_wrapper(analyzer_obj):
     
-    if arguments.test_mode:
+    if True:
         logger.info("*********** TEST MODE **********")
         for i in process_data_generator(analyzer_obj):
             if arguments.verbose:
