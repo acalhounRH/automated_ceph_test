@@ -146,7 +146,7 @@ def process_data(test_id):
                 analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "benchmark")
                 analyzer_obj_list.append(analyzer_obj)
                 
-        return analyzer_obj_list
+    return analyzer_obj_list
 
 class argument_handler():
     def __init__(self):
