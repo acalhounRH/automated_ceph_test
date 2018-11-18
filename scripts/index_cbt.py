@@ -31,9 +31,10 @@ def main():
         processed_analyzer_list = process_data(arguments.test_id)
         
         for analyzer_obj in processed_analyzer_list:
-            pool.apply_async(tester, args=(analyzer_obj, 2))
-        pool.close()
-        pool.join()    
+            print analyzer_obj
+#             pool.apply_async(tester, args=(analyzer_obj, 2))
+#         pool.close()
+#         pool.join()    
     except Exception as e:
         if "NoneType" in e.message:
             logger.error("No data Found!")
