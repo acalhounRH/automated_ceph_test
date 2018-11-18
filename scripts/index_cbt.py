@@ -3,8 +3,10 @@
 import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
 import datetime, getopt, multiprocessing
-from time import gmtime, strftime
+from time import gmtime, strftime, sleep
 from elasticsearch import Elasticsearch, helpers
+from random import randint
+
 from proto_py_es_bulk import *
 from scribes import *
 from utils.common_logging import setup_loggers
@@ -55,6 +57,7 @@ def tester(obj1, obj2):
     
 def indexer_wrapper(analyzer_obj,arguments):
     
+    sleep(randint(5,30))
     if True:
         logger.info("*********** TEST MODE **********")
         for i in process_data_generator(analyzer_obj):
