@@ -30,7 +30,7 @@ def main():
         processed_analyzer_list = process_data(arguments.test_id)
         
         for analyzer_obj in processed_analyzer_list:
-            tester(analyzer_obj, arguments)
+            indexer_wrapper(analyzer_obj, arguments)
 #             pool.apply_async(tester, args=(analyzer_obj, 2))
 #         pool.close()
 #         pool.join()    
