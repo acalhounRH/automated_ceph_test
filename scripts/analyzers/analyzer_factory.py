@@ -17,12 +17,6 @@ class analyzer_factory():
             logger.debug(benchmark_name)
             logger.debug("")
             logger.debug(dirpath, cbt_config_gen, test_metadata, type)
-            
-            for i in args:
-                print i
-                
-            for i in kwargs:
-                print i
             return _analyzer_mapping[args](dirpath, cbt_config_gen, test_metadata, type)
         except KeyError:
             raise FactoryError(benchmark_name, "Unkown benchmark")
