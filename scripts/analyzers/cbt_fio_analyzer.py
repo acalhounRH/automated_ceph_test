@@ -8,7 +8,7 @@ logger = logging.getLogger("index_cbt")
 
 class analyze_cbt_fio_results():
     
-    def __init__(self, tdir, cbt_config_obj, test_metadata, benchmark_file, type):
+    def __init__(self, tdir, cbt_config_obj, test_metadata, type):
         self.target_dir = tdir
         self.cbt_config = cbt_config_obj
         self.metadata = test_metadata

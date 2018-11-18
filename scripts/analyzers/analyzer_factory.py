@@ -15,8 +15,6 @@ class analyzer_factory():
     def factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, type):
         try:
             logger.debug(benchmark_name)
-            logger.debug("")
-            logger.debug(dirpath, cbt_config_gen, test_metadata, type)
             
             obj = _analyzer_mapping[benchmark_name](dirpath, cbt_config_gen, test_metadata, type)
             return obj
