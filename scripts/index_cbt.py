@@ -72,7 +72,7 @@ def indexer_wrapper(analyzer_obj, arguments):
 
 def process_data_generator(analyzer_obj):
     
-    for scribe in analyzer_obj.emit_scribes:
+    for scribe in analyzer_obj.emit_scribes():
         for action in scribe.emit_actions():
             yield action
 
