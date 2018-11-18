@@ -56,14 +56,14 @@ class analyze_cbt_fio_results():
             yield fiojson_results_transcriber_generator
     
     
-    def listdir_fullpath(d):
+    def listdir_fullpath(self, d):
         return [os.path.join(d, f) for f in os.listdir(d)]
     
     
     def analyze_cbt_fiologs(self, tdir, cbt_config_obj, test_metadata):
     
         logger.info("Processing fio logs...")
-        test_files = sorted(listdir_fullpath(tdir), key=os.path.getctime)
+        test_files = sorted(self.listdir_fullpath(tdir), key=os.path.getctime)
     
         for file in test_files:
             if ("_iops" in file) or ("_lat" in file):
