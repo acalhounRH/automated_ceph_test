@@ -14,10 +14,7 @@ class analyzer_factory():
     @staticmethod
     def factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, type):
         try:
-            logger.debug(benchmark_name)
-            
-            obj = _analyzer_mapping[benchmark_name](dirpath, cbt_config_gen, test_metadata, type)
-            return obj
+            return _analyzer_mapping[benchmark_name](dirpath, cbt_config_gen, test_metadata, type)
         except KeyError:
             raise FactoryError(benchmark_name, "Unkown benchmark") 
         
