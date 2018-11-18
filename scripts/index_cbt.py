@@ -36,9 +36,9 @@ def main():
         
         while processed_analyzer_list > 0:
             
+            staging_process_list = []
             if setup_process_list:
-                staging_process_list = []
-                for i in range(2):
+                for i in range(5):
                     try:
                         staging_process_list.append(processed_analyzer_list.pop(0))
                     except:
