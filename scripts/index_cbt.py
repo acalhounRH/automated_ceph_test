@@ -26,14 +26,22 @@ def main():
     
 #     pool = multiprocessing.Pool(processes = _max_subprocesses)
     pool = multiprocessing.Pool(processes = 2)
+    process_list = []
     try:
         processed_analyzer_list = process_data(arguments.test_id)
         
         for analyzer_obj in processed_analyzer_list:
-            #indexer_wrapper(analyzer_obj, copy.deepcopy(arguments))
-            pool.apply_async(indexer_wrapper, args=(analyzer_obj))
-        pool.close()
-        pool.join()    
+            #indexer_wrapper(analyzer_obj, arguments)
+            process = multiprocessing.Process(target=indexer_wrapper, args(analyzer_obj))
+            process_list.append(process)
+#             pool.apply_async(indexer_wrapper, args=(analyzer_obj))
+        for process in process_list:
+            process.start()
+            
+        for process in process_list:
+            process.join()
+#         pool.close()
+#         pool.join()    
     except Exception as e:
         if "NoneType" in e.message:
             logger.error("No data Found!")
