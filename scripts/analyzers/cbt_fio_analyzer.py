@@ -60,7 +60,7 @@ class analyze_cbt_fio_results():
         return [os.path.join(d, f) for f in os.listdir(d)]
     
     
-    def analyze_cbt_fiologs(tdir, cbt_config_obj, test_metadata):
+    def analyze_cbt_fiologs(self, tdir, cbt_config_obj, test_metadata):
     
         logger.info("Processing fio logs...")
         test_files = sorted(listdir_fullpath(tdir), key=os.path.getctime)
