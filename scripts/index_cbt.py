@@ -34,7 +34,7 @@ def main():
     setup_process_list = True
     try:
         
-        while processed_analyzer_list > 0
+        while processed_analyzer_list > 0:
             
             if setup_process_list:
                 staging_process_list = []
