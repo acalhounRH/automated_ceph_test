@@ -29,19 +29,37 @@ def main():
 #     pool = multiprocessing.Pool(processes = _max_subprocesses)
     pool = multiprocessing.Pool(processes = 2)
     process_list = []
+    
+    processed_analyzer_list = process_data(arguments.test_id)
+    setup_process_list = True
     try:
-        processed_analyzer_list = process_data(arguments.test_id)
         
-        for analyzer_obj in processed_analyzer_list:
-            #indexer_wrapper(analyzer_obj, arguments)
-            process = multiprocessing.Process(target=indexer_wrapper, args=(analyzer_obj,arguments))
-            process_list.append(process)
-#             pool.apply_async(indexer_wrapper, args=(analyzer_obj))
-        for process in process_list:
-            process.start()
+        while processed_analyzer_list > 0
             
-        for process in process_list:
-            process.join()
+            if setup_process_list:
+                staging_process_list = []
+                for i in range(2):
+                    try:
+                        staging_process_list.append(processed_analyzer_list.pop(0))
+                    except:
+                        logger.info("No more iteams")
+                
+                setup_process_list = False
+                
+            for analyzer_obj in staging_process_list:
+                #indexer_wrapper(analyzer_obj, arguments)
+                process = multiprocessing.Process(target=indexer_wrapper, args=(analyzer_obj,arguments))
+                process_list.append(process)
+    #             pool.apply_async(indexer_wrapper, args=(analyzer_obj))
+            for process in process_list:
+                process.start()
+                
+            for process in process_list:
+                process.join()
+                
+            logger.info("Done with current processes")
+            setup_process_list = True
+        logger.info("ALL DONE")
 #         pool.close()
 #         pool.join()    
     except Exception as e:
