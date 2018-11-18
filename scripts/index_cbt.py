@@ -141,7 +141,7 @@ def process_data(test_id):
                     test_metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
                     
                 args = (dirpath, cbt_config_gen, test_metadata, "benchmark")
-                analyzer_obj = factory.factory(benchmark_name, args)
+                analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "benchmark")
                 return analyzer_obj
 
 class argument_handler():
