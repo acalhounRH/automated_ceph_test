@@ -12,7 +12,7 @@ _analyzer_mapping = {"librbdfio" : cbt_fio_analyzer.analyze_cbt_fio_results,
 class analyzer_factory():
         
     @staticmethod
-    def factory(self, **kwargs, *args):
+    def factory(self, *args, **kwargs):
         try:
             logger.debug(benchmark_name)
             logger.debug("")
