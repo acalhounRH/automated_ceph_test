@@ -23,30 +23,30 @@ class analyze_cbt_fio_results():
     def emit_scribes(self):
         #Will emit scribe obejcts for each particular file found. 
         logger.info("Processing RBD fio benchmark results.")
-        test_id = test_metadata['ceph_benchmark_test']['common']['test_info']['test_id']
+        test_id = self.metadata['ceph_benchmark_test']['common']['test_info']['test_id']
         
         metadata = {}
-        metadata = test_metadata          
+        metadata = self.metadata          
         if "benchmark" in self.analysis_type:            
-            analyze_cbt_fiologs_generator = analyze_cbt_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+            analyze_cbt_fiologs_generator = analyze_cbt_fiologs(self.target_dir, self.cbt_config, copy.deepcopy(self.metadata))
             for fiolog_obj in analyze_cbt_fiologs_generator:
                 yield fiolog_transcriber_generator_obj
                                       
             #process pbench logs
-            analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(tdir, cbt_config_obj, copy.deepcopy(metadata))
+            analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(self.target_dir, self.cbt_config, copy.deepcopy(self.metadata))
             for pbench_obj in analyze_cbt_Pbench_data_generator:
                 yield pbench_transcriber_obj
         
         if "archive" in self.analysis_type:
             logger.info("Processing fio json files...")
-            fiojson_results_transcriber_generator = cbt_fiojson_scribe.fiojson_results_transcriber(copy.deepcopy(test_metadata))
+            fiojson_results_transcriber_generator = cbt_fiojson_scribe.fiojson_results_transcriber(copy.deepcopy(self.metadata))
         
-            for dirpath, dirs, files in os.walk("."):
+            for dirpath, dirs, files in os.walk(self.target_dir):
                 for filename in files:
                     if "json_" in filename:
                         json_file = os.path.join(dirpath,filename)
                         if os.path.getsize(json_file) > 0: 
-                            fiojson_results_transcriber_generator.add_json_file(json_file, copy.deepcopy(metadata))
+                            fiojson_results_transcriber_generator.add_json_file(json_file, copy.deepcopy(self.metadata))
                         else:
                             logger.warn("Found corrupted JSON file, %s." % json_file)
                                            
