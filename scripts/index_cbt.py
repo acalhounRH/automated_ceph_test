@@ -56,7 +56,6 @@ def main():
     
             for process in process_list:
                 process.start()
-                logger.debug("PID - %s" % process.pid())
                 
             for process in process_list:
                 process.join()
@@ -80,7 +79,7 @@ def tester(obj1, obj2):
     
 def indexer_wrapper(analyzer_obj,arguments):
     
-    sleep(randint(5,30))
+    sleep(randint(0,5))
     if True:
         logger.info("*********** TEST MODE **********")
         for i in process_data_generator(analyzer_obj):
