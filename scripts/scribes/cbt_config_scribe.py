@@ -154,7 +154,7 @@ class cbt_config_transcriber:
     def get_cpu_info(self, remoteclient, host):
         cpu_info_dict = {}
         
-        if host in elf.cpu_info_map:
+        if host in self.cpu_info_map:
             cpu_info_dict = self.cpu_info_map[host]
             return cpu_info_dict 
         else:
