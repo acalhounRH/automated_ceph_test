@@ -34,7 +34,7 @@ def main():
             logger.info("STARTING process tasking")
             staging_analyzer_obj_list = []
             if setup_process_list:
-                for i in range(_max_subprocesses):
+                for i in range(5):
                     try:
                         cur_analyzer_obj = processed_analyzer_list.pop(0)
                         staging_analyzer_obj_list.append(cur_analyzer_obj)
