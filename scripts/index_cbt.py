@@ -47,16 +47,17 @@ def main():
                         logger.info("No more iteams")
                 
                 setup_process_list = False
-                
+            
+            process_list = [] 
             for analyzer_obj in staging_process_list:
                 pname = "Process-%s" % process_count 
                 process = multiprocessing.Process(name=pname, target=indexer_wrapper, args=(analyzer_obj,arguments))
-                process.start()
-                #process_list.append(process)
+                #process.start()
+                process_list.append(process)
                 process_count += 1
     
-#             for process in process_list:
-#                 process.start()
+            for process in process_list:
+                process.start()
 #                 
             for process in staging_process_list:
                 process.join()
