@@ -154,27 +154,32 @@ class cbt_config_transcriber:
     def get_cpu_info(self, remoteclient, host):
         cpu_info_dict = {}
         
-        try:
-            output = remoteclient.issue_command(host, "lscpu")
-            for line in output:
-                #print line
-                seperated_line = line.split(":")
-                #print seperated_line
-                cpu_prop = seperated_line[0].strip()
-                cpu_prop_value = seperated_line[1].strip()
-                
-                if "NUMA node" in cpu_prop and "CPU(s)" in cpu_prop:
-                    cpu_info_dict[cpu_prop] = []
-                    split_values = cpu_prop_value.split(",")
-                    for value in split_values:
-                        cpu_info_dict[cpu_prop].append(value)
-                elif "Flags" not in cpu_prop:
-                    cpu_info_dict[cpu_prop] = cpu_prop_value  
-        
-        except:
-            logger.warn("Unable to retrive cpu info for %s" % host)
-        
-        return cpu_info_dict    
+        if host in elf.cpu_info_map:
+            cpu_info_dict = self.cpu_info_map[host]
+            return cpu_info_dict 
+        else:
+            try:
+                output = remoteclient.issue_command(host, "lscpu")
+                for line in output:
+                    #print line
+                    seperated_line = line.split(":")
+                    #print seperated_line
+                    cpu_prop = seperated_line[0].strip()
+                    cpu_prop_value = seperated_line[1].strip()
+                    
+                    if "NUMA node" in cpu_prop and "CPU(s)" in cpu_prop:
+                        cpu_info_dict[cpu_prop] = []
+                        split_values = cpu_prop_value.split(",")
+                        for value in split_values:
+                            cpu_info_dict[cpu_prop].append(value)
+                    elif "Flags" not in cpu_prop:
+                        cpu_info_dict[cpu_prop] = cpu_prop_value  
+            
+            except:
+                logger.warn("Unable to retrive cpu info for %s" % host)
+            
+            self.cpu_info_map[host] = cpu_info_dict
+            return cpu_info_dict        
     
     def get_interfaces(self, remoteclient, host):
         interface_dict = {}
