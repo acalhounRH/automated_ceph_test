@@ -248,6 +248,7 @@ class ssh_remote_command():
         
         except Exception as e:
             if retry_count < 2:
+                retry_count += 1
                 self.issue_command(host, command, retry_count)
             else:
                 self.sshclient.close()
