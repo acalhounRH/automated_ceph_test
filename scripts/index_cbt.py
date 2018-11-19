@@ -74,7 +74,9 @@ def tester(obj1, obj2):
     
 def indexer_wrapper(analyzer_obj,arguments):
     
-    sleep(randint(10,20))
+    A = randint(5,10)
+    B = randint(20,35)
+    sleep(randint(A,B))
     if True:
         logger.info("*********** TEST MODE **********")
         for i in process_data_generator(analyzer_obj):
