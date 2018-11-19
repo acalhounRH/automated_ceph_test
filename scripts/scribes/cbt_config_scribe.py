@@ -14,6 +14,8 @@ class cbt_config_transcriber:
         self.config_file = cbt_yaml_config
         self.host_map = {}
         self.fqdn_map = {}
+        self.cpu_info_map = {}
+        self.interface_map = {}
         
         #try:
         self.acitve_ceph_client = ceph_client()
