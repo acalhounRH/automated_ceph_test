@@ -14,6 +14,8 @@ class cbt_config_transcriber:
         self.config_file = cbt_yaml_config
         self.host_map = {}
         self.fqdn_map = {}
+        self.cpu_info_map = {}
+        self.interface_map = {}
         
         #try:
         self.acitve_ceph_client = ceph_client()
@@ -152,51 +154,61 @@ class cbt_config_transcriber:
     def get_cpu_info(self, remoteclient, host):
         cpu_info_dict = {}
         
-        try:
-            output = remoteclient.issue_command(host, "lscpu")
-            for line in output:
-                #print line
-                seperated_line = line.split(":")
-                #print seperated_line
-                cpu_prop = seperated_line[0].strip()
-                cpu_prop_value = seperated_line[1].strip()
-                
-                if "NUMA node" in cpu_prop and "CPU(s)" in cpu_prop:
-                    cpu_info_dict[cpu_prop] = []
-                    split_values = cpu_prop_value.split(",")
-                    for value in split_values:
-                        cpu_info_dict[cpu_prop].append(value)
-                elif "Flags" not in cpu_prop:
-                    cpu_info_dict[cpu_prop] = cpu_prop_value  
-        
-        except:
-            logger.warn("Unable to retrive cpu info for %s" % host)
-        
-        return cpu_info_dict    
+        if host in elf.cpu_info_map:
+            cpu_info_dict = self.cpu_info_map[host]
+            return cpu_info_dict 
+        else:
+            try:
+                output = remoteclient.issue_command(host, "lscpu")
+                for line in output:
+                    #print line
+                    seperated_line = line.split(":")
+                    #print seperated_line
+                    cpu_prop = seperated_line[0].strip()
+                    cpu_prop_value = seperated_line[1].strip()
+                    
+                    if "NUMA node" in cpu_prop and "CPU(s)" in cpu_prop:
+                        cpu_info_dict[cpu_prop] = []
+                        split_values = cpu_prop_value.split(",")
+                        for value in split_values:
+                            cpu_info_dict[cpu_prop].append(value)
+                    elif "Flags" not in cpu_prop:
+                        cpu_info_dict[cpu_prop] = cpu_prop_value  
+            
+            except:
+                logger.warn("Unable to retrive cpu info for %s" % host)
+            
+            self.cpu_info_map[host] = cpu_info_dict
+            return cpu_info_dict    
     
     def get_interfaces(self, remoteclient, host):
         interface_dict = {}
         
-        try:
-            output = remoteclient.issue_command(host, "ip a")
-            
-            for line in output:
-                seperated_line = line.split(" ")
+        if host in self.interface_map:
+            interface_dict = self.interface_map[host]
+            return interface_dict
+        else:
+            try:
+                output = remoteclient.issue_command(host, "ip a")
                 
-                #Get interface name
-                if seperated_line[0].strip(":").isdigit():
-                    interface_name = seperated_line[1]
-                    interface_dict[interface_name] = []
-                
-                #Get IPv4 for interface 
-                if "inet" in line and not "inet6" in line:
-                    ipindex = seperated_line.index("inet") + 1
-                    ip_address = seperated_line[ipindex]
-                    interface_dict[interface_name].append(ip_address)
-        except:
-            logger.warn("Unable to retrive network in for %s" % host)    
-        #return a dict of all interfaces:IPaddresses
-        return interface_dict
+                for line in output:
+                    seperated_line = line.split(" ")
+                    
+                    #Get interface name
+                    if seperated_line[0].strip(":").isdigit():
+                        interface_name = seperated_line[1]
+                        interface_dict[interface_name] = []
+                    
+                    #Get IPv4 for interface 
+                    if "inet" in line and not "inet6" in line:
+                        ipindex = seperated_line.index("inet") + 1
+                        ip_address = seperated_line[ipindex]
+                        interface_dict[interface_name].append(ip_address)
+            except:
+                logger.warn("Unable to retrive network in for %s" % host)
+            self.interface_map[host] = interface_dict    
+            #return a dict of all interfaces:IPaddresses
+            return interface_dict
 
     def get_ceph_service_pid(self, remoteclient, host, service, id):
         pid_grep_command = "ps -eaf | grep %s | grep 'id %s ' | grep -v grep| awk '{print $2}'" % (service, id)
