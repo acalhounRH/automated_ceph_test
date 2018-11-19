@@ -23,6 +23,8 @@ urllib3_log.setLevel(logging.CRITICAL)
 _max_subprocesses = multiprocessing.cpu_count() / 2
 
 def main():
+    
+    start_time = time.time()
     arguments = argument_handler()
     
     processed_analyzer_list = process_data(arguments.test_id)
@@ -65,7 +67,10 @@ def main():
         else:
             logger.exception(e.message)
             
-
+    stop_time = time.time()
+    
+    time_delta = stop_time - start_time
+    logger.info("Total Duration is - %s" % time_delta)
 
 def tester(obj1, obj2):
     logger.info("This is just a test")
