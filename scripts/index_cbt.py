@@ -29,7 +29,8 @@ def main():
     setup_process_list = True
     try:
         process_count = 0
-        while processed_analyzer_list > 0:
+        run = True
+        while run:
             logger.info("STARTING process tasking")
             staging_analyzer_obj_list = []
             if setup_process_list:
@@ -40,6 +41,7 @@ def main():
                         logger.debug(len(processed_analyzer_list))
                     except:
                         logger.info("No more iteams")
+                        run = False 
                 setup_process_list = False
             
             process_list = [] 
@@ -72,7 +74,7 @@ def tester(obj1, obj2):
     
 def indexer_wrapper(analyzer_obj,arguments):
     
-    sleep(randint(5,15))
+    sleep(randint(10,20))
     if True:
         logger.info("*********** TEST MODE **********")
         for i in process_data_generator(analyzer_obj):

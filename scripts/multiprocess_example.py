@@ -12,23 +12,30 @@ _max_subprocesses = multiprocessing.cpu_count() / 2
 def main():
     logger.info("STARTING THE EXAMPLE TEST")
     
-    test_list = [1,2,3,4,5,6,7,8,9]
-    
     pool = multiprocessing.Pool(processes = _max_subprocesses)
-    for i in test_list_generator:
-        pool.apply_async(f, args=(i,))
+    test_list = test_list_generator()
+    my_sample = sample()
+    for i in test_list:
+        pool.apply_async(f, args=(i,my_sample,))
     pool.close()
     pool.join()
      
 
 def test_list_generator():
-    for i in xrange(0, 10):
-        return i
-
-def f(name):
-    logger.debug('hello %s' % name)
     
+    test_list = []
+    for i in xrange(0, 10):
+        test_list.append(i)
+        
+    return test_list
 
+def f(name, obj):
+    logger.debug('hello %s %s' % (name, obj.word))
+    
+class sample():
+    def __init__(self):
+        self.word = "THIS"
+    
 if __name__ == '__main__':
     main()
     
