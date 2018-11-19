@@ -132,6 +132,7 @@ def process_data(test_id):
                 logger.info("Gathering cbt configuration settings...")
                 cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)
                 for benchmark in cbt_config_gen.config['benchmarks']:
+                    print json.dumps(benchmark)
                     benchmark_name = benchmark["benchmark"]
                     analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "archive")
                     analyzer_obj_list.append(analyzer_obj)
