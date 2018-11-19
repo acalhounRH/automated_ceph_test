@@ -51,15 +51,16 @@ def main():
             for analyzer_obj in staging_process_list:
                 pname = "Process-%s" % process_count 
                 process = multiprocessing.Process(name=pname, target=indexer_wrapper, args=(analyzer_obj,arguments))
-                process_list.append(process)
+                process.start()
+                #process_list.append(process)
                 process_count += 1
     
-            for process in process_list:
-                process.start()
-                
-            for process in process_list:
+#             for process in process_list:
+#                 process.start()
+#                 
+            for process in staging_process_list:
                 process.join()
-                process.terminate()
+#                 process.terminate()
                 
             logger.info("Done with current processes")
             setup_process_list = True
