@@ -56,7 +56,7 @@ def main():
     
             for process in process_list:
                 process.start()
-                logger.debug("PID - %s" %process.pid())
+                logger.debug("PID - %s" % process.pid())
                 
             for process in process_list:
                 process.join()
