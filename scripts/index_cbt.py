@@ -33,7 +33,7 @@ def main():
     processed_analyzer_list = process_data(arguments.test_id)
     setup_process_list = True
     try:
-        
+        process_count = 0
         while processed_analyzer_list > 0:
             
             staging_process_list = []
@@ -48,9 +48,12 @@ def main():
                 
             for analyzer_obj in staging_process_list:
                 #indexer_wrapper(analyzer_obj, arguments)
-                process = multiprocessing.Process(target=indexer_wrapper, args=(analyzer_obj,arguments))
+                pname = "Process-%s" % process_count 
+                process = multiprocessing.Process(name=pname, target=indexer_wrapper, args=(analyzer_obj,arguments))
                 process_list.append(process)
     #             pool.apply_async(indexer_wrapper, args=(analyzer_obj))
+                process_count += 1
+    
             for process in process_list:
                 process.start()
                 
