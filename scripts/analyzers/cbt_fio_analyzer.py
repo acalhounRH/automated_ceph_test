@@ -42,6 +42,22 @@ class analyze_cbt_fio_results():
                         if previous_dir is not dirpath:
                             test_config = yaml.load(open("%s/benchmark_config.yaml" % dirpath))
                             self.metadata['ceph_benchmark_test']['test_config'] = test_config["cluster"]
+                            
+                            op_size_bytes = self.metadata['ceph_benchmark_test']['test_config']['op_size']
+                            time_w_unit = self.metadata['ceph_benchmark_test']['test_config']['time']
+                             
+                            if op_size_bytes: 
+                                 op_size_kb = int(op_size_bytes) / 1024
+                                 self.metadata['ceph_benchmark_test']['test_config']['op_size'] = op_size_kb
+                             
+                            try:
+                                if "S" in time_w_unit:  
+                                    time_wo_unit = time_w_unit.strip("S")
+                                    time_wo_unit = int(time_wo_unit)
+                            except:
+                                time_wo_unit = time_w_unit
+                                self.metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
+                            
                             previous_dir = dirpath
                         json_file = os.path.join(dirpath,filename)
                         if os.path.getsize(json_file) > 0: 
