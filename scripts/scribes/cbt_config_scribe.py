@@ -248,7 +248,7 @@ class ssh_remote_command():
         
         except Exception as e:
             if retry_count < 2:
-                logger.warn("%s, Retrying to issue command (%s)" % (e, retry_count)
+                logger.warn("%s, Retrying to issue command (%s)" % (e, retry_count))
                 retry_count += 1
                 self.issue_command(host, command, retry_count)
             else:
