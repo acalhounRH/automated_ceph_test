@@ -35,27 +35,28 @@ def main():
     try:
         process_count = 0
         while processed_analyzer_list > 0:
-            
+            logger.info("STARTING process tasking")
             staging_process_list = []
             if setup_process_list:
                 for i in range(5):
                     try:
-                        staging_process_list.append(processed_analyzer_list.pop(0))
+                        cur_analyzer_obj = processed_analyzer_list.pop()
+                        staging_process_list.append(cur_analyzer_obj)
+                        logger.debug(len(processed_analyzer_list))
                     except:
                         logger.info("No more iteams")
                 
                 setup_process_list = False
                 
             for analyzer_obj in staging_process_list:
-                #indexer_wrapper(analyzer_obj, arguments)
                 pname = "Process-%s" % process_count 
                 process = multiprocessing.Process(name=pname, target=indexer_wrapper, args=(analyzer_obj,arguments))
                 process_list.append(process)
-    #             pool.apply_async(indexer_wrapper, args=(analyzer_obj))
                 process_count += 1
     
             for process in process_list:
                 process.start()
+                logger.debug(process.pid())
                 
             for process in process_list:
                 process.join()
