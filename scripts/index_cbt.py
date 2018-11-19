@@ -59,7 +59,7 @@ def main():
             for process in process_list:
                 process.start()
 #                 
-            for process in staging_process_list:
+            for process in process_list:
                 process.join()
 #                 process.terminate()
                 
