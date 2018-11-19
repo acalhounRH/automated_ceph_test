@@ -229,8 +229,8 @@ class ssh_remote_command():
     def __init__(self):
           self.sshclient = SSHClient()
     
-    def issue_command(self, host, command):
-        
+    def issue_command(self, host, command, retry=0):
+        retry_count=retry
         try:
             self.sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             key_path = os.path.expanduser("~/.ssh/authorized_keys")
@@ -247,8 +247,11 @@ class ssh_remote_command():
             return formated_output
         
         except Exception as e:
-            self.sshclient.close()
-            logger.warn("Connection Failed: %s" % e)
+            if retry_count < 2:
+                self.issue_command(host, command, retry_count)
+            else:
+                self.sshclient.close()
+                logger.warn("Connection Failed: %s" % e)
     
 class ceph_client():
     def __init__(self):
