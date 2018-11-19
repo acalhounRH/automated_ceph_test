@@ -40,7 +40,6 @@ def main():
                         staging_analyzer_obj_list.append(cur_analyzer_obj)
                         logger.debug(len(processed_analyzer_list))
                     except:
-                        logger.info("No more iteams")
                         run = False 
                 setup_process_list = False
             
