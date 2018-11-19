@@ -35,7 +35,7 @@ def main():
             if setup_process_list:
                 for i in range(_max_subprocesses):
                     try:
-                        cur_analyzer_obj = processed_analyzer_list.pop()
+                        cur_analyzer_obj = processed_analyzer_list.pop(0)
                         staging_analyzer_obj_list.append(cur_analyzer_obj)
                         logger.debug(len(processed_analyzer_list))
                     except:
@@ -72,7 +72,7 @@ def tester(obj1, obj2):
     
 def indexer_wrapper(analyzer_obj,arguments):
     
-    sleep(randint(0,5))
+    sleep(randint(5,15))
     if True:
         logger.info("*********** TEST MODE **********")
         for i in process_data_generator(analyzer_obj):
@@ -130,19 +130,8 @@ def process_data(test_id):
                 logger.info("Gathering cbt configuration settings...")
                 cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)
 #                 benchmark_name = cbt_config_gen.config['benchmarks']
-#                 args = (dirpath, cbt_config_gen, test_metadata, "archive")
-#                 analyzer_obj = factory.factory(benchmark_name, args)
-                
-                #return analyzer_obj             
-#                 yield cbt_config_gen
-#             
-#                 #if rbd test, process json data 
-#                 ##instead of creating a analyzer for a specific type of benchmark 
-#                 ##create a benchmark processor that can be spun off as a seperate subprocess
-#                 if "librbdfio" in cbt_config_gen.config['benchmarks']:
-#                     analyze_cbt_fio_results_generator = cbt_fio_analyzer.analyze_cbt_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
-#                     for fiojson_obj in analyze_cbt_fio_results_generator:
-#                         yield fiojson_obj
+#                 analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "archive")
+#                 analyzer_obj_list.append(analyzer_obj)
 #                
 #                 #if radons bench test, process data 
 #                 if "radosbench" in cbt_config_gen.config['benchmarks']:

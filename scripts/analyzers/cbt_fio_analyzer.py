@@ -13,12 +13,7 @@ class analyze_cbt_fio_results():
         self.cbt_config = cbt_config_obj
         self.metadata = test_metadata
         self.analysis_type = type
-        
-    #Needs to handle Three types of data:
-    #    1 - fio log data, in a single benchmark directory
-    #    2 - fio json data, in the entire archive i.e. across all iterations and samples may have to extract this to a seperate module 
-    #    3 - pbench data, in a single benchmark directory 
-    
+
     
     def emit_scribes(self):
         #Will emit scribe obejcts for each particular file found. 
