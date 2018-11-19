@@ -38,7 +38,6 @@ def main():
                     try:
                         cur_analyzer_obj = processed_analyzer_list.pop(0)
                         staging_analyzer_obj_list.append(cur_analyzer_obj)
-                        logger.debug(len(processed_analyzer_list))
                     except:
                         run = False 
                 setup_process_list = False
