@@ -13,6 +13,7 @@ class cbt_config_transcriber:
         self.config = yaml.load(open(cbt_yaml_config))   
         self.config_file = cbt_yaml_config
         self.host_map = {}
+        self.fqdn_map = {}
         
         #try:
         self.acitve_ceph_client = ceph_client()
@@ -135,12 +136,18 @@ class cbt_config_transcriber:
         #print json.dumps(self.host_map, indent=4)
         
     def get_fqdn(self, remoteclient, host):
-        try:
-            output = remoteclient.issue_command(host, "hostname -f")
-            output = output[0].strip()
+        
+        if host in self.fqdn_map:
+            output = self.fqdn_map[host]
             return output
-        except:
-            return None
+        else:
+            try:
+                output = remoteclient.issue_command(host, "hostname -f")
+                output = output[0].strip()
+                self.fqdn_map[host] = output
+                return output
+            except:
+                return None
         
     def get_cpu_info(self, remoteclient, host):
         cpu_info_dict = {}
