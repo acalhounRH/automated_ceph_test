@@ -74,10 +74,8 @@ def tester(obj1, obj2):
     
 def indexer_wrapper(analyzer_obj,arguments):
     
-    A = randint(5,10)
-    B = randint(20,35)
-    sleep(randint(A,B))
-    if True:
+    sleep(randint(10,25))
+    if arguments.test_mode:
         logger.info("*********** TEST MODE **********")
         for i in process_data_generator(analyzer_obj):
             if arguments.verbose:
@@ -133,11 +131,11 @@ def process_data(test_id):
             if 'cbt_config.yaml' in fname:
                 logger.info("Gathering cbt configuration settings...")
                 cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)
-#                     for benchmark in cbt_config_gen.config['benchmarks']:
-#                         benchmark_name = benchmark["benchmark"]
-#                 benchmark_name = cbt_config_gen.config['benchmarks']
-#                     analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "archive")
-#                     analyzer_obj_list.append(analyzer_obj)
+                    for benchmark in cbt_config_gen.config['benchmarks']:
+                        benchmark_name = benchmark["benchmark"]
+                        analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "archive")
+                        analyzer_obj_list.append(analyzer_obj)
+                        
 #                
 #                 #if radons bench test, process data 
 #                 if "radosbench" in cbt_config_gen.config['benchmarks']:
@@ -146,30 +144,30 @@ def process_data(test_id):
 #                     for rados_obj in analyze_cbt_rados_results_generator:
 #                         yield rados_obj
 
-            if 'benchmark_config.yaml' in fname:
-                benchmark_data = yaml.load(open(fname))
-                test_metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
-                
-                benchmark_name = test_metadata['ceph_benchmark_test']['test_config']['benchmark']
-                
-                op_size_bytes = test_metadata['ceph_benchmark_test']['test_config']['op_size']
-                time_w_unit = test_metadata['ceph_benchmark_test']['test_config']['time']
-                
-                if op_size_bytes: 
-                     op_size_kb = int(op_size_bytes) / 1024
-                     test_metadata['ceph_benchmark_test']['test_config']['op_size'] = op_size_kb
-                
-                try:
-                    if "S" in time_w_unit:  
-                        time_wo_unit = time_w_unit.strip("S")
-                        time_wo_unit = int(time_wo_unit)
-                except:
-                    time_wo_unit = time_w_unit
-                    test_metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
-                    
-                args = (dirpath, cbt_config_gen, test_metadata, "benchmark")
-                analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "benchmark")
-                analyzer_obj_list.append(analyzer_obj)
+#             if 'benchmark_config.yaml' in fname:
+#                 benchmark_data = yaml.load(open(fname))
+#                 test_metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
+#                 
+#                 benchmark_name = test_metadata['ceph_benchmark_test']['test_config']['benchmark']
+#                 
+#                 op_size_bytes = test_metadata['ceph_benchmark_test']['test_config']['op_size']
+#                 time_w_unit = test_metadata['ceph_benchmark_test']['test_config']['time']
+#                 
+#                 if op_size_bytes: 
+#                      op_size_kb = int(op_size_bytes) / 1024
+#                      test_metadata['ceph_benchmark_test']['test_config']['op_size'] = op_size_kb
+#                 
+#                 try:
+#                     if "S" in time_w_unit:  
+#                         time_wo_unit = time_w_unit.strip("S")
+#                         time_wo_unit = int(time_wo_unit)
+#                 except:
+#                     time_wo_unit = time_w_unit
+#                     test_metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
+#                     
+#                 args = (dirpath, cbt_config_gen, test_metadata, "benchmark")
+#                 analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "benchmark")
+#                 analyzer_obj_list.append(analyzer_obj)
                 
     return analyzer_obj_list
 
