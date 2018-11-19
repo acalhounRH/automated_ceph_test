@@ -35,11 +35,14 @@ class analyze_cbt_fio_results():
         if "archive" in self.analysis_type:
             logger.info("Processing fio json files...")
             fiojson_results_transcriber_generator = cbt_fiojson_scribe.fiojson_results_transcriber(copy.deepcopy(self.metadata))
-        
+            previous_dir = ""
             for dirpath, dirs, files in os.walk(self.target_dir):
                 for filename in files:
                     if "json_" in filename:
-                        self.metadata['ceph_benchmark_test']['test_config'] = yaml.load(open("%s/benchmark_config.yaml" % dirpath))
+                        if previous_dir is not dirpath:
+                            test_config = yaml.load(open("%s/benchmark_config.yaml" % dirpath))
+                            self.metadata['ceph_benchmark_test']['test_config'] = test_config["cluster"]
+                            previous_dir = dirpath
                         json_file = os.path.join(dirpath,filename)
                         if os.path.getsize(json_file) > 0: 
                             fiojson_results_transcriber_generator.add_json_file(json_file, copy.deepcopy(self.metadata))
