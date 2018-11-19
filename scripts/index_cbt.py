@@ -23,12 +23,7 @@ urllib3_log.setLevel(logging.CRITICAL)
 _max_subprocesses = multiprocessing.cpu_count() / 2
 
 def main():
-    #es, test_id, test_mode = argument_handler()
     arguments = argument_handler()
-    
-#     pool = multiprocessing.Pool(processes = _max_subprocesses)
-    pool = multiprocessing.Pool(processes = 2)
-    process_list = []
     
     processed_analyzer_list = process_data(arguments.test_id)
     setup_process_list = True
@@ -36,38 +31,34 @@ def main():
         process_count = 0
         while processed_analyzer_list > 0:
             logger.info("STARTING process tasking")
-            staging_process_list = []
+            staging_analyzer_obj_list = []
             if setup_process_list:
-                for i in range(5):
+                for i in range(_max_subprocesses):
                     try:
                         cur_analyzer_obj = processed_analyzer_list.pop()
-                        staging_process_list.append(cur_analyzer_obj)
+                        staging_analyzer_obj_list.append(cur_analyzer_obj)
                         logger.debug(len(processed_analyzer_list))
                     except:
                         logger.info("No more iteams")
-                
                 setup_process_list = False
             
             process_list = [] 
-            for analyzer_obj in staging_process_list:
+            for analyzer_obj in staging_analyzer_obj_list:
                 pname = "Process-%s" % process_count 
                 process = multiprocessing.Process(name=pname, target=indexer_wrapper, args=(analyzer_obj,arguments))
-                #process.start()
                 process_list.append(process)
                 process_count += 1
     
             for process in process_list:
                 process.start()
-#                 
+                 
             for process in process_list:
                 process.join()
-#                 process.terminate()
                 
             logger.info("Done with current processes")
             setup_process_list = True
         logger.info("ALL DONE")
-#         pool.close()
-#         pool.join()    
+   
     except Exception as e:
         if "NoneType" in e.message:
             logger.error("No data Found!")
