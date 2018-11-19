@@ -28,9 +28,9 @@ class analyze_cbt_fio_results():
                 yield fiolog_transcriber_generator_obj
                                       
             #process pbench logs
-#             analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(self.target_dir, self.cbt_config, copy.deepcopy(self.metadata))
-#             for pbench_transcriber_obj in analyze_cbt_Pbench_data_generator:
-#                 yield pbench_transcriber_obj
+            analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(self.target_dir, self.cbt_config, copy.deepcopy(self.metadata))
+            for pbench_transcriber_obj in analyze_cbt_Pbench_data_generator:
+                yield pbench_transcriber_obj
         
         if "archive" in self.analysis_type:
             logger.info("Processing fio json files...")
