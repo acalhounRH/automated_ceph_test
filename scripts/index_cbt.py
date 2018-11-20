@@ -25,7 +25,7 @@ _max_subprocesses = multiprocessing.cpu_count() / 2
 def main():
     
     FMT = '%Y-%m-%dT%H:%M:%SGMT'
-    start_time = time.strftime('%Y-%m-%dT%H:%M:%SGMT', time.time())
+    start_time = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
     arguments = argument_handler()
     
     processed_analyzer_list = process_data(arguments.test_id)
@@ -68,7 +68,7 @@ def main():
         else:
             logger.exception(e.message)
             
-    stop_time = time.strftime('%Y-%m-%dT%H:%M:%SGMT', time.time())
+    stop_time = time.strftime('%Y-%m-%dT%H:%M:%SGMT', gmtime())
     
     
     start_time = datetime.datetime.strptime(start_t, FMT)
