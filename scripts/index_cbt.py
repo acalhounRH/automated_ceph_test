@@ -71,9 +71,6 @@ def main():
     
     time_delta = stop_time - start_time
     logger.info("Total Duration is - %s" % time_delta)
-
-def tester(obj1, obj2):
-    logger.info("This is just a test")
     
 def indexer_wrapper(analyzer_obj,arguments):
     
@@ -134,6 +131,7 @@ def process_data(test_id):
             if 'cbt_config.yaml' in fname:
                 logger.info("Gathering cbt configuration settings...")
                 cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)
+                analyzer_obj_list.append(cbt_config_gen)
                 for benchmark in cbt_config_gen.config['benchmarks']:
                     benchmark_name = benchmark
                     analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "archive")

@@ -210,6 +210,9 @@ class cbt_config_transcriber:
         output = remoteclient.issue_command(host, pid_grep_command)
         return output[0]
     
+    def emit_scribes(self):
+        return self
+    
     def emit_actions(self):
         
         logger.debug("Indexing %s" % self.config_file)
