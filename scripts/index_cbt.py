@@ -72,7 +72,7 @@ def main():
     
     
     start_time = datetime.datetime.strptime(start_time, FMT)
-    end_time = datetime.datetime.strptime(end_time, FMT)
+    stop_time = datetime.datetime.strptime(stop_time, FMT)
     time_delta = stop_time - start_time
     logger.info("Total Duration is - %s" % time_delta)
     
