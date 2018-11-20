@@ -24,7 +24,8 @@ _max_subprocesses = multiprocessing.cpu_count() / 2
 
 def main():
     
-    start_time = time.time()
+    FMT = '%Y-%m-%dT%H:%M:%SGMT'
+    start_time = time.strftime('%Y-%m-%dT%H:%M:%SGMT', time.time())
     arguments = argument_handler()
     
     processed_analyzer_list = process_data(arguments.test_id)
@@ -67,10 +68,13 @@ def main():
         else:
             logger.exception(e.message)
             
-    stop_time = time.time()
+    stop_time = time.strftime('%Y-%m-%dT%H:%M:%SGMT', time.time())
     
+    
+    start_time = datetime.datetime.strptime(start_t, FMT)
+    end_time = datetime.datetime.strptime(end_t, FMT)
     time_delta = stop_time - start_time
-    logger.info("Total Duration is - %s" % str(time_delta))
+    logger.info("Total Duration is - %s" % time_delta)
     
 def indexer_wrapper(analyzer_obj,arguments):
     
