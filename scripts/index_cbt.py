@@ -70,7 +70,7 @@ def main():
     stop_time = time.time()
     
     time_delta = stop_time - start_time
-    logger.info("Total Duration is - %s" % time_delta)
+    logger.info("Total Duration is - %s" % str(time_delta))
     
 def indexer_wrapper(analyzer_obj,arguments):
     
