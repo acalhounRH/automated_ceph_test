@@ -105,7 +105,7 @@ echo "autossh -M $port1 -f -N $jenkins_agent -R 8080:localhost:8080 -C"
 autossh -M $port2 -f -N $jenkins_agent -R 8081:localhost:8081 -C
 echo "autossh -M $port2 -f -N $jenkins_agent -R 8081:localhost:8081 -C"
 autossh -M $port3 -f -N $jenkins_agent -R 9200:10.16.31.52:9200 -C
-echo "autossh -M $port2 -f -N $jenkins_agent -R 8081:localhost:8081 -C"
+echo "autossh -M $port3 -f -N $jenkins_agent -R 9200:10.16.31.52:9200 -C"
  
 j_host="
 	Host $jenkins_agent
