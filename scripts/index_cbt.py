@@ -132,7 +132,7 @@ def process_data(test_id):
                 logger.info("Gathering cbt configuration settings...")
                 cbt_analyzer_obj = cbt_config_scribe.cbt_analyzer(test_id, fname)
                 cbt_config_gen = cbt_analyzer_obj.cbt_config_obj
-                analyzer_obj_list.append(cbt_analyzer_obj)
+                #analyzer_obj_list.append(cbt_analyzer_obj)
                 for benchmark in cbt_config_gen.config['benchmarks']:
                     benchmark_name = benchmark
                     analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "archive")
