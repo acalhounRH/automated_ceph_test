@@ -6,6 +6,13 @@ from elasticsearch.client.remote import RemoteClient
 
 logger = logging.getLogger("index_cbt")
 
+class cbt_analyzer:
+    def __init__(self, test_id, cbt_yaml_config):
+        self.cbt_config_obj = cbt_config_transcriber(test_id, cbt_yaml_config)
+        
+    def emit_scribes(self):
+        return self.cbt_config_obj
+
 class cbt_config_transcriber:
     
     def __init__(self, test_id, cbt_yaml_config):
@@ -209,9 +216,6 @@ class cbt_config_transcriber:
         pid_grep_command = "ps -eaf | grep %s | grep 'id %s ' | grep -v grep| awk '{print $2}'" % (service, id)
         output = remoteclient.issue_command(host, pid_grep_command)
         return output[0]
-    
-    def emit_scribes(self):
-        return self
     
     def emit_actions(self):
         

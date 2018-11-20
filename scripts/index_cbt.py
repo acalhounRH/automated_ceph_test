@@ -130,8 +130,9 @@ def process_data(test_id):
             #capture cbt configuration 
             if 'cbt_config.yaml' in fname:
                 logger.info("Gathering cbt configuration settings...")
-                cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)
-                analyzer_obj_list.append(cbt_config_gen)
+                cbt_analyzer_obj = cbt_config_scribe.cbt_analyser(test_id, fname)
+                cbt_config_gen = cbt_analyzer_obj.cbt_config_obj
+                analyzer_obj_list.append(cbt_analyzer_obj)
                 for benchmark in cbt_config_gen.config['benchmarks']:
                     benchmark_name = benchmark
                     analyzer_obj = factory.factory(benchmark_name, dirpath, cbt_config_gen, test_metadata, "archive")
