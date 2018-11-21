@@ -62,7 +62,6 @@ def index_wrapper(es, comparison_id, test_id, start_time, test_mode, verbose, se
         logger.info("*********** TEST MODE **********")
         logger.info("********************************")
     else:
-        logger.info("%%%%%%%%%%%%%%%%%%%%%%REALSTUFF%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
         res_beg, res_end, res_suc, res_dup, res_fail, res_retry  = proto_py_es_bulk.streaming_bulk(es, test_data_generator(es, comparison_id, test_id, start_time, series))
            
         FMT = '%Y-%m-%dT%H:%M:%SGMT'
@@ -114,7 +113,7 @@ class test_holder():
         
         index_list=""
         for i in indices:
-            if "run2run" not in i and "pbench" not in i and "metricbeat" not in i and ".monitoring-" not in i and ".kibana" not in i:
+            if "run2run" not in i and "metricbeat" not in i and ".monitoring-" not in i and ".kibana" not in i:
                 logger.debug("adding %s to index list" % i)
                 if index_list:
                     index_list = "%s,%s" % (index_list, i)
