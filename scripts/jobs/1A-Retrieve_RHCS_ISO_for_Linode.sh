@@ -24,7 +24,7 @@ if [[ $ceph_iso_file =~ "RHCEPH-*-x86_64-dvd.iso" ]]; then
     sudo wget -r -nd --no-parent -A "$ceph_iso_file" $ceph_iso_path &> /dev/null
     new_ceph_iso_file="$(ls)"
 else
-    sudo wget $ceph_iso_path/$ceph_iso_file &> /dev/null
+    wget $ceph_iso_path/$ceph_iso_file &> /dev/null
     new_ceph_iso_file=$ceph_iso_file
 fi
 if [ ! -f $new_ceph_iso_file ] ; then 
