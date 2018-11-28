@@ -108,5 +108,6 @@ if [ "$master_node" == "true" ]; then
   #rpm -i https://pkg.jenkins.io/redhat/jenkins-2.110-1.1.noarch.rpm
   wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
   rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
-  yum install jenkins
+  yum install java -y
+  yum install jenkins -y
 fi 
