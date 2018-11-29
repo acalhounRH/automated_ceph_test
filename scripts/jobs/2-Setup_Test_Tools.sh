@@ -10,74 +10,60 @@
 # Jenkins will stop the pipeline immediately,
 # this makes troubleshooting a pipeline much easier for the user
 
+copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo"
+epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+NOTOK=1
+
+register_tool() {
+    pbench-register-tool --name=$1 --remote=$2 default -- --interval=$3 || exit $NOTOK
+}
+
 script_dir=$HOME/automated_ceph_test
 
 #set inventory file
-if [ "$linode_cluster" == "true" ]; then
-	echo "setting up for linode"
-	inventory_file=$HOME/ceph-linode/ansible_inventory_tmp
-    > $HOME/.ssh/config
+hostname | grep linode.com
+if [ $? = 0 ]; then
+    export linode_cluster=true
+    echo "setting up for linode"
+    inventory_file=$HOME/ceph-linode/ansible_inventory
 else
-	inventory_file=$script_dir/ansible_inventory
+    inventory_file=$script_dir/ansible_inventory
 fi 
-
-#function to add host to 
-function add_to_sshconfig {
-	# if user have predefined users, it is their responsibility to setup ssh keys user register_host.sh
-	if [ "$linode_cluster" == "true" ]; then
-		new_config="
-		Host $1
-	  		User root
-	  		StrictHostKeyChecking no
-		"
-	
-		echo "$new_config" >> $HOME/.ssh/config
-	fi 
-}
 
 #Based on user input register pbench monitoring tools
 function register_tools {
-
-	if [ "$sar" = "true" ]; then
-        /opt/pbench-agent/util-scripts/pbench-register-tool --name=sar --remote=$1 default -- --interval=$sar_interval
+    hst=$1
+    if [ "$sar" = "true" ]; then
+        register_tool sar $hst $sar_interval
     fi
     if [ "$iostat" = "true" ]; then
-        /opt/pbench-agent/util-scripts/pbench-register-tool --name=iostat --remote=$1 default -- --interval=$iostat_interval
+        register_tool iostat $hst $iostat_interval
     fi
     if [ "$mpstat" = "true" ]; then
-        /opt/pbench-agent/util-scripts/pbench-register-tool --name=mpstat --remote=$1 default -- --interval=$mpstat_interval        
+        register_tool mpstat $hst $mpstat_interval
     fi
     if [ "$pidstat" = "true" ]; then
-        /opt/pbench-agent/util-scripts/pbench-register-tool --name=pidstat --remote=$1 default -- --interval=$pidstat_interval        
+        register_tool pidstat $hst $pidstat_interval
     fi
-    if [ "$proc-vmstat" = "true" ]; then 
-        /opt/pbench-agent/util-scripts/pbench-register-tool --name=proc-vmstat --remote=$1 default -- --interval=$proc_vmstat_interval        
+    if [ "$proc_vmstat" = "true" ]; then 
+        register_tool proc-vmstat $hst $proc_vmstat_interval
     fi
-    if [ "$proc-interrupts" = "true" ]; then
-        /opt/pbench-agent/util-scripts/pbench-register-tool --name=proc-interrupts --remote=$1 default -- --interval=$proc_interrupts_interval        
+    if [ "$proc_interrupts" = "true" ]; then
+        register_tool proc-interrupts $hst $proc_interrupts_interval
     fi
     if [ "$turbostat" = "true" ]; then
-        /opt/pbench-agent/util-scripts/pbench-register-tool --name=turbostat --remote=$1 default -- --interval=$turbo_interval       
+        if [ "$linode_cluster" = "true" ] ; then
+            echo "you cannot run turbostat within linode VM"
+        else
+            register_tool turbostat $hst $turbostat_interval
+        fi
     fi
-    
-    #for tool_name in $tools_ary; do
-    #	/opt/pbench-agent/util-scripts/pbench-register-tool --name=$tool_name --remote=$1 default -- --interval=3
-    #done
 }
 
 
-#define pbench service as a collection of ceph-ansible groups
-service_inventory="
-[servers:children]
-osds
-mons
-mgrs
-clients
-"
-
 if [ "$linode_cluster" == "true" ]; then
-	echo "copy linode inventory"
-	cp $HOME/ceph-linode/ansible_inventory $inventory_file
+    echo "copy linode inventory"
+    cp $HOME/ceph-linode/ansible_inventory $inventory_file
 fi
 
 echo "$service_inventory" >> $inventory_file
@@ -86,71 +72,43 @@ echo "$service_inventory" >> $inventory_file
 cat $inventory_file
 
 
-###:TODO This will not work in non-linode deployments 
-#ansible -m fetch -a "src=/etc/ceph/ceph.conf dest=/etc/ceph/ceph.conf.d" client-000 -i $inventory_file
-#cp /etc/ceph/ceph.conf.d/client-000/etc/ceph/ceph.conf /etc/ceph/ceph.conf
-#
-#ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
-#cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
+yum remove -y pbench-fio pbench-agent pbench-sysstat
+rm -rf /var/lib/pbench-agent
+yum install -y $epel_repo_rpm_url
+(yum install -y yum-utils wget && \
+ yum-config-manager --enable epel && \
+ (cd /etc/yum.repos.d && wget $copr_repo_url) && \
+ yum install pbench-fio pbench-agent pbench-sysstat pdsh -y) \
+  || exit $NOTOK
 
+# now do same thing on all remote hosts
 
-cd /etc/yum.repos.d
-yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y 
-yum install -y yum-utils; yum-config-manager --enable epel
-wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; yum install pbench-agent -y
-source /etc/profile.d/pbench-agent.sh
-yum install pbench-fio -y
-yum install pdsh -y
-
-echo "******************* install pbench agent in linode"
-ansible -m shell -a "yum install wget -y; \
-					 cd /etc/yum.repos.d; \
-					 wget https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo; \
-					 yum install pbench-agent -y" -i $inventory_file all
-
-echo "*******************install pbench-fio and pdsh for CBT"
-ansible -m shell -a "yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y; \
-                     yum install -y yum-utils; \
-                     yum-config-manager --enable epel; \
-                     yum install pbench-fio -y; \
-                     yum install pdsh -y;" all -i $inventory_file
-    
-ansible -m copy -a "src=/etc/ceph/ceph.client.admin.keyring dest=/etc/ceph/ceph.client.admin.keyring" clients -i $inventory_file
-exit_status=`echo $?`
-
-if [ "$exit_status" -gt 0 ]; then
-	echo "coping client keys failed" 
-	exit 1
-fi
-
-if [ ! -d /var/lib/pbench-agent/tools-default-old ]; then
-  sudo mkdir -p /var/lib/pbench-agent/tools-default-old;
-fi
-
-
-if [ -d /var/lib/pbench-agent/tools-default ]; then
-	echo "******************* making tools dir"
-	sudo mv /var/lib/pbench-agent/tools-default/* /var/lib/pbench-agent/tools-default-old/
-	sudo chmod 777 /var/lib/pbench-agent/tools-default/
-	sudo chmod 777 /var/lib/pbench-agent/pbench.log
-else 
-	mkdir -p /var/lib/pbench-agent/
-fi 
+export ANSIBLE_INVENTORY=$inventory_file
+ansible -m yum -a "name=$epel_repo_rpm_url" all
+(ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat state=absent" all && \
+ ansible -m shell -a "rm -rf /var/lib/pbench-agent" all && \
+ ansible -m yum -a "name=wget,yum-utils" all && \
+ ansible -m shell -a "cd /etc/yum.repos.d; wget $copr_repo_url" all && \
+ ansible -m shell -a "yum-config-manager --enable epel" all && \
+ ansible -m yum -a "name=pbench-fio,pdsh,pbench-agent,pbench-sysstat" all) \
+  || exit $NOTOK
+ 
 
 echo "******************* registering tools:"
-for i in `ansible --list-host -i $inventory_file all |grep -v hosts | grep -v ":"`
+
+source /etc/profile.d/pbench-agent.sh
+ansible --list-host all | grep -v hosts | grep -v ':' > /tmp/host.list
+
+for i in `cat /tmp/host.list`
     do
-		echo "setting up host $i"
-	    if [ "$linode_cluster" == "true" ]; then
-	    		echo "Registering tools on Linode host"
-	    		IP_address=`cat $inventory_file | grep $i | awk {'print $2'} | sed 's/.*=//'`
-	    		add_to_sshconfig $IP_address
-	    		register_tools $IP_address
-		else
-	    		echo "Registering tools on pre-existing host"
-	    		add_to_sshconfig $i
-	    		register_tools $i
-	    fi
+        echo "setting up host $i"
+        if [ "$linode_cluster" = "true" ]; then
+            echo "Registering tools on Linode host"
+            IP_address=`cat $inventory_file | grep $i | awk {'print $2'} | sed 's/.*=//'`
+            register_tools $IP_address || exit $NOTOK
+        else
+            echo "Registering tools on pre-existing host"
+            register_tools $i || exit $NOTOK
+        fi
 done
 
-#if cosbench
