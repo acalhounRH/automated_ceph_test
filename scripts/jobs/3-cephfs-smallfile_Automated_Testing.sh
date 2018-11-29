@@ -32,7 +32,6 @@ clone_branch() {
 	fi
 	rm -rf .git
 	cd
-	ansible -m shell -a "rm -rf ~/$git_dirname" clients
 	ansible -m synchronize -a "src=~/$git_dirname delete=yes dest=./" clients
 }
 
@@ -107,6 +106,6 @@ ssh -o StrictHostKeyChecking=no localhost pwd
 pbench-user-benchmark -- python ~/cbt/cbt.py -a $archive_dir/cbt_results $archive_dir/benchmark.yaml
 rc=$?
 umount -v $mountpoint
-rm -fv /etc/ceph/cephfs.key /etc/ceph/ceph.client.admin.keyring smf-clients.list /etc/ceph/ceph.conf
+rm -fv /etc/ceph/cephfs.key smf-clients.list
 
 exit $rc
