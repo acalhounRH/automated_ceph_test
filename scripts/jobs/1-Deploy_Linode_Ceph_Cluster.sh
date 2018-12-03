@@ -19,99 +19,131 @@ inventory_file=$HOME/ceph-linode/ansible_inventory
 
 
 # clean house, so we don't have previous version of Ceph interfering
-sudo yum remove ceph-base ceph-ansible librados2 -y
+yum remove ceph-base ceph-ansible ansible librados2 -y
 rm -rf /usr/share/ceph-ansible
+rm -f /etc/ceph/ceph.conf /etc/ceph/ceph.client.admin.keyring
 yum-config-manager --disable epel
 
 cd $script_dir/staging_area/rhcs_latest/
 new_ceph_iso_file="$(ls)"
 
-sudo rm -rf /ceph-ansible-keys
-sudo mkdir -m0777 /ceph-ansible-keys
+rm -rf /ceph-ansible-keys
+mkdir -m0777 /ceph-ansible-keys
 
 #mount ISO and create rhcs yum repo file 
-sudo cp $script_dir/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
-sudo mkdir -p /mnt/rhcs_latest/
-sudo umount /mnt/rhcs_latest/
-sudo mount $script_dir/staging_area/rhcs_latest/RHCEPH* /mnt/rhcs_latest/ || exit $NOTOK
-sudo yum clean all
+
+cp $script_dir/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
+mkdir -p /mnt/rhcs_latest/
+umount /mnt/rhcs_latest/
+mount $script_dir/staging_area/rhcs_latest/RHCEPH* /mnt/rhcs_latest/
+yum clean all
 
 # install precise ansible version if necessary
+
 if [ -n "$ansible_version" ] ; then
-	yum install -y ansible-$ansible_version
-else
-	yum install -y ansible
+    yum install -y ansible-$ansible_version
 fi
 
-#install ceph-ansible
-sudo yum install ceph-ansible -y
+#install ceph-ansible and ceph client packages
+#there must not be any dependencies on ceph-selinux 
+#for this to work reliably
+# break this up into separate installs so yum doesn't choke
 
-sudo sed -i 's/gpgcheck=1/gpgcheck=0/g' /usr/share/ceph-ansible/roles/ceph-common/templates/redhat_storage_repo.j2
+yum install ceph-fuse -y
+yum install ceph-common -y
+yum install ceph-ansible -y
+yum install ceph-fuse ceph-common ceph-ansible -y || exit $NOTOK
+
+# disable key checking in Ceph RPMs to avoid need for 
+# "redhatbuild" GPG RPM key in beta releases
+# described at https://wiki.test.redhat.com/CEPH
+
+sed -i 's/gpgcheck=1/gpgcheck=0/g' /usr/share/ceph-ansible/roles/ceph-common/templates/redhat_storage_repo.j2
+
+# provide inputs to ceph-ansible
 
 mkdir -p $script_dir/staging_area/tmp
-#setup all.yml
 echo "$ceph_ansible_all_config" > $script_dir/staging_area/tmp/all.yml
 sed -i "s/<ceph_iso_file>/$new_ceph_iso_file/g" $script_dir/staging_area/tmp/all.yml
-sudo cp $script_dir/staging_area/tmp/all.yml /usr/share/ceph-ansible/group_vars/all.yml
-
-
-#setup osd.yml
+cp $script_dir/staging_area/tmp/all.yml /usr/share/ceph-ansible/group_vars/all.yml
 echo "$ceph_ansible_osds_config" > $script_dir/staging_area/tmp/osds.yml
-sudo cp $script_dir/staging_area/tmp/osds.yml /usr/share/ceph-ansible/group_vars/osds.yml
+cp $script_dir/staging_area/tmp/osds.yml /usr/share/ceph-ansible/group_vars/osds.yml
+ln -svf /usr/share/ceph-ansible/site.yml.sample /usr/share/ceph-ansible/site.yml
 
+# set up python environment for linode API
 
-#copy site.yml
-sudo cp /usr/share/ceph-ansible/site.yml.sample /usr/share/ceph-ansible/site.yml
-
-
-#Start Ceph-linode deployment
 cd $HOME/ceph-linode
 echo "$Linode_Cluster_Configuration" > cluster.json
 virtualenv-2 linode-env && source linode-env/bin/activate && pip install linode-python
 export LINODE_API_KEY=$Linode_API_KEY
-
+# careful, inventory file may not exist yet
 export ANSIBLE_INVENTORY=$inventory_file
 
-try_ceph_install() {
-  /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible || return $NOTOK
-  export first_mon=`ansible --list-host mons |grep -v hosts | grep -v ":" | head -1`
-  export first_mon_ip=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["ansible_ssh_host"] }}' localhost | grep -v localhost`
-  ansible -m script -a \
-     "$script_dir/scripts/utils/check_cluster_status.py" $first_mon
-}
 
-try_ceph_install
-
-# if it fails and we have a version adjustment repo, 
-# use that and retry ceph-ansible
-# this is a hack to work around the lack of correct ansible version and/or
-# and lack of latest versions of selinux-policy RPMs in centos
-# when a new RHEL version is released.
-# it only is used if ceph-ansible fails.  This isn't so bad because
-# running it again doesn't take as long the 2nd time.
+# if we have a version adjustment repo, use it
+# use that before you try ceph-ansible
+# this works around the lack of correct ansible version and/or
+# and lack of latest versions of selinux-policy RPMs in centos/RHEL GA
+# when a new RHCS version is released.
 # the extra repo we insert is given by version_adjust_repo URL parameter
-# also passed to preceding job
+# also passed to preceding 1A job
 
-if [ $? != 0 -a -n "$version_adjust_repo" ] ; then 
+if [ -n "$version_adjust_repo" ] ; then 
+    # this is a hack to let launch.sh create linodes and ansible inventory
+    # without actually running ceph-ansible
+
+    mkdir -p /tmp/ceph-ansible/roles
+    touch /tmp/ceph-ansible/site.yml.sample
+    # just create VMs
+    /bin/bash +x ./launch.sh --ceph-ansible /tmp/ceph-ansible
+    # ignore the error status, but make sure you have inventory
+    if [ ! -f $ANSIBLE_INVENTORY ] ; then
+        echo "failed to start linodes"
+        exit $NOTOK
+    fi
     version_adjust_name=`basename $version_adjust_repo`
-	yum clean all
-	yum install -y libselinux-python || yum upgrade -y libselinux-python
-    ansible -m shell -a "rm -rf $version_adjust_name" all
-	ansible -m copy -a "src=~/$version_adjust_name dest=./" all
+    ln -svf ~/$version_adjust_name/version_adjust.repo /etc/yum.repos.d/
+    yum clean all
+    yum install -y libselinux-python || yum upgrade -y libselinux-python
+
+    # to support ansible synchronize module
+    yum install -y rsync
+    ansible -m yum -a 'name=rsync' all
+
+    # use ansible synchronize module to copy repo tree to all hosts
+    # create softlink to it in /etc/yum.repos.d
+
+    ansible -m synchronize -a "delete=yes src=~/$version_adjust_name dest=./" all
     ansible -m shell -a \
       "ln -svf ~/$version_adjust_name/version_adjust.repo /etc/yum.repos.d/" all
+
+    # for some reason new RHCS selinux-ceph package
+    # always has dependencies that the RHEL GA or centos 
+    # version can't satisfy.
+
     ansible -m shell -a \
-      'yum clean all ; yum install -y libselinux-python || yum upgrade -y libselinux-python' all
-    try_ceph_install || exit $NOTOK
+      'yum clean all ; yum install -y libselinux-python || yum upgrade -y libselinux-python' all \
+      || exit $NOTOK
+elif [ -f $ANSIBLE_INVENTORY ] ; then
+    # remove any prior version adjustment repo
+    (ansible -m file -a "path=/etc/yum.repos.d/version_adjust.repo state=absent" all && \
+     ansible -m shell -a "yum clean all" all) || exit $NOTOK
 fi
 
-# rsync is useful for the ansible synchronize module, 
-# which makes it fast to copy directory trees
-# ceph-fuse enables cephfs testing
+# run launch.sh again, this time with correct ceph-ansible path
+# linode-launch.py will notice that the VMs have already been
+# created and will not create any more.
+# it will rerun pre-config.yml but this doesn't take very long
 
-(yum install ceph-fuse ceph-common rsync -y && 
- ansible -m shell -a 'yum install -y rsync' clients) \
-  || exit $NOTOK
+/bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible
+
+# find out about first monitor
+
+export first_mon=`ansible --list-host mons |grep -v hosts | grep -v ":" | head -1`
+export first_mon_ip=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["ansible_ssh_host"] }}' localhost | grep -v localhost`
+
+ansible -m script -a "$script_dir/scripts/utils/check_cluster_status.py" $first_mon \
+ || exit $NOTOK
 
 # make everyone in the cluster able to run ceph -s
 # make agent able to access Ceph cluster as client
