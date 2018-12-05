@@ -124,6 +124,7 @@ class fiojson_results_transcriber:
                 waver_ary = []
                 raver_ary = []
                 total_ary = []
+                tmp_doc = {}
                 tmp_doc['object_size'] = obj_size # set document's object size
                 tmp_doc['operation'] = oper # set documents operation
                 firstrecord = True
