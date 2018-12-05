@@ -73,7 +73,7 @@ cat $inventory_file
 
 
 yum remove -y pbench-fio pbench-agent pbench-sysstat
-rm -rf /var/lib/pbench-agent
+rm -rf /var/lib/pbench-agent/tools-default
 yum install -y $epel_repo_rpm_url
 (yum install -y yum-utils wget && \
  yum-config-manager --enable epel && \
