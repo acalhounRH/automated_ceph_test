@@ -88,7 +88,21 @@ class pbench_transcriber:
                                         tmp_doc[tool][file_name]['metric_value'] = metric_value
                                         a = importdoc
                             else:
-                                tmp_doc[tool][file_name]['metric_stat'] = col_ary[col]
+                                metric_stat = col_ary[col]
+                                if "-read" in metric_stat:
+                                    metric_stat = metric_stat.replace("-read", "")
+                                    tmp_doc[tool][file_name]["Data_Direction"] = "read"
+                                elif "-write" in metric_stat:
+                                    metric_stat = metric_stat.replace("-write", "")
+                                    tmp_doc[tool][file_name]["Data_Direction"] = "write"
+                                elif "-tx" in metric_stat:
+                                    metric_stat = metric_stat.replace("-tx", "")
+                                    tmp_doc[tool][file_name]["Data_Direction"] = "transmit"
+                                elif "-rx" in metric_stat:
+                                    metric_stat = metric_stat.replace("-rx", "")
+                                    tmp_doc[tool][file_name]["Data_Direction"] = "receive"
+                                    
+                                tmp_doc[tool][file_name]['metric_stat'] = metric_stat
                                 
                                 if "cpuall" in file_name and self.host_info is not None:
                                     metric_value = metric_value / int(self.host_info['cpu_info']['CPU(s)'])
