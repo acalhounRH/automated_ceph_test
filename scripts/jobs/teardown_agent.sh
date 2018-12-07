@@ -14,8 +14,8 @@ script_dir=$HOME/automated_ceph_test/
 
 host=`grep $agent_name ~/agent_list |awk -F'=' '{print $2}'`
 
-if [ -Z $host ]; then
-	echo "$host is not in agent_list"
+if [ -z $host ]; then
+	echo "host for $agent_name is not in agent_list"
     exit 1
 fi
 
