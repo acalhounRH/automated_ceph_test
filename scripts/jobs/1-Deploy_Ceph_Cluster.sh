@@ -17,7 +17,8 @@ echo "$ceph_inventory" > $inventory_file
 if [ -d /usr/share/ceph-ansible ]; then
 	echo "purging cluster and removing previous version of ceph-ansible"
 	cd /usr/share/ceph-ansible
-	ansible-playbook infrastructure-playbooks/purge-cluster.yml -i $inventory_file -e ireallymeanit=yes
+	cp infrastructure-playbooks/purge-cluster.yml .
+	ansible-playbook purge-cluster.yml -i $inventory_file -e ireallymeanit=yes
 fi
 
 sudo yum remove ceph-ansible -y
