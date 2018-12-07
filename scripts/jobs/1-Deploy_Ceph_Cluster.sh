@@ -111,6 +111,7 @@ cp /etc/ceph/ceph.conf.d/$monname/etc/ceph/ceph.conf /etc/ceph/ceph.conf
 
 ceph_client_key=/ceph-ansible-keys/`ls /ceph-ansible-keys/ | grep -v conf`/etc/ceph/ceph.client.admin.keyring
 cp $ceph_client_key /etc/ceph/ceph.client.admin.keyring
+ansible -m copy -a 'src=/etc/ceph/ceph.client.admin.keyring dest=/etc/ceph/' -i $inventory_file clients
 
 #Health check
 $script_dir/scripts/utils/check_cluster_status.py
