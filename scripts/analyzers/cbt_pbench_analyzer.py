@@ -25,7 +25,10 @@ def analyze_cbt_Pbench_data(tdir, cbt_config_obj, test_metadata):
                         hostname = host
                         tool = pfname.split("/")[-3]
                         metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = hostname
-                        metadata['ceph_benchmark_test']['common']['hardware']['ipaddress'] = socket.gethostbyname(hostname)
+                        try:
+                            metadata['ceph_benchmark_test']['common']['hardware']['ipaddress'] = socket.gethostbyname(hostname)
+                        except:
+                            metadata['ceph_benchmark_test']['common']['hardware']['ipaddress'] = "UNKNOWN"
                         metadata['ceph_benchmark_test']['application_config']['ceph_config']['ceph_node_type'] = cbt_config_obj.get_host_type(hostname)
                         metadata['ceph_benchmark_test']['common']['test_info']['tool'] = tool
                         metadata['ceph_benchmark_test']['common']['test_info']['file_name'] = os.path.basename(pfname)
