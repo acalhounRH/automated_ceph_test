@@ -216,7 +216,7 @@ class cbt_config_transcriber:
         if output:
             return output[0]
         else:
-            return -1
+            return str("-1")
     
     def emit_actions(self):
         
