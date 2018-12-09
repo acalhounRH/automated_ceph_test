@@ -213,7 +213,7 @@ class cbt_config_transcriber:
     def get_ceph_service_pid(self, remoteclient, host, service, id):
         pid_grep_command = "ps -eaf | grep %s | grep 'id %s ' | grep -v grep| awk '{print $2}'" % (service, id)
         output = remoteclient.issue_command(host, pid_grep_command)
-        if not output[0]:
+        if output:
             return output[0]
         else:
             return -1
