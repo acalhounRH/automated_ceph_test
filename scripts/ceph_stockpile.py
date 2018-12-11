@@ -23,12 +23,17 @@ def main():
 
     
     logger.info("Gathering cbt configuration settings...")
-    cbt_config_gen = cbt_config_scribe.cbt_config_transcriber("ALC", find_cbt_config())             
+    if os.path.isfile("host_map.json"):
+        cbt_config_gen = cbt_config_scribe.cbt_config_transcriber("ALC", find_cbt_config(), os.path.abspath("host_map.json"))
+    else:
+        cbt_config_gen = cbt_config_scribe.cbt_config_transcriber("ALC", find_cbt_config())
+    
     logger.info("Done")
                     
 def find_cbt_config():
     for dirpath, dirs, files in os.walk("."):
             if 'cbt_config.yaml' in files:
+                find_cbt_config()
                 config_fullpath = os.path.join(dirpath,"cbt_config.yaml")
                 return config_fullpath
                     
