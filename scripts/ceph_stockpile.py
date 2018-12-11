@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
 import datetime, socket, getopt
