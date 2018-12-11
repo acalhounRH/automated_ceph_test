@@ -8,7 +8,7 @@ logger = logging.getLogger("index_cbt")
 
 class cbt_config_transcriber:
     
-    def __init__(self, UID, cbt_yaml_config):
+    def __init__(self, UID, cbt_yaml_config, hostmap=None):
         self.UID = UID 
         self.config = yaml.load(open(cbt_yaml_config))   
         self.config_file = cbt_yaml_config
@@ -17,19 +17,20 @@ class cbt_config_transcriber:
         self.cpu_info_map = {}
         self.interface_map = {}
         
-        #try:
-        self.acitve_ceph_client = ceph_client()
-        #except:
-        #    logger.warn("Unable to establish a connection to ceph")   
-         
-        if self.acitve_ceph_client.Connection_status:   
-            self.remoteclient = ssh_remote_command()
-    
-            
-            self.make_host_map()
-        else:
-            logger.warn("Ceph host to role mapping was not performed.")
-            
+        if hostmap:
+            self.load_host_map(hostmap)
+        else:    
+            #if hostmap file is not provided generate it  
+            self.acitve_ceph_client = ceph_client()   
+             
+            if self.acitve_ceph_client.Connection_status:   
+                self.remoteclient = ssh_remote_command()
+        
+                
+                self.make_host_map()
+            else:
+                logger.warn("Ceph host to role mapping was not performed.")
+                
             
     def set_host_type_list(self):
         
