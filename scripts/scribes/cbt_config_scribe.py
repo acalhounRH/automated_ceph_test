@@ -78,11 +78,11 @@ class cbt_config_transcriber:
         ceph_role_list = ['mds', 'mon', 'osd', 'mgr']
         for role in ceph_role_list:
             host_role_list = self.acitve_ceph_client.issue_command("%s metadata" % role)
-            #print json.dumps(host_role_list, indent=4)
+            print json.dumps(host_role_list, indent=4)
             
             if len(host_role_list) > 0:
                 for role_info in host_role_list:
-                    print role_info['hostname']
+                    #print role_info['hostname']
                     host_fqdn = self.get_fqdn(self.remoteclient, role_info['hostname'])
                     
                     child = {}
