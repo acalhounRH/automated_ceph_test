@@ -8,8 +8,8 @@ logger = logging.getLogger("index_cbt")
 
 class cbt_config_transcriber:
     
-    def __init__(self, test_id, cbt_yaml_config):
-        self.test_id = test_id 
+    def __init__(self, UID, cbt_yaml_config):
+        self.UID = UID 
         self.config = yaml.load(open(cbt_yaml_config))   
         self.config_file = cbt_yaml_config
         self.host_map = {}
@@ -135,7 +135,7 @@ class cbt_config_transcriber:
                     self.host_map[client_fqdn]['children'].append(child)
         self.set_host_type_list()
         
-        #print json.dumps(self.host_map, indent=4)
+        print json.dumps(self.host_map, indent=4)
         
     def get_fqdn(self, remoteclient, host):
         
@@ -230,7 +230,7 @@ class cbt_config_transcriber:
                                  { 
                                      "test_info": 
                                      { 
-                                         "test_id": self.test_id }
+                                         "test_id": self.UID }
                                      }
                                  }, 
                               #  "ceph_config": self.host_map,
