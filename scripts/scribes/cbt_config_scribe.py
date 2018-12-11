@@ -136,8 +136,9 @@ class cbt_config_transcriber:
                     self.host_map[client_fqdn]['children'].append(child)
         self.set_host_type_list()
         
-        with open("host_map.json", 'w') as outfile:
-            json.dump(self.host_map, outfile)
+        dataWriter = open("host_map.json", 'w')
+        dataWriter.write(json.dumps(self.host_map, indent=4))
+        dataWriter.close()
             
         print json.dumps(self.host_map, indent=4)
         
