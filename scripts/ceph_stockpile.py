@@ -23,7 +23,7 @@ def main():
 
     
     logger.info("Gathering cbt configuration settings...")
-    cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, find_cbt_config())             
+    cbt_config_gen = cbt_config_scribe.cbt_config_transcriber("ALC", find_cbt_config())             
     logger.info("Done")
                     
 def find_cbt_config():
