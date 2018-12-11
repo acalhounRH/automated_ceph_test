@@ -137,7 +137,7 @@ class cbt_config_transcriber:
         self.set_host_type_list()
         
         with open("host_map.json", 'w') as outfile:
-            json.dumps(self.host_map, indent=4, outfile)
+            json.dump(self.host_map, outfile)
             
         print json.dumps(self.host_map, indent=4)
         
