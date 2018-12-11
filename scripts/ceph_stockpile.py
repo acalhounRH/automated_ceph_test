@@ -24,7 +24,7 @@ def main():
     
     logger.info("Gathering cbt configuration settings...")
     if os.path.isfile("host_map.json"):
-        cbt_config_gen = cbt_config_scribe.cbt_config_transcriber("ALC", find_cbt_config(), os.path.abspath("host_map.json"))
+        cbt_config_gen = cbt_config_scribe.cbt_config_transcriber("ALC", find_cbt_config(), os.path.abspath("./host_map.json"))
     else:
         cbt_config_gen = cbt_config_scribe.cbt_config_transcriber("ALC", find_cbt_config())
     
