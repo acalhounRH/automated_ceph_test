@@ -18,9 +18,8 @@ urllib3_log = logging.getLogger("urllib3")
 urllib3_log.setLevel(logging.CRITICAL)
 
 
-def main():
-    self.log_level = logging.INFO
-    setup_loggers("ceph_stockpile", self.log_level)
+def main(): 
+    setup_loggers("ceph_stockpile", logging.INFO)
 
     
     logger.info("Gathering cbt configuration settings...")
