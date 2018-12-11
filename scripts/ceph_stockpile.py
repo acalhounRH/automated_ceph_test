@@ -33,7 +33,6 @@ def main():
 def find_cbt_config():
     for dirpath, dirs, files in os.walk("."):
             if 'cbt_config.yaml' in files:
-                find_cbt_config()
                 config_fullpath = os.path.join(dirpath,"cbt_config.yaml")
                 return config_fullpath
                     
