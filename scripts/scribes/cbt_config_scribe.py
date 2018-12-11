@@ -31,6 +31,10 @@ class cbt_config_transcriber:
             else:
                 logger.warn("Ceph host to role mapping was not performed.")
                 
+    def load_host_map(self, hostmap_file):
+        logger.info("Loading %s" % hostmap_file)
+        self.host_map = json.load(hostmap_file)
+        print json.dumps(self.host_map, indent=4)
             
     def set_host_type_list(self):
         
