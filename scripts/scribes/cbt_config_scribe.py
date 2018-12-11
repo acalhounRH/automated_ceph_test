@@ -136,6 +136,9 @@ class cbt_config_transcriber:
                     self.host_map[client_fqdn]['children'].append(child)
         self.set_host_type_list()
         
+        with open("host_map.json", 'w') as outfile:
+            json.dumps(self.host_map, indent=4, outfile)
+            
         print json.dumps(self.host_map, indent=4)
         
     def get_fqdn(self, remoteclient, host):
