@@ -82,7 +82,7 @@ class cbt_config_transcriber:
             
             if len(host_role_list) > 0:
                 for role_info in host_role_list:
-                    #print role_info['hostname']
+                    print role_info['hostname']
                     host_fqdn = self.get_fqdn(self.remoteclient, role_info['hostname'])
                     
                     child = {}
