@@ -33,7 +33,11 @@ class cbt_config_transcriber:
                 
     def load_host_map(self, hostmap_file):
         logger.info("Loading %s" % hostmap_file)
-        self.host_map = json.load(hostmap_file)
+        
+        file = open(hostmap_file)
+        self.host_map = json.load(file.read())
+        file.close()
+        
         print json.dumps(self.host_map, indent=4)
             
     def set_host_type_list(self):
