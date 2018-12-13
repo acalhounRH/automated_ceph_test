@@ -42,7 +42,7 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
             }
     
     elapsed_time = 0
-    print "working on host % " % host
+    print "working on host %s " % host
     
     while elapsed_time < duration:
         collection_time = time.time() 
