@@ -56,7 +56,7 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
             print perf_dump
         #sleep after you have collected perf dump
         collection_delta_time = collection_time - datetime.datetime.now() 
-        remainder = time_interval - collection_delta_time  
+        remainder = datetime.timedelta(seconds=time_interval) - collection_delta_time.seconds()  
         
         print "going to sleep for %s" % remainder
         if remainder < 0:
