@@ -59,6 +59,7 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
         print collection_delta_time
         print time_interval
         print datetime.timedelta(seconds=time_interval)
+        print collection_delta_time.seconds
         remainder = datetime.timedelta(seconds=time_interval) - datetime.timedelta(seconds=collection_delta_time)  
         
         print "going to sleep for %s" % remainder
