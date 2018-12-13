@@ -30,7 +30,7 @@ def main():
     print json.dumps(osd_host_dict, indent=4)
     
     for host in osd_host_dict:
-     collect_measurement(host, osd_host_dict[host] 1, 10, start_time)
+     collect_measurement(host, osd_host_dict[host], 1, 10, start_time)
         
 def collect_measurement(host, osd_list, duration, time_interval, start_time):
     
