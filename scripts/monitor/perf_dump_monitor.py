@@ -91,7 +91,7 @@ class ssh_remote_command():
                 formated_output.append(i)
             
             self.sshclient.close()
-            return formated_output
+            return i
         
         except Exception as e:
             self.sshclient.close()
