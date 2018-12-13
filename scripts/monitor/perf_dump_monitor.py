@@ -28,10 +28,11 @@ def main():
             osd_host_dict[host["hostname"]].append(host["id"])
             
     print json.dumps(osd_host_dict, indent=4)
+    
+    for host in osd_host_dict:
+     collect_measurement(host, 1, 10)
         
-    
-    
-def Collect_measurement(host, duration, time_interval):
+def collect_measurement(host, duration, time_interval):
     
     perf_dump_data = {
             "_index": "ceph_perf_dump_data_index",
@@ -47,12 +48,15 @@ def Collect_measurement(host, duration, time_interval):
         #collect the performance measurements 
         for osd in osd_list:
         
-          perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)
-        
-            
-        
-        #sleep after you have collected perf dump 
-        time.sleep(time_interval) #time_interval
+          perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)   
+          print perf_dump
+        #sleep after you have collected perf dump
+        remainder = collection_time - time_interval
+        if remainder < 0:
+            print "taking too ling"
+            tine.sleep(remainder)
+        else: 
+            time.sleep(remainder) #time_interval
         
     
     
