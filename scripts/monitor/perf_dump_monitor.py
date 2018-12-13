@@ -54,7 +54,7 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
             perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)   
             print perf_dump
         #sleep after you have collected perf dump
-        remainder = collection_time - time_interval
+        remainder = time_interval - collection_time 
         
         print "going to sleep for %s" % remainder
         if remainder < 0:
@@ -62,9 +62,6 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
             tine.sleep(remainder)
         else: 
             time.sleep(remainder) #time_interval
-        
-    
-    
 
 class ssh_remote_command():
     def __init__(self):
