@@ -13,7 +13,7 @@ def main():
     remoteclient = ssh_remote_command()
     
     #get metadata list of all osds
-    osd_metadata_list = self.acitve_ceph_client.issue_command("osd metadata")
+    osd_metadata_list = acitve_ceph_client.issue_command("osd metadata")
     
     start_time = time.time()
     elapsed_time = 0 
