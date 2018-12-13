@@ -24,7 +24,7 @@ def main():
         if host["hostname"] not in host_list:
             osd_host_dict[host["hostname"]] = []
             osd_host_dict[host["hostname"]].append(host["id"])
-        else
+        else:
             osd_host_dict[host["hostname"]].append(host["id"])
             
     print json.dumps(osd_host_dict, indent=4)
