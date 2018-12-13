@@ -83,7 +83,7 @@ class ssh_remote_command():
             
             output = stdout.readlines()
             self.sshclient.close()
-            return i
+            return output
         
         except Exception as e:
             self.sshclient.close()
