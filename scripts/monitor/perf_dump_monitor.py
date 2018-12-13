@@ -3,6 +3,7 @@
 import yaml, os, time, json, hashlib, paramiko
 import socket, datetime, logging, rados, ipaddress
 from paramiko import SSHClient
+from datetime import date
 
 logger = logging.getLogger("index_cbt")
 
@@ -15,7 +16,7 @@ def main():
     #get metadata list of all osds
     osd_metadata_list = acitve_ceph_client.issue_command("osd metadata")
     
-    start_time = time.time()
+    start_time = datetime.datetime()
     elapsed_time = 0 
     
     host_list = []
@@ -45,7 +46,7 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
     print "working on host %s " % host
     
     while elapsed_time < duration:
-        collection_time = time.time() 
+        collection_time = datetime.datetime() 
         elapsed_time = collection_time - start_time
         
         #collect the performance measurements 
@@ -54,12 +55,13 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
             perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)   
             print perf_dump
         #sleep after you have collected perf dump
-        remainder = time_interval - collection_time 
+        collection_delta_time = collection_time - datetime.datetime()
+        remainder = datetime.timedelta(seconds=time_interval) - collection_delta_time  
         
         print "going to sleep for %s" % remainder
         if remainder < 0:
             print "taking too ling"
-            tine.sleep(remainder)
+            time.sleep(remainder)
         else: 
             time.sleep(remainder) #time_interval
 
