@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-import os, sys, json, time, types, copy
+import os, sys, json, time, types, copy, hashlib
 from time import gmtime, strftime
 from elasticsearch import Elasticsearch, helpers
 from decimal import Decimal
@@ -56,6 +56,7 @@ def compare_result(test1, test2, headerdoc):
     result_doc["_source"] = {}
     result_doc["_source"]['test1'] = test1
     result_doc["_source"]['test2'] = test2
+    result_doc["_op_type"] = "create"
 
     print ("Comparing %s Versus %s ") % (test1, test2)
 
@@ -115,24 +116,26 @@ def compare_result(test1, test2, headerdoc):
 
     #perform analysis of results
     actions = []
+    average_delta_list = []
     for operation in operations_array:
         for object_size in object_size_array: 
             rdelta = round(((test2_doc[operation][object_size] - test1_doc[operation][object_size]) / test1_doc[operation][object_size]) * 100, 3)
             #print "%s = (%s - %s / %s) * 100" % (rdelta, test2_doc[operation][object_size], test1_doc[operation][object_size], test1_doc[operation][object_size])
+            average_delta_list.append(rdelta) 
             c_results = copy.deepcopy(result_doc)
             c_results['_source']['operation'] = operation
             c_results['_source']['%sKB' % object_size] = rdelta
 
-         #   if rdelta > -5:
-         #       print ("PASS: %s %s %s" % (operation, object_size, rdelta))
-         #   elif rdelta < -5 and rdelta > -10:
-         #       print ("WARN: %s %s %s" % (operation, object_size, rdelta))
-         #   elif rdelta < -10:
-         #       print ("FAILED: %s %s %s" % (operation, object_size, rdelta))
-
-            #print json.dumps(c_results, indent=1)
+            c_results["_id"] = hashlib.md5(json.dumps(c_results)).hexdigest()
             a = copy.deepcopy(c_results)
             actions.append(a)
+            
+    c_results = copy.deepcopy(result_doc)
+    average_delta = round((sum(average_delta_list)/len(average_delta_list)), 3)
+    c_results['_source']['average_delta'] = average_delta
+    c_results["_id"] = hashlib.md5(json.dumps(c_results)).hexdigest()
+    a = copy.deepcopy(c_results)
+    actions.append(a)
 
     deque(helpers.parallel_bulk(es, actions, chunk_size=250, thread_count=1, request_timeout=60), maxlen=0)
 
