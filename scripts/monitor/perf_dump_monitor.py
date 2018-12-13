@@ -82,14 +82,6 @@ class ssh_remote_command():
             stdin, stdout, stderr = self.sshclient.exec_command(command)
             
             output = stdout.readlines()
-            #remove trailing \n
-            formated_output = []
-            for i in output:
-                print i
-                i = i.strip('\n')
-                i = i.replace('"', "", 0)
-                formated_output.append(i)
-            
             self.sshclient.close()
             return i
         
