@@ -31,7 +31,7 @@ def main():
     print json.dumps(osd_host_dict, indent=4)
     
     for host in osd_host_dict:
-     collect_measurement(remoteclient, host, osd_host_dict[host], 1, 10, start_time)
+     collect_measurement(remoteclient, host, osd_host_dict[host], 1, 60, start_time)
         
 def collect_measurement(remoteclient, host, osd_list, duration, time_interval, start_time):
     
@@ -53,14 +53,14 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
         for osd in osd_list:
             print "osd %s" % osd
             perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)   
-            print perf_dump
+            print json.dumps(perf_dump, indent=4)
         #sleep after you have collected perf dump
         collection_delta_time = collection_time - datetime.datetime.now()
         print collection_delta_time
         print time_interval
         print datetime.timedelta(seconds=time_interval)
         print collection_delta_time.seconds
-        remainder = datetime.timedelta(seconds=time_interval) - datetime.timedelta(seconds=collection_delta_time)  
+        remainder = datetime.timedelta(seconds=time_interval) - collection_delta_time  
         
         print "going to sleep for %s" % remainder
         if remainder < 0:
