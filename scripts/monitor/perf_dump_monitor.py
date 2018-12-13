@@ -30,9 +30,9 @@ def main():
     print json.dumps(osd_host_dict, indent=4)
     
     for host in osd_host_dict:
-     collect_measurement(host, 1, 10)
+     collect_measurement(host, osd_host_dict[host] 1, 10, start_time)
         
-def collect_measurement(host, duration, time_interval):
+def collect_measurement(host, osd_list, duration, time_interval, start_time):
     
     perf_dump_data = {
             "_index": "ceph_perf_dump_data_index",
@@ -41,7 +41,8 @@ def collect_measurement(host, duration, time_interval):
             "_source": {}
             }
     
-    while time_delta_s < duration:
+    elapsed_time = 0
+    while elapsed_time < duration:
         collection_time = time.time() 
         elapsed_time = collection_time - start_time
         
