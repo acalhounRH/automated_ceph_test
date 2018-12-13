@@ -86,7 +86,7 @@ class ssh_remote_command():
             formated_output = []
             for i in output:
                 i = i.strip('\n')
-                i = i.replace('"', "", 1)
+                i = i.replace('"', "", 0)
                 formated_output.append(i)
             
             self.sshclient.close()
