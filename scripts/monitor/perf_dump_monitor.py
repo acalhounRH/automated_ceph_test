@@ -47,7 +47,7 @@ def Collect_measurement(host, duration, time_interval):
         #collect the performance measurements 
         for osd in osd_list:
         
-          perf_dump  remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)
+          perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)
         
             
         
