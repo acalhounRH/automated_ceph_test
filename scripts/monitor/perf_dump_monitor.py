@@ -1,3 +1,5 @@
+#! /usr/bin/python
+
 import yaml, os, time, json, hashlib, paramiko
 import socket, datetime, logging, rados, ipaddress
 from paramiko import SSHClient
