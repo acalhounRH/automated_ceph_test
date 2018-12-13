@@ -60,14 +60,14 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
         print time_interval
         print datetime.timedelta(seconds=time_interval)
         print collection_delta_time.seconds
-        remainder = datetime.timedelta(seconds=time_interval) - collection_delta_time  
+        remainder = datetime.timedelta(seconds=time_interval) - collection_delta_time
         
         print "going to sleep for %s" % remainder
-        if remainder < 0:
+        if remainder.seconds < 0:
             print "taking too ling"
-            time.sleep(remainder)
+            time.sleep(remainder.seconds)
         else: 
-            time.sleep(remainder) #time_interval
+            time.sleep(remainder.seconds) #time_interval
 
 class ssh_remote_command():
     def __init__(self):
