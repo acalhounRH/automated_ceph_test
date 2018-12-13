@@ -85,6 +85,7 @@ class ssh_remote_command():
             #remove trailing \n
             formated_output = []
             for i in output:
+                print i
                 i = i.strip('\n')
                 i = i.replace('"', "", 0)
                 formated_output.append(i)
