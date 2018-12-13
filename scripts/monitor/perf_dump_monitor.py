@@ -21,7 +21,7 @@ def main():
     host_list = []
     osd_host_dict = {}
     for host in osd_metadata_list:
-        if host["hostname"] not in host_list:
+        if host["hostname"] not in osd_host_dict:
             osd_host_dict[host["hostname"]] = []
             osd_host_dict[host["hostname"]].append(host["id"])
         else:
