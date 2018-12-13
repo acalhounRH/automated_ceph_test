@@ -42,17 +42,21 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
             }
     
     elapsed_time = 0
+    print "working on host % " % host
+    
     while elapsed_time < duration:
         collection_time = time.time() 
         elapsed_time = collection_time - start_time
         
         #collect the performance measurements 
         for osd in osd_list:
-        
-          perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)   
-          print perf_dump
+            print "osd %s" % osd
+            perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)   
+            print perf_dump
         #sleep after you have collected perf dump
         remainder = collection_time - time_interval
+        
+        print "going to sleep for %s" % remainder
         if remainder < 0:
             print "taking too ling"
             tine.sleep(remainder)
