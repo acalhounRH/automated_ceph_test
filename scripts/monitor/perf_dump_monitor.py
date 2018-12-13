@@ -16,7 +16,7 @@ def main():
     #get metadata list of all osds
     osd_metadata_list = acitve_ceph_client.issue_command("osd metadata")
     
-    start_time = datetime.datetime()
+    start_time = datetime.datetime.now() 
     elapsed_time = 0 
     
     host_list = []
@@ -46,7 +46,7 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
     print "working on host %s " % host
     
     while elapsed_time < duration:
-        collection_time = datetime.datetime() 
+        collection_time = datetime.datetime.now() 
         elapsed_time = collection_time - start_time
         
         #collect the performance measurements 
@@ -55,7 +55,7 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
             perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)   
             print perf_dump
         #sleep after you have collected perf dump
-        collection_delta_time = collection_time - datetime.datetime()
+        collection_delta_time = collection_time - datetime.datetime.now() 
         remainder = datetime.timedelta(seconds=time_interval) - collection_delta_time  
         
         print "going to sleep for %s" % remainder
