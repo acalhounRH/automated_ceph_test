@@ -11,15 +11,21 @@
 # this makes troubleshooting a pipeline much easier for the user
 
 script_dir=$HOME/automated_ceph_test/
+NOTOK=1
+
+# ensure autossh is installed before doing anything
+which autossh || exit $NOTOK
 
 lowercase_agent_name=`echo "$agent_name" | awk '{print tolower($0)}'`
 
-if [[ `grep $lowercase_agent_name ~/agent_list` ]]; then
-	echo "Agent name already in use, aborting!"
-    exit 1
+if [[ `grep "^${lowercase_agent_name}=" ~/agent_list` ]]; then
+	echo 'Agent name already in use, aborting!'
+    exit $NOTOK
 fi
-
-
+if [[ `grep "=${agent_host}" ~/agent_list` ]] ; then 
+    echo 'Agent host already in use, aborting'
+    exit $NOTOK
+fi
 #check if agent host have was specified, if it was the assumption is that its an internal host.
 if [ ! -z "$agent_host" ]; then
 	#assumption is that ssh keys have been copied and placed on agent and all cluster servers
@@ -43,13 +49,13 @@ else
 	jenkins_agent=`python2 ./scripts/utils/create_linode_agent.py`
 	
 	if [ -Z $jenkins_agent ]; then
-		echo "Failed to retrive agent hostname"
-		exit 1
+		echo "Failed to retrieve agent hostname"
+		exit $NOTOK
 	fi
 
 	if [ "$jenkins_agent" == "jenkins agent already created" ]; then
     	echo "Linode Jenkins agent already exists!"
-		exit 1 
+		exit $NOTOK
 	fi
 	echo "*****************************"
 fi
@@ -68,7 +74,7 @@ echo "$new_host" >> $HOME/.ssh/config
 
 # automatic port ranges, 0-2, 3-5, 6-8, etc
 #only need three ports to forward, 1 jenkings master, 2 jenkins client, 3 elasticsearch 
-jenkins_masater_port=0
+jenkins_master_port=0
 jenkins_client_port=2
 elasticsearch_port=4
 
@@ -80,7 +86,7 @@ for i in {0..101}; do #allows for about 100 agents, dont expect this to happen.
         exit 1
     fi
     
-	port_range="${jenkins_masater_port}-${elasticsearch_port}"
+	port_range="${jenkins_master_port}-${elasticsearch_port}"
 	#check if current range is not used, if so use specified port ranges and add them to file
     #then break out of loop.
     
@@ -89,14 +95,14 @@ for i in {0..101}; do #allows for about 100 agents, dont expect this to happen.
     	break
     else
 		#increment all three ports by three
-		jenkins_masater_port=$((jenkins_masater_port+3))
+		jenkins_master_port=$((jenkins_master_port+3))
 		jenkins_client_port=$((jenkins_client_port+3))
 		elasticsearch_port=$((elasticsearch_port+3))
 	fi
 done
 
 # need to store active ports 
-(( port1 = 20000 + $jenkins_masater_port ))
+(( port1 = 20000 + $jenkins_master_port ))
 (( port2 = 30000 + $jenkins_client_port ))
 (( port3 = 40000 + $elasticsearch_port ))
 echo "STARTING AUTOSSH"

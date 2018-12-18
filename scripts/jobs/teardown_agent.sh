@@ -12,7 +12,8 @@
 
 script_dir=$HOME/automated_ceph_test/
 
-host=`grep $agent_name ~/agent_list |awk -F'=' '{print $2}'`
+# make sure you only match exactly that agent name
+host=`grep "^${agent_name}=" ~/agent_list |awk -F'=' '{print $2}'`
 
 if [ -z $host ]; then
 	echo "host for $agent_name is not in agent_list"
@@ -36,14 +37,15 @@ if [[ $host == *"linode.com"* ]]; then
     `python2 ./scripts/utils/remove_linode_agent.py`
 else 
 	#issue ssh remote command to destory swam-client
-	ssh $host " pkill -f swarm-client"
+	ssh $host " pkill -f -- swarm-client"
 fi 
 #issue pkill command, command will kill command with full process name containing host
+#make sure you match only that one
 #SIGTERM
-pkill -f $host
+pkill -f -- "-N $host "
 
 #remove host from agent_list, create back up just in case
-sed -i.bak "/$agent_name/d" ~/agent_list
+sed -i.bak "/^$agent_name=/d" ~/agent_list
 
 #remove host from agent_port_range file, create back up just in case
-sed -i.bak "/$agent_name/d"  ~/agent_port_range
+sed -i.bak "/^$agent_name=/d"  ~/agent_port_range
