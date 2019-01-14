@@ -168,9 +168,8 @@ fi
 
 # find out about first monitor
 
-export first_mon=`ansible --list-host mons |grep -v hosts | grep -v ":" | head -1`
-export first_mon_ip=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["ansible_ssh_host"] }}' localhost | grep -v localhost`
-
+export first_mon=`ansible --list-host mons |grep -v hosts | grep -v ":" | head -1 | sed 's/ //g'`
+export first_mon_ip=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["inventory_hostname"] }}' localhost | grep -v localhost | sed 's/ //g'`
 ansible -m script -a "$script_dir/scripts/utils/check_cluster_status.py" $first_mon \
  || exit $NOTOK
 
