@@ -83,7 +83,7 @@ def main ():
            assert(root[u'SIZE'] == int(root_size))
            disks.append({u'DiskID': root[u'DISKID']})
         else:
-           disks.append(client.linode_disk_createfromdistribution(LinodeID = node[u'LinodeID'], Label = u'root', DistributionID = distribution, rootPass = "linoj", Size = root_size, rootSSHKey = SSH_KEY))
+           disks.append(client.linode_disk_createfromdistribution(LinodeID = node[u'LinodeID'], Label = u'root', DistributionID = distribution, rootPass = "linoj666", Size = root_size, rootSSHKey = SSH_KEY))
         swap = filter(lambda d: d[u'LABEL'] == u'swap', current_disks)
         if swap:
            swap = swap[0]
