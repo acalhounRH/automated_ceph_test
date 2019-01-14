@@ -146,7 +146,7 @@ fi
 
 # should not have to disable firewall in Ceph after RHCS 3.1
 
-if [ "$disable_firewall" = 1 ] ; then
+if [ "$disable_firewall" = "true" ] ; then
     ansible -m shell -a \
       '(systemctl stop firewalld && systemctl disable firewalld) || (systemctl stop iptables && systemctl disable iptables)' all  \
     || exit $NOTOK
