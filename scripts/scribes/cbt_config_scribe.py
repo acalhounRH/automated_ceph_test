@@ -33,11 +33,11 @@ class cbt_config_transcriber:
                 
     def load_host_map(self, hostmap_file):
         logger.info("Loading %s" % hostmap_file)
-        print hostmap_file
+        #print hostmap_file
         with open(hostmap_file) as f:
             self.host_map = json.loads(f.read())
         
-        print json.dumps(self.host_map, indent=4)
+        #print json.dumps(self.host_map, indent=4)
             
     def set_host_type_list(self):
         
@@ -86,7 +86,7 @@ class cbt_config_transcriber:
         ceph_role_list = ['mds', 'mon', 'osd', 'mgr']
         for role in ceph_role_list:
             host_role_list = self.acitve_ceph_client.issue_command("%s metadata" % role)
-            print json.dumps(host_role_list, indent=4)
+            #print json.dumps(host_role_list, indent=4)
             
             if len(host_role_list) > 0:
                 for role_info in host_role_list:
@@ -147,7 +147,7 @@ class cbt_config_transcriber:
         dataWriter.write(json.dumps(self.host_map, indent=4))
         dataWriter.close()
             
-        print json.dumps(self.host_map, indent=4)
+        #print json.dumps(self.host_map, indent=4)
         
     def get_fqdn(self, remoteclient, host):
         
