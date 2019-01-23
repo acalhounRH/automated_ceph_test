@@ -1,13 +1,14 @@
 #! /usr/bin/python
 
-import yaml, os, time, json, hashlib, paramiko, ast
-import socket, datetime, logging, rados, ipaddress
+import yaml, os, time, json, hashlib, paramiko, ast, sys
+import socket, datetime, logging, rados, ipaddress, getopt
+import multiprocessing
 from paramiko import SSHClient
 from datetime import date
 
-logger = logging.getLogger("index_cbt")
-
 def main():
+#    setup_loggers("index_perf_dump", logging.DEBUG)
+    arguments = argument_handler()
     #setup client connection to ceph
     acitve_ceph_client = ceph_client()
     #setup ssh remote command 
@@ -21,20 +22,70 @@ def main():
     
     host_list = []
     osd_host_dict = {}
+    #create mapping of each osd and the host it is deployed on
     for host in osd_metadata_list:
         if host["hostname"] not in osd_host_dict:
             osd_host_dict[host["hostname"]] = []
             osd_host_dict[host["hostname"]].append(host["id"])
         else:
             osd_host_dict[host["hostname"]].append(host["id"])
+
+
+#########
             
-#    print json.dumps(osd_host_dict, indent=4)
-    
-    for host in osd_host_dict:
-     collect_measurement(remoteclient, host, osd_host_dict[host], 1, 60, start_time)
+    #for each host run the collect measurement method
+    td_duration = datetime.timedelta(seconds=arguments.duration)
+    print td_duration.seconds
+
+    manager = multiprocessing.Manager()
+    return_list = manager.list()
+
+    monitor_status = True
+    while monitor_status:
+        collection_time = datetime.datetime.now()
+#        elapsed_time = collection_time - start_time
+        print elapsed_time
         
-def collect_measurement(remoteclient, host, osd_list, duration, time_interval, start_time):
+        #For each host spwan a subprocess and retrive perf dump
+        process_list = []
+        for host in osd_host_dict:
+            p = multiprocessing.Process(target=collect_measurement, args=(remoteclient, host, osd_host_dict[host], return_list))
+            process_list.append(p)
+
+        for process in process_list:
+            process.start()
+
+        for process in process_list:
+            process.join()
+
+       # print "finished collecting sample"
+        collection_delta_time = datetime.datetime.now() - collection_time
+        
+        #collection period - collection time delta
+        remainder = datetime.timedelta(seconds=arguments.sample_period) - collection_delta_time
+        elapsed_time = datetime.datetime.now() - start_time
+
+        print "going to sleep for %s seconds" % remainder.seconds
+        if remainder.seconds < 0:
+            print "taking too ling"
+            time.sleep(remainder.seconds)
+        else:
+            time.sleep(remainder.seconds) #time_interval
+
+        #if the elapsed time is greater than the specified duration quit. 
+        if elapsed_time.seconds > td_duration.seconds:
+            print "all done monitoring"
+            monitor_status = False
+        else:
+            print "keep on monitoring"
+
+    f = open("ceph-osd-perf-dump.txt", 'w')
+    f.write(json.dumps(list(return_list), indent=1))
+    f.close()
+
     
+def collect_measurement(remoteclient, host, osd_list, return_list):
+    print "started collection" 
     perf_dump_data = {
             "_index": "ceph_perf_dump_data_index",
             "_type": "ceph_perf_dump_data",
@@ -42,39 +93,18 @@ def collect_measurement(remoteclient, host, osd_list, duration, time_interval, s
             "_source": {}
             }
     
-    elapsed_time = datetime.timedelta(seconds=0)
     print "working on host %s " % host
-    td_duration = datetime.timedelta(seconds=duration)
-    print td_duration.seconds
-    f = open("perf-dump.txt", 'w')
-    while elapsed_time.seconds < td_duration.seconds:
-        collection_time = datetime.datetime.now() 
-        elapsed_time = collection_time - start_time
-        print elapsed_time
-        
         #collect the performance measurements 
-        for osd in osd_list:
-            print "osd %s" % osd
-            perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)   
-            #print perf_dump
-            f.write(json.dumps(perf_dump, indent=4))
-            print json.dumps(perf_dump, indent=4)
-        #sleep after you have collected perf dump
-        #collection_delta_time = collection_time - datetime.datetime.now()
-        collection_delta_time = datetime.datetime.now() - collection_time
-#        print collection_delta_time
-#        print time_interval
-#        print datetime.timedelta(seconds=time_interval)
-#        print collection_delta_time.seconds
-        remainder = datetime.timedelta(seconds=time_interval) - collection_delta_time
+    for osd in osd_list:
         
-        print "going to sleep for %s" % remainder.seconds
-        if remainder.seconds < 0:
-            print "taking too ling"
-            time.sleep(remainder.seconds)
-        else: 
-            time.sleep(remainder.seconds) #time_interval
-    f.close()
+        perf_dump = remoteclient.issue_command(host, "ceph daemon osd.%s perf dump" % osd)
+        tmp_doc = { "data": perf_dump }
+        collection_time = datetime.datetime.now()
+        tmp_doc["date"] = collection_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        tmp_doc["hostname"] = host
+        tmp_doc["osd_id"] = osd
+        perf_dump_data["_source"] = tmp_doc
+        return_list.append(perf_dump_data)
 
 class ssh_remote_command():
     def __init__(self):
@@ -92,13 +122,9 @@ class ssh_remote_command():
 
             for line in output:
                 combinded_ouput.append(line.strip())
-            #newstuff = "[%s]" % ''.join(combinded_ouput)
+            
             newstuff = ''.join(combinded_ouput)
-#            print newstuff
             self.sshclient.close()
-#            output = ''.join(output)
-#            output = output.strip()
-#            return output
             brandnewstuff = ast.literal_eval(newstuff)
             return brandnewstuff
         
@@ -136,6 +162,44 @@ class ceph_client():
             return json.loads(output)
         except Exception as e:
             logger.error("Error issuing command, %s" % command)
-            
+    
+class argument_handler():
+    def __init__(self):
+        self.duration = 0
+        self.sample_period = 0
+        self.output_file=None
+        
+        usage = """ 
+                Usage:
+                    index_cbt.py -t <test id> -h <host> -p <port>
+                    
+                    -d or --duration - test duration
+                    -s or --sample_period - sample period 
+                    -o of --output_dir - output directory (default is current working directory)
+                """
+        try:
+            opts, _ = getopt.getopt(sys.argv[1:], 'd:s:o:', ['output_file', 'duration=', 'sample_period_'])
+        except getopt.GetoptError:
+            print usage 
+            exit(1)
+    
+        for opt, arg in opts:
+            if opt in ('-d', '--duration'):
+                self.duration = int(arg)
+            if opt in ('-s', '--sample'):
+                self.sample_period = int(arg)
+            if opt in ('-o', '--output_dir'):
+                self.output_dir = "./"
+        
+        if self.duration and self.sample_period:
+            print("monitoring duration %s, Sample Period, %s" % (self.duration, self.sample_period))
+        else:
+            print(usage)
+            print self.duration, self.sample_period
+    #        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
+            exit (1)
+    
+
+        
 if __name__ == '__main__':
     main()
