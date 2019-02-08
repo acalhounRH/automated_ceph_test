@@ -47,7 +47,7 @@ mkdir -m0777 /ceph-ansible-keys
 cp $script_dir/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
 mkdir -p /mnt/rhcs_latest/
 umount /mnt/rhcs_latest/
-mount $script_dir/staging_area/rhcs_latest/RHCEPH* /mnt/rhcs_latest/
+mount $script_dir/staging_area/rhcs_latest/$new_ceph_iso_file /mnt/rhcs_latest/
 yum clean all
 
 # install precise ansible version if necessary
