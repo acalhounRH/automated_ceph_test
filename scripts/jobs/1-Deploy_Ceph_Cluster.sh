@@ -75,11 +75,9 @@ sed -i 's/gpgcheck=1/gpgcheck=0/g' /usr/share/ceph-ansible/roles/ceph-common/tem
 # provide inputs to ceph-ansible
 
 mkdir -p $script_dir/staging_area/tmp
-echo "$ceph_ansible_all_config" > $script_dir/staging_area/tmp/all.yml
-sed -i "s/<ceph_iso_file>/$new_ceph_iso_file/g" $script_dir/staging_area/tmp/all.yml
-cp $script_dir/staging_area/tmp/all.yml /usr/share/ceph-ansible/group_vars/all.yml
-echo "$ceph_ansible_osds_config" > $script_dir/staging_area/tmp/osds.yml
-cp $script_dir/staging_area/tmp/osds.yml /usr/share/ceph-ansible/group_vars/osds.yml
+echo "$ceph_ansible_all_config" > /usr/share/ceph-ansible/group_vars/all.yml
+sed -i "s/<ceph_iso_file>/$new_ceph_iso_file/g" /usr/share/ceph-ansible/group_vars/all.yml
+echo "$ceph_ansible_osds_config" > /usr/share/ceph-ansible/group_vars/osds.yml
 ln -svf /usr/share/ceph-ansible/site.yml.sample /usr/share/ceph-ansible/site.yml
 
 if [ -n "$linode_cluster" ] ; then
