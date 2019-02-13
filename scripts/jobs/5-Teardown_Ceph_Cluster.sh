@@ -75,7 +75,8 @@ if [ -z "$called_from_deploy" ] ; then
         export ANSIBLE_DEBUG_CALLBACK=stdout
         export ANSIBLE_INVENTORY=~/automated_ceph_test/ansible_inventory
         cd /usr/share/ceph-ansible
-        ansible-playbook -v -e ireallymeanit=yes infrastructure-playbooks/purge-cluster.yml || exit 1
+        cp infrastructure-playbooks/purge-cluster.yml .
+        ansible-playbook -v -e ireallymeanit=yes purge-cluster.yml || exit 1
         ansible -v -m shell -a 'lsblk' all
     fi
   fi
