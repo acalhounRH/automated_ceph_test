@@ -162,7 +162,9 @@ if [ -n "$linode_cluster" ] ; then
     /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible || exit $NOTOK
 else
     # not linode
-    cd /usr/share/ceph-ansible ; ansible-playbook -v site.yml.sample || exit $NOTOK
+    ANSIBLE_STRATEGY=debug;
+    cd /usr/share/ceph-ansible
+    ansible-playbook -vv site.yml.sample || exit $NOTOK
 fi
 
 # find out about first monitor
