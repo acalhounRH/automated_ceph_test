@@ -34,6 +34,7 @@ export ANSIBLE_INVENTORY=$inventory_file
 #yum remove ceph-base ceph-ansible ansible librados2 -y
 #rm -rf /usr/share/ceph-ansible
 #rm -f /etc/ceph/ceph.conf /etc/ceph/ceph.client.admin.keyring
+yum install -y yum-utils
 yum-config-manager --disable epel
 
 cd $script_dir/staging_area/rhcs_latest/
@@ -161,7 +162,7 @@ if [ -n "$linode_cluster" ] ; then
     /bin/bash +x ./launch.sh --ceph-ansible /usr/share/ceph-ansible || exit $NOTOK
 else
     # not linode
-    (cd /usr/share/ceph-ansible ; ansible-playbook -v site.yml.sample || exit $NOTOK)
+    cd /usr/share/ceph-ansible ; ansible-playbook -v site.yml.sample || exit $NOTOK
 fi
 
 # find out about first monitor
