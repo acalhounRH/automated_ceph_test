@@ -47,9 +47,9 @@ pipeline {
             }
             stage('Test') {
                 steps {
-                	environment {
-               			name 'starttime', value: currentBuild.getTimeInMillis()
-               		}
+                	script {
+                    	export stoptime = currentBuild.getTimeInMillis()
+                	}
 
                 	
                     build job: '3-CBT_Automated_Testing', parameters: [
@@ -58,8 +58,8 @@ pipeline {
                         text(name: 'cbt_settings', value: "$settings"),
                         [$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], , nodeEligibility: [$class: 'AllNodeEligibility']]]
                         
-                    environment {
-                		name 'stoptime', value: currentBuild.getTimeInMillis()
+      		      	script {
+                    	export stoptime = currentBuild.getTimeInMillis()
                 	}
                 }
             }
