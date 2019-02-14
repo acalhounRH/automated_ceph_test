@@ -54,8 +54,9 @@ pipeline {
                 	
                     build job: '3-Automated_Testing', parameters: [
                         booleanParam(name: 'linode_cluster', value: false),
-                        string(name: 'cbt_archive_dir', value: "/var/lib/pbench-agent/$Test_ID"),
-                        text(name: 'cbt_settings', value: "$settings"),
+                        string(name: 'benchmark', value: "$benchmark"),
+                        string(name: 'archive_dir', value: "/var/lib/pbench-agent/$Test_ID"),
+                        text(name: 'settings', value: "$settings"),
                         [$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], , nodeEligibility: [$class: 'AllNodeEligibility']]]
                         
       		      	script {

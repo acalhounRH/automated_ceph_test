@@ -21,15 +21,15 @@ fi
 source /etc/profile.d/pbench-agent.sh
 mkdir -p $HOME/cbt/jenkins_jobfiles/
 jobfiles_dir=$HOME/cbt/jenkins_jobfiles/
-echo "$cbt_settings" > $jobfiles_dir/automated_test.yml
+echo "$settings" > $jobfiles_dir/automated_test.yml
 
 $script_dir/scripts/utils/addhost_to_jobfile.sh $jobfiles_dir/automated_test.yml $inventory_file
 
 echo "################Jenkins Job File################"
 cat $jobfiles_dir/automated_test.yml
 
-sudo mkdir -m 777 $cbt_archive_dir
-$HOME/cbt/cbt.py $jobfiles_dir/automated_test.yml -a $cbt_archive_dir
+sudo mkdir -m 777 $archive_dir
+$HOME/cbt/cbt.py $jobfiles_dir/automated_test.yml -a $archive_dir
 
 echo "role_to_hostnames [ " > $cbt_archive_dir/results/ansible_facts.json
 ansible all -m setup -i $inventory_file | sed -s 's/ | SUCCESS => /"&/' | sed -s 's/ | SUCCESS => /": /' | sed -s 's/},/}/' | sed -s 's/}/},/' >> $cbt_archive_dir/results/ansible_facts.json
