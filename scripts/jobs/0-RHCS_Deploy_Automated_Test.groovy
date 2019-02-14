@@ -52,7 +52,7 @@ pipeline {
                 	}
 
                 	
-                    build job: '3-CBT_Automated_Testing', parameters: [
+                    build job: '3-Automated_Testing', parameters: [
                         booleanParam(name: 'linode_cluster', value: false),
                         string(name: 'cbt_archive_dir', value: "/var/lib/pbench-agent/$Test_ID"),
                         text(name: 'cbt_settings', value: "$settings"),
@@ -97,9 +97,9 @@ pipeline {
             }
             failure {
                 node ('master') {
-                    mail to: 'acalhoun@redhat.com',
-                    subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
-                    body: "Something is wrong with ${env.BUILD_URL}"
+                    emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+            		recipientProviders:[[$class: 'RequesterRecipientProvider']],
+            		subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
                 }
             }
         }
