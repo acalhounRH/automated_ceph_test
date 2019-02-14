@@ -47,9 +47,9 @@ pipeline {
             }
             stage('Test') {
                 steps {
-                	script {
-                    	def starttime = currentBuild.getTimeInMillis()
-                	}
+                
+               		env.starttime = currentBuild.getTimeInMillis()
+
                 	
                     build job: '3-CBT_Automated_Testing', parameters: [
                         booleanParam(name: 'linode_cluster', value: false),
@@ -57,9 +57,7 @@ pipeline {
                         text(name: 'cbt_settings', value: "$CBT_settings"),
                         [$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], , nodeEligibility: [$class: 'AllNodeEligibility']]]
                         
-                	script {
-                    	def stoptime = currentBuild.getTimeInMillis()
-                	}
+                	env.stoptime = currentBuild.getTimeInMillis()
                 }
             }
             stage('Analysis') {
@@ -89,7 +87,10 @@ pipeline {
             success {
                 node ('master') {
                     emailext 
-                    body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}\n Visualization of results can be found ${here, path="http://famine.perf.lab.eng.bos.redhat.com:3000/d/wXlLG4hik/rbd-experimental-dashboards?orgId=1&from=${starttime}&to=${stoptime}&var-Test_ID=${Test_ID}&var-time_interval=\$__auto_interval_time_interval&var-Operation=All&var-object_size=All"}",
+                    body: "
+                     ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n
+                     More info at: ${env.BUILD_URL}\n
+                     Visualization of results can be found ${here, path="http://famine.perf.lab.eng.bos.redhat.com:3000/d/wXlLG4hik/rbd-experimental-dashboards?orgId=1&from=${env.starttime}&to=${env.stoptime}&var-Test_ID=${Test_ID}&var-time_interval=\$__auto_interval_time_interval&var-Operation=All&var-object_size=All"}",
             		recipientProviders:[[$class: 'RequesterRecipientProvider']],
             		subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
                 }
