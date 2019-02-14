@@ -59,7 +59,7 @@ pipeline {
                         [$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], , nodeEligibility: [$class: 'AllNodeEligibility']]]
                         
                     environment {
-                		name: 'stoptime', value: currentBuild.getTimeInMillis()
+                		name 'stoptime', value: currentBuild.getTimeInMillis()
                 	}
                 }
             }
