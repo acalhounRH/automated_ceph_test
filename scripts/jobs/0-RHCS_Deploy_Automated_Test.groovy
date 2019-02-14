@@ -92,7 +92,7 @@ pipeline {
                 node ('master') {
                     emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}\n Visualization of results can be found here http://famine.perf.lab.eng.bos.redhat.com:3000/d/wXlLG4hik/rbd-experimental-dashboards?orgId=1&from=${env.starttime}&to=${env.stoptime}&var-Test_ID=${Test_ID}&var-time_interval=\$__auto_interval_time_interval&var-Operation=All&var-object_size=All",
             		recipientProviders:[[$class: 'RequesterRecipientProvider']],
-            		subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+            		subject: "JBuild ${currentBuild.currentResult}: ${Test_ID}""
                 }
                         
             }
@@ -100,7 +100,7 @@ pipeline {
                 node ('master') {
                     emailext body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
             		recipientProviders:[[$class: 'RequesterRecipientProvider']],
-            		subject: "Jenkins Build ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+            		subject: "Build ${currentBuild.currentResult}: ${Test_ID}"
                 }
             }
         }
