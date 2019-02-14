@@ -47,8 +47,9 @@ pipeline {
             }
             stage('Test') {
                 steps {
-                
-               		env.starttime = currentBuild.getTimeInMillis()
+                	environment {
+               			starttime = currentBuild.getTimeInMillis()
+               		}
 
                 	
                     build job: '3-CBT_Automated_Testing', parameters: [
@@ -57,7 +58,9 @@ pipeline {
                         text(name: 'cbt_settings', value: "$settings"),
                         [$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], , nodeEligibility: [$class: 'AllNodeEligibility']]]
                         
-                	env.stoptime = currentBuild.getTimeInMillis()
+                    environment {
+                		stoptime = currentBuild.getTimeInMillis()
+                	}
                 }
             }
             stage('Analysis') {
