@@ -2,6 +2,9 @@ pipeline {
     agent {label 'master'}
         stages {
                 stage('Build') {
+                	when {
+                		environment name: 'Deploy', value: 'true'
+                		}
                     steps {
                                 build job: '1A-Push_SW_To_Remote_Agent', parameters: [
                                     string(name: 'ceph_iso_file', value: "$iso_file"),
@@ -55,7 +58,7 @@ pipeline {
                     steps{
                         build job: '4-Perform_Analysis', parameters: [
                             string(name: 'Test_ID', value: "$Test_ID"),
-                            string(name: 'archive_dir', value: "$archive_dir"),
+                            string(name: 'archive_dir', value: "/var/lib/pbench-agent/$Test_ID"),
                             string(name: 'elasticsearch_host', value: "$elasticsearch_host"),
                             string(name: 'elasticsearch_port', value: '9200'),
                             [$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], , nodeEligibility: [$class: 'AllNodeEligibility']]]
