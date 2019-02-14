@@ -35,7 +35,7 @@ ls
 
 # clear out ceph-ansible staging area
 
-ssh $agenthostname " 
+ssh root@$agenthostname " 
 	hostname
 	cd ~/automated_ceph_test/staging_area
 	mkdir -pv rhcs_latest rhcs_old || exit 1
@@ -46,7 +46,7 @@ ssh $agenthostname "
 # copy iso to agent
 
 echo "###################### $new_ceph_iso_file $agenthostname"
-scp $new_ceph_iso_file $agenthostname:~/automated_ceph_test/staging_area/rhcs_latest || exit 1
+scp $new_ceph_iso_file root@$agenthostname:~/automated_ceph_test/staging_area/rhcs_latest || exit 1
 
 # remove local dir
 
@@ -84,11 +84,11 @@ if [ -n "$version_adjust_repo" ] ; then
 
   # either all these commands work or the job exits with failure status
 
-  (ssh $agenthostname "rm -rf $version_adjust_name" && \
-   scp -r $version_adjust_dir/$version_adjust_name $agenthostname: && \
-   ssh $agenthostname "ln -svf \$HOME/$version_adjust_name/version_adjust.repo /etc/yum.repos.d/") \
+  (ssh root@$agenthostname "rm -rf $version_adjust_name" && \
+   scp -r $version_adjust_dir/$version_adjust_name root@$agenthostname: && \
+   ssh root@$agenthostname "ln -svf \$HOME/$version_adjust_name/version_adjust.repo /etc/yum.repos.d/") \
      || exit 1
 else
-  ssh $agenthostname "rm -fv /etc/yum.repos.d/version_adjust.repo"
+  ssh root@$agenthostname "rm -fv /etc/yum.repos.d/version_adjust.repo"
 fi
-ssh $agenthostname 'yum clean all'
+ssh root@$agenthostname 'yum clean all'
