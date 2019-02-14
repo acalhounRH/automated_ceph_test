@@ -48,7 +48,7 @@ pipeline {
             stage('Test') {
                 steps {
                 	script {
-                    	env.starttime = currentBuild.getTimeInMillis()
+                    	env.starttime = System.currentTimeMillis()
                 	}
 
                 	
@@ -59,7 +59,7 @@ pipeline {
                         [$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], , nodeEligibility: [$class: 'AllNodeEligibility']]]
                         
       		      	script {
-                    	 env.stoptime = currentBuild.getTimeInMillis()
+                    	 env.stoptime = System.currentTimeMillis()
                 	}
                 }
             }
