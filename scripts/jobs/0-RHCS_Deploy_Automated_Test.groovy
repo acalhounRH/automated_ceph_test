@@ -64,15 +64,20 @@ pipeline {
                             [$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], , nodeEligibility: [$class: 'AllNodeEligibility']]]
                         }
                 }
+                stage('Teardown') {
+                	when {
+                		environment name: 'Teardown', value: 'true'
+                	}
+                	steps{
+	                	build job:'5-Teardown_Ceph_Cluster', parameters: [
+	                    	password(description: 'Linode API Key', name: 'Linode_API_Key', value: "$Linode_API_Key"), 
+	                    	string(name: 'teardown_delay_minutes', value: "$teardown_delay_minutes"), 
+	                    	text(name: 'preexisting_ansible_inventory', value: "$ceph_inventory"),
+	                    	[$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], nodeEligibility: [$class: 'AllNodeEligibility']]]
+	               	}
+                }
         }
         post {
-                always {
-                  build job:'5-Teardown_Ceph_Cluster', parameters: [
-                      password(description: 'Linode API Key', name: 'Linode_API_Key', value: "$Linode_API_Key"), 
-                      string(name: 'teardown_delay_minutes', value: "$teardown_delay_minutes"), 
-                      text(name: 'preexisting_ansible_inventory', value: "$ceph_inventory"),
-                      [$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], nodeEligibility: [$class: 'AllNodeEligibility']]]
-                }
                 success {
                     node ('master') {
                         mail to: 'acalhoun@redhat.com',
