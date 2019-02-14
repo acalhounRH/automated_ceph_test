@@ -65,7 +65,7 @@ pipeline {
                     build job: '4-Perform_Analysis', parameters: [
                         string(name: 'Test_ID', value: "$Test_ID"),
                         string(name: 'archive_dir', value: "/var/lib/pbench-agent/$Test_ID"),
-                        string(name: 'elasticsearch_host', value: "$elasticsearch_host"),
+                        string(name: 'elasticsearch_host', value: 'localhost'),
                         string(name: 'elasticsearch_port', value: '9200'),
                         [$class: 'NodeParameterValue', name: 'agentName', labels: ["$node"], , nodeEligibility: [$class: 'AllNodeEligibility']]]
                     }
