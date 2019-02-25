@@ -27,8 +27,8 @@ def main ():
     DISK_SIZE_GB=24
     BOOT_SIZE=DISK_SIZE_GB*1024-SWAP_SIZE_MB
 
-
-    client = linapi.Api(os.environ['LINODE_API_KEY'])
+    key = os.environ['LINODE_API_KEY']
+    client = linapi.Api(key = key, batching = False)
 
     datacenters = client.avail_datacenters()
     plans = client.avail_linodeplans()
