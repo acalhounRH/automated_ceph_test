@@ -62,9 +62,9 @@ fi
 #for this to work reliably
 # break this up into separate installs so yum doesn't choke
 
-yum install ceph-fuse -y
-yum install ceph-common -y
-yum install ceph-ansible -y
+#yum install ceph-fuse -y
+#yum install ceph-common -y
+#yum install ceph-ansible -y
 yum install ceph-fuse ceph-common ceph-ansible -y || exit $NOTOK
 
 # disable key checking in Ceph RPMs to avoid need for 
