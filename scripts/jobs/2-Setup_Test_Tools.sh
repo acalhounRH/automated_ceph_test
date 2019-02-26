@@ -10,9 +10,21 @@
 # Jenkins will stop the pipeline immediately,
 # this makes troubleshooting a pipeline much easier for the user
 
-copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo"
+#copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo"
+copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/"
 epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
 NOTOK=1
+
+relase=`cat /etc/redhat-release`
+if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then 
+	copr_repo_url="http://pbench.perf.lab.eng.bos.redhat.com/repo/production/yum.repos.d/rhel8/"
+	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+elif [[ $release == *"Red Hat Enterprise Linux release 7."* ]] then
+	copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/"
+	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+else 
+	exit $NOTOF
+fi 
 
 register_tool() {
     pbench-register-tool --name=$1 --remote=$2 default -- --interval=$3 || exit $NOTOK
@@ -71,25 +83,43 @@ echo "$service_inventory" >> $inventory_file
 #Setup and install pbench on all linode host
 cat $inventory_file
 
+#You will need to install a cert in order to use the Dev COPR
+#instance where the rhel8 pbench RPMS are stored - see
+#	https://mojo.redhat.com/docs/DOC-1151538-how-to-use-internal-copr-repository-coprdevelredhatcom-with-rhel-7
+
 
 yum remove -y pbench-fio pbench-agent pbench-sysstat
 rm -rf /var/lib/pbench-agent/tools-default
-yum install -y $epel_repo_rpm_url
-(yum install -y yum-utils wget && \
- yum-config-manager --enable epel && \
- (cd /etc/yum.repos.d && wget $copr_repo_url) && \
- yum install pbench-fio pbench-agent pbench-sysstat pdsh -y) \
+
+if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then
+	wget -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt
+	update-ca-trust
+else 
+	 yum install -y $epel_repo_rpm_url
+	(yum install -y yum-utils wget && \
+	 yum-config-manager --enable epel) \
+ 	|| exit $NOTOK
+fi
+
+ (cd /etc/yum.repos.d && wget -r -np -nd  --accept '*.repo' $copr_repo_url) && \
+ yum install pbench-fio pbench-agent pbench-sysstat pdsh -y \
   || exit $NOTOK
 
 # now do same thing on all remote hosts
 
 export ANSIBLE_INVENTORY=$inventory_file
-ansible -m yum -a "name=$epel_repo_rpm_url" all
+
+if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then
+	ansible -m shell -a "wget -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt ; update-ca-trust" all
+else
+	ansible -m yum -a "name=$epel_repo_rpm_url" all
+	ansible -m yum -a "name=wget,yum-utils" all 
+	ansible -m shell -a "yum-config-manager --enable epel" all
+fi
+
 (ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat state=absent" all && \
  ansible -m shell -a "rm -rf /var/lib/pbench-agent/tools-default" all && \
- ansible -m yum -a "name=wget,yum-utils" all && \
- ansible -m shell -a "cd /etc/yum.repos.d; wget $copr_repo_url" all && \
- ansible -m shell -a "yum-config-manager --enable epel" all && \
+ ansible -m shell -a "cd /etc/yum.repos.d; wget -r -np -nd  --accept '*.repo' $copr_repo_url" all && \
  ansible -m yum -a "name=pbench-fio,pdsh,pbench-agent,pbench-sysstat" all) \
   || exit $NOTOK
  

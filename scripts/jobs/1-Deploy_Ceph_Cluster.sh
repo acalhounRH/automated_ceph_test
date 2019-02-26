@@ -37,20 +37,20 @@ export ANSIBLE_INVENTORY=$inventory_file
 yum install -y yum-utils
 yum-config-manager --disable epel
 
-cd $script_dir/staging_area/rhcs_latest/
-new_ceph_iso_file="$(ls)"
-
 rm -rf /ceph-ansible-keys
 mkdir -m0777 /ceph-ansible-keys
 
-#mount ISO and create rhcs yum repo file 
+cd $script_dir/staging_area/rhcs_latest/
+new_ceph_iso_file="$(ls)"
 
-cp $script_dir/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
-mkdir -p /mnt/rhcs_latest/
-umount /mnt/rhcs_latest/
-mount $script_dir/staging_area/rhcs_latest/$new_ceph_iso_file /mnt/rhcs_latest/
-yum clean all
-
+if [ ! -z "$new_ceph_iso_file" ] ; then
+	#mount ISO and create rhcs yum repo file 
+	cp $script_dir/staging_area/repo_files/rhcs.repo /etc/yum.repos.d/
+	mkdir -p /mnt/rhcs_latest/
+	umount /mnt/rhcs_latest/
+	mount $script_dir/staging_area/rhcs_latest/$new_ceph_iso_file /mnt/rhcs_latest/
+	yum clean all
+fi 
 # install precise ansible version if necessary
 
 if [ -n "$ansible_version" ] ; then
@@ -77,6 +77,8 @@ sed -i 's/gpgcheck=1/gpgcheck=0/g' /usr/share/ceph-ansible/roles/ceph-common/tem
 
 mkdir -p $script_dir/staging_area/tmp
 echo "$ceph_ansible_all_config" > /usr/share/ceph-ansible/group_vars/all.yml
+
+#if ceph_origin: respository and ceph_repository_type: iso sed cmd will automatically set iso parameter
 sed -i "s/<ceph_iso_file>/$new_ceph_iso_file/g" /usr/share/ceph-ansible/group_vars/all.yml
 echo "$ceph_ansible_osds_config" > /usr/share/ceph-ansible/group_vars/osds.yml
 ln -svf /usr/share/ceph-ansible/site.yml.sample /usr/share/ceph-ansible/site.yml
@@ -170,6 +172,7 @@ fi
 # find out about first monitor
 
 export first_mon=`ansible --list-host mons |grep -v hosts | grep -v ":" | head -1 | sed 's/ //g'`
+#only needed with linode install
 export first_mon_ip=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["inventory_hostname"] }}' localhost | grep -v localhost | sed 's/ //g'`
 ansible -m script -a "$script_dir/scripts/utils/check_cluster_status.py" $first_mon \
  || exit $NOTOK
