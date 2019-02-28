@@ -101,7 +101,7 @@ else
  	|| exit $NOTOK
 fi
 
- (cd /etc/yum.repos.d && wget -q -r -np -nd  --accept '*.repo' $copr_repo_url) && \
+ (cd /etc/yum.repos.d && wget -q -O -r -np -nd  --accept '*.repo' $copr_repo_url) && \
  yum install pbench-fio pbench-agent-internal pbench-sysstat -y \
   || exit $NOTOK
 
