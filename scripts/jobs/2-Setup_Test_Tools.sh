@@ -11,8 +11,8 @@
 # this makes troubleshooting a pipeline much easier for the user
 
 #copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo"
-copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/"
-epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+#copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/"
+#epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
 NOTOK=1
 
 release=`cat /etc/redhat-release`
