@@ -122,7 +122,7 @@ fi
  ansible -m shell -a "rm -rf /var/lib/pbench-agent/tools-default" all && \
  ansible -m shell -a "cd /etc/yum.repos.d; wget -q -r -np -nd  --accept '*.repo' $copr_repo_url" all && \
  ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat" all) \ 	
- || exit $NOTOK 
+  || exit $NOTOK 
  #removed pdsh, unable to find in rhel 8
  #ansible -m yum -a "name=pbench-fio,pdsh,pbench-agent,pbench-sysstat" all) \
 
