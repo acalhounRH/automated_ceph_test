@@ -101,8 +101,9 @@ else
  	|| exit $NOTOK
 fi
 
+#removed pdsh, unable to find in rhel 8
  (cd /etc/yum.repos.d && wget -q -r -np -nd  --accept '*.repo' $copr_repo_url) && \
- yum install pbench-fio pbench-agent pbench-sysstat -y \ #removed pdsh, unable to find in rhel 8
+ yum install pbench-fio pbench-agent pbench-sysstat -y \ 
   || exit $NOTOK
 
 # now do same thing on all remote hosts
