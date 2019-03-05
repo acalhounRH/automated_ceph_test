@@ -31,7 +31,7 @@ cat $jobfiles_dir/automated_test.yml
 sudo mkdir -m 777 $archive_dir
 $HOME/cbt/cbt.py $jobfiles_dir/automated_test.yml -a $archive_dir
 
-echo "role_to_hostnames [ " > $archive_dir/results/ansible_facts.json
-ansible all -m setup -i $inventory_file | sed -s 's/ | SUCCESS => /"&/' | sed -s 's/ | SUCCESS => /": /' | sed -s 's/},/}/' | sed -s 's/}/},/' >> $archive_dir/results/ansible_facts.json
-echo "]" >> $archive_dir/results/ansible_facts.json
+#echo "role_to_hostnames [ " > $archive_dir/results/ansible_facts.json
+#ansible all -m setup -i $inventory_file | sed -s 's/ | SUCCESS => /"&/' | sed -s 's/ | SUCCESS => /": /' | sed -s 's/},/}/' | sed -s 's/}/},/' >> $archive_dir/results/ansible_facts.json
+#echo "]" >> $archive_dir/results/ansible_facts.json
 
