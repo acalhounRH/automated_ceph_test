@@ -282,11 +282,11 @@ class ssh_remote_command():
 #             self.sshclient.connect(host, username="root", key_filename=key_path)
 #             stdin, stdout, stderr = self.sshclient.exec_command(command)
 
-            proc = subprocess.Popen(['ssh', 'host', command],
+            proc = subprocess.Popen(['ssh', host, command],
                                     stdin=subprocess.PIPE,stdout=subprocess.PIPE)
             
-            if stderr:
-                raise ValueError(str(stderr))
+#             if stderr:
+#                 raise ValueError(str(stderr))
             
             output = pro.stdout.readlines()
             if output:
