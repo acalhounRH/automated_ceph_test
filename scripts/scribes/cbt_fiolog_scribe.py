@@ -22,7 +22,7 @@ class fiolog_transcriber:
         #logger.debug("Indexing %s" % self.csv_file)
         try:
             jsondoc = json.load(open(self.json_file))
-            test_time_ms = long(jsondoc['timestamp_ms'])
+            test_time_ms = int(jsondoc['timestamp_ms'])
             test_duration_sec = jsondoc['global options']['runtime']
             try:
                 if "S" in test_duration_sec: 
@@ -67,7 +67,6 @@ class fiolog_transcriber:
                     importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                     yield importdoc  # XXX: TODO change to yield a
         except Exception as e:
-            logger.warn(e)
-            logger.warn("Failed to open file %s" % self.json_file)    
+            logger.warn(e)    
                 
                 
