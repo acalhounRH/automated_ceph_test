@@ -285,13 +285,16 @@ class ssh_remote_command():
                 raise ValueError(str(stderr))
             
             output = stdout.readlines()
-            #remove trailing \n
-            formated_output = []
-            for i in output:
-                formated_output.append(i.strip('\n'))
-            
-            self.sshclient.close()
-            return formated_output
+            if output:
+                #remove trailing \n
+                formated_output = []
+                for i in output:
+                    formated_output.append(i.strip('\n'))
+                
+                self.sshclient.close()
+                return formated_output
+            else:
+                logger.warn("nothing returned from ssh command")
         
         except Exception as e:
             self.sshclient.close()
