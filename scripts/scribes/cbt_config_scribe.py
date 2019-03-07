@@ -288,12 +288,13 @@ class ssh_remote_command():
 #             if stderr:
 #                 raise ValueError(str(stderr))
 
-            output = proc.stdout.readlines().decode('utf-8')
+            output = proc.stdout.readlines()
             logger.debug(output)
             if output:
                 #remove trailing \n
                 formated_output = []
                 for i in output:
+                    i = i.decode('utf-8')
                     formated_output.append(i.strip('\n'))
                 
                 self.sshclient.close()
