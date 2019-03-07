@@ -281,7 +281,7 @@ class ssh_remote_command():
 #             #pkey = paramiko.RSAKey.from_private_key_file(key_path)
 #             self.sshclient.connect(host, username="root", key_filename=key_path)
 #             stdin, stdout, stderr = self.sshclient.exec_command(command)
-
+            logger.debug("ssh: host %s comand %s" % (host, command))
             proc = subprocess.Popen(['ssh', host, command],
                                     stdin=subprocess.PIPE,stdout=subprocess.PIPE)
             
