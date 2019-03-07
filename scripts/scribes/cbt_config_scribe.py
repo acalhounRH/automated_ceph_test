@@ -287,14 +287,14 @@ class ssh_remote_command():
             
 #             if stderr:
 #                 raise ValueError(str(stderr))
-            
+            logger.debug(proc.stdout)
             output = proc.stdout.read()
             logger.debug(output)
             if output:
                 #remove trailing \n
                 formated_output = []
                 for i in output:
-                    formated_output.append(i.strip('\n'))
+                    formated_output.append(str(i).strip('\n'))
                 
                 self.sshclient.close()
                 return formated_output
