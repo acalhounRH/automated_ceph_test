@@ -295,6 +295,7 @@ class ssh_remote_command():
         
         except Exception as e:
             self.sshclient.close()
+            logger.debug(e)
             logger.warn("SSH Connection Failed: %s" % e)
     
 class ceph_client():
