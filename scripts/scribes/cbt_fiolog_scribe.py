@@ -21,7 +21,7 @@ class fiolog_transcriber:
         
         #logger.debug("Indexing %s" % self.csv_file)
         try:
-            jsondoc = json.load(open(os.path.abspath(self.json_file)))
+            jsondoc = json.load(open(self.json_file))
             test_time_ms = long(jsondoc['timestamp_ms'])
             test_duration_sec = jsondoc['global options']['runtime']
             try:
