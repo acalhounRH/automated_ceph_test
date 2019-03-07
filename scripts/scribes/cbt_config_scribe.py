@@ -271,6 +271,9 @@ class ssh_remote_command():
             self.sshclient.connect(host, username="root", key_filename=key_path)
             stdin, stdout, stderr = self.sshclient.exec_command(command)
             
+            if stderr:
+                raise ValueError(str(stderr))
+            
             output = stdout.readlines()
             #remove trailing \n
             formated_output = []
