@@ -2,7 +2,7 @@ import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
 import datetime, socket, itertools
 from scribes import *
-import cbt_pbench_analyzer
+from .cbt_pbench_analyzer import *
 from datetime import timedelta
 from ansible.modules.system import hostname
 
