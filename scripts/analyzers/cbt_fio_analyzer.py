@@ -2,7 +2,7 @@ import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
 import datetime, socket
 from scribes import *
-import cbt_pbench_analyzer
+from cbt_pbench_analyzer import *
 
 logger = logging.getLogger("index_cbt")
 
