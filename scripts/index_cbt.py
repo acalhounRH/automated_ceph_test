@@ -39,7 +39,7 @@ def main():
             tdelta = end_t - start_t
             logger.info("Duration of indexing - %s" % tdelta)
             logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
-        except e as exception:
+        except Exception as e:
             logger.error(e.message)
             sys.exit(1)
 
