@@ -161,9 +161,10 @@ class cbt_config_transcriber:
         
     def get_fqdn(self, remoteclient, host):
         logger.debug(self.fqdn_map)
-        if host in self.fqdn_map:
-            output = self.fqdn_map[host]
-            return output
+        for k in self.fqdn_map:
+            if host in k:
+                output = self.fqdn_map[k]
+                return output
         else:
             try:
                 output = remoteclient.issue_command(host, "hostname -f")
