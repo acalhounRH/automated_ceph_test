@@ -2,6 +2,7 @@
 import yaml, os, time, json, hashlib, paramiko
 import socket, datetime, logging, rados, ipaddress
 from paramiko import SSHClient
+import subprocess
 from elasticsearch.client.remote import RemoteClient
 
 logger = logging.getLogger("index_cbt")
@@ -275,16 +276,19 @@ class ssh_remote_command():
     def issue_command(self, host, command):
         
         try:
-            self.sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            key_path = os.path.expanduser("~/.ssh/id_rsa.pub")
-            #pkey = paramiko.RSAKey.from_private_key_file(key_path)
-            self.sshclient.connect(host, username="root", key_filename=key_path)
-            stdin, stdout, stderr = self.sshclient.exec_command(command)
+#             self.sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#             key_path = os.path.expanduser("~/.ssh/id_rsa.pub")
+#             #pkey = paramiko.RSAKey.from_private_key_file(key_path)
+#             self.sshclient.connect(host, username="root", key_filename=key_path)
+#             stdin, stdout, stderr = self.sshclient.exec_command(command)
+
+            proc = subprocess.Popen(['ssh', 'host', command],
+                                    stdin=subprocess.PIPE,stdout=subprocess.PIPE)
             
             if stderr:
                 raise ValueError(str(stderr))
             
-            output = stdout.readlines()
+            output = pro.stdout.readlines()
             if output:
                 #remove trailing \n
                 formated_output = []
