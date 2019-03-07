@@ -86,7 +86,8 @@ def analyze_cbt_fiologs(tdir, cbt_config_obj, test_metadata):
             #jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
             jsonfile = "%s/json_%s" % (tdir, os.path.basename(file).split('_', 1)[0])
             jsonfile = os.path.abspath(jsonfile)
-            hostname = os.path.basename(file).split('.')[2]
+            hostname = os.path.basename(file).split('.', 2)[2]
+            hostname = hostname.split("_")[0]
             
             metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = hostname
             try:

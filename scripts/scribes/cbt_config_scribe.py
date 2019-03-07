@@ -75,7 +75,7 @@ class cbt_config_transcriber:
             except:
                 return "UNKNOWN"
         else:
-            return "UNKOWN"
+            return "UNKNOWN"
         
     def make_host_map(self):
         logger.debug("getting ceph node map")
@@ -298,7 +298,6 @@ class ssh_remote_command():
         
         except Exception as e:
             self.sshclient.close()
-            logger.error(e)
             logger.warn("SSH Connection Failed: %s" % e)
     
 class ceph_client():
