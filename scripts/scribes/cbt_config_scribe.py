@@ -2,6 +2,7 @@
 import yaml, os, time, json, hashlib, paramiko
 import socket, datetime, logging, rados, ipaddress
 from paramiko import SSHClient
+import bencode
 from elasticsearch.client.remote import RemoteClient
 
 logger = logging.getLogger("index_cbt")
@@ -264,7 +265,8 @@ class cbt_config_transcriber:
         file_time = datetime.datetime.fromtimestamp(file_time)
         importdoc['_source']['date'] = file_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         
-        importdoc["_id"] = hashlib.md5(json.dumps(importdoc, sort_keys=True)).hexdigest()
+        #importdoc["_id"] = hashlib.md5(json.dumps(importdoc, sort_keys=True)).hexdigest()
+        importdoc["_id"] = hashlib.md5(bencode.bencode(importdoc)).hexdigest()
         yield importdoc    
         
 
