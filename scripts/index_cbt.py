@@ -40,7 +40,7 @@ def main():
             logger.info("Duration of indexing - %s" % tdelta)
             logger.info("Indexed results - %s success, %s duplicates, %s failures, with %s retries." % (res_suc, res_dup, res_fail, res_retry)) 
         except Exception as e:
-            logger.error(e.message)
+            logger.error(e)
             sys.exit(1)
 
 def process_data_generator(test_id):
