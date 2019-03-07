@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python2
 
 import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
