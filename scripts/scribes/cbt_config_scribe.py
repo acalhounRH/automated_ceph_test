@@ -160,7 +160,7 @@ class cbt_config_transcriber:
         logger.debug(json.dumps(self.host_map, indent=4))
         
     def get_fqdn(self, remoteclient, host):
-        logger.debug(self.fqdn_map)
+       # logger.debug(self.fqdn_map)
         for k in self.fqdn_map:
             if host in k:
                 output = self.fqdn_map[k]
@@ -272,7 +272,7 @@ class cbt_config_transcriber:
 
 class ssh_remote_command():
     def __init__(self):
-          self.sshclient = SSHClient()
+          self.sshcounter = 0
     
     def issue_command(self, host, command):
         
@@ -286,11 +286,12 @@ class ssh_remote_command():
             proc = subprocess.Popen(['ssh', host, command],
                                     stdin=subprocess.PIPE,stdout=subprocess.PIPE)
             
+            self.sshcounter = self.sshcounter + 1
+            
 #             if stderr:
 #                 raise ValueError(str(stderr))
 
             output = proc.stdout.readlines()
-            logger.debug(output)
             if output:
                 #remove trailing \n
                 formated_output = []
