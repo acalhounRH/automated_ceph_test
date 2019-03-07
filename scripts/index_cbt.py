@@ -1,4 +1,4 @@
-#! /usr/bin/python2
+#! /usr/bin/python3
 
 import os, sys, json, time, types, csv, copy
 import logging, statistics, yaml 
@@ -113,7 +113,7 @@ class argument_handler():
         try:
             opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:o:dvT', ['output_file', 'test_id=', 'host=', 'port=', 'debug', 'test_mode', 'verbose'])
         except getopt.GetoptError:
-            print usage 
+            print (usage) 
             exit(1)
     
         for opt, arg in opts:
