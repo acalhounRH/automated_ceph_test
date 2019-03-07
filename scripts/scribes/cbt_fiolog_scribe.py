@@ -30,7 +30,7 @@ class fiolog_transcriber:
             except:
                 logger.debug("no S on duration time")
                 
-            test_duration_ms = long(test_duration_sec) * 1000
+            test_duration_ms = int(test_duration_sec) * 1000
             start_time = test_time_ms - test_duration_ms
         
             file_name = os.path.basename(self.csv_file)
