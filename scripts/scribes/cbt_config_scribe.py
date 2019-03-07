@@ -294,7 +294,7 @@ class ssh_remote_command():
                 #remove trailing \n
                 formated_output = []
                 for i in output:
-                    formated_output.append(str(i).strip('\n'))
+                    formated_output.append(i.strip('\n'))
                 
                 self.sshclient.close()
                 return formated_output
