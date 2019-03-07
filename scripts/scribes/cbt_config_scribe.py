@@ -267,7 +267,7 @@ class ssh_remote_command():
         
         try:
             self.sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            key_path = os.path.expanduser("~/.ssh/identity")
+            key_path = os.path.expanduser("~/.ssh/id_rsa")
             self.sshclient.connect(host, username="root", key_filename=key_path)
             stdin, stdout, stderr = self.sshclient.exec_command(command)
             
