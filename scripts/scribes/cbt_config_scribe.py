@@ -160,7 +160,7 @@ class cbt_config_transcriber:
         logger.debug(json.dumps(self.host_map, indent=4))
         
     def get_fqdn(self, remoteclient, host):
-        
+        logger.debug(self.fqdn_map)
         if host in self.fqdn_map:
             output = self.fqdn_map[host]
             return output
