@@ -282,7 +282,7 @@ class ssh_remote_command():
         
         except Exception as e:
             self.sshclient.close()
-            logger.warn("Connection Failed: %s" % e)
+            logger.warn("SSH Connection Failed: %s" % e)
     
 class ceph_client():
     def __init__(self):
@@ -301,7 +301,7 @@ class ceph_client():
                 self.cluster.connect(timeout=1)
                 self.Connection_status = True
             except Exception as e:
-                logger.warn("Connection error: %s" % e.message )
+                logger.warn("Ceph Client Connection error: %s" % e.message )
             
                 
             self.osd_host_list = []
