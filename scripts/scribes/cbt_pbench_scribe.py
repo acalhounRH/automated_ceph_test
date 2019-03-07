@@ -126,7 +126,7 @@ class pbench_transcriber:
                                 a = importdoc
                         if a:
                                 importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
-                                importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
+                                importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
                                 yield a
                     
                     

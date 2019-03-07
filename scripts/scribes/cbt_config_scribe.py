@@ -156,7 +156,7 @@ class cbt_config_transcriber:
         dataWriter.write(json.dumps(self.host_map, indent=4))
         dataWriter.close()
             
-        #print json.dumps(self.host_map, indent=4)
+        logger.debug(json.dumps(self.host_map, indent=4))
         
     def get_fqdn(self, remoteclient, host):
         

@@ -164,5 +164,5 @@ class fiojson_results_transcriber:
                         tmp_doc['std-dev-%s' % obj_size] = round((((statistics.stdev(raver_ary) + statistics.stdev(waver_ary)) / tmp_doc['total-iops'])* 100), 3)
                 
                 importdoc["_source"]['ceph_benchmark_test']['test_data'] = tmp_doc
-                importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
+                importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
                 yield importdoc   

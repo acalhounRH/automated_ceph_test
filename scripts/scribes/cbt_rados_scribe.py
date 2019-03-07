@@ -92,7 +92,7 @@ class rados_transcriber():
                             cur_time = start_time + timedelta(seconds=current_seconds_since_start)
                             importdoc["_source"]["date"] = cur_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                             importdoc["_source"]['ceph_benchmark_test']['test_data']['rados_logs'] = current_item
-                            importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
+                            importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
                             yield importdoc
                         time_set = True 
                                 
@@ -115,7 +115,7 @@ class rados_json_transcriber():
         with open(self.json_file, 'r') as myfile:
             data=myfile.read()
         importdoc["_source"]['ceph_benchmark_test']['test_data']['rados_json'] = json.loads(data)
-        importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
+        importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
         return importdoc 
         
                                 
