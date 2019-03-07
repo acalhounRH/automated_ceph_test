@@ -37,7 +37,7 @@ class fiolog_transcriber:
             importdoc["_source"]['ceph_benchmark_test']['common']['test_info']['file'] = file_name 
             
             #thread_n_metric = file_name.split('.')[1]
-            thread - file_name.split('.')[1]
+            thread = file_name.split('.')[1]
             metric_name = file_name.split('_')[1]
             metric_name = metric_name.split ('.')[0]
             #thread, metric_name = thread_n_metric.split('_', 1)
