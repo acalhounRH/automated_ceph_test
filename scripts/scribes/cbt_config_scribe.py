@@ -289,6 +289,7 @@ class ssh_remote_command():
 #                 raise ValueError(str(stderr))
             
             output = proc.stdout.read()
+            logger.debug(output)
             if output:
                 #remove trailing \n
                 formated_output = []
