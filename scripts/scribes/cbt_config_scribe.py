@@ -277,19 +277,12 @@ class ssh_remote_command():
     def issue_command(self, host, command):
         
         try:
-#             self.sshclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-#             key_path = os.path.expanduser("~/.ssh/id_rsa.pub")
-#             #pkey = paramiko.RSAKey.from_private_key_file(key_path)
-#             self.sshclient.connect(host, username="root", key_filename=key_path)
-#             stdin, stdout, stderr = self.sshclient.exec_command(command)
+
             logger.debug("ssh: host %s comand %s" % (host, command))
             proc = subprocess.Popen(['ssh', host, command],
                                     stdin=subprocess.PIPE,stdout=subprocess.PIPE)
             
             self.sshcounter = self.sshcounter + 1
-            
-#             if stderr:
-#                 raise ValueError(str(stderr))
 
             output = proc.stdout.readlines()
             if output:
@@ -299,13 +292,11 @@ class ssh_remote_command():
                     i = i.decode('utf-8')
                     formated_output.append(i.strip('\n'))
                 
-                self.sshclient.close()
                 return formated_output
             else:
                 logger.warn("nothing returned from ssh command")
         
         except Exception as e:
-            self.sshclient.close()
             logger.warn("SSH Connection Failed: %s" % e)
     
 class ceph_client():
