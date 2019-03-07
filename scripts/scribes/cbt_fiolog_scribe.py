@@ -66,7 +66,8 @@ class fiolog_transcriber:
                     importdoc["_source"]['ceph_benchmark_test']["test_data"] = tmp_doc
                     importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
                     yield importdoc  # XXX: TODO change to yield a
-        except:
+        except Exception as e:
+            logger.warn(e)
             logger.warn("Failed to open file %s" % self.json_file)    
                 
                 
