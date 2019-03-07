@@ -91,7 +91,7 @@ class cbt_config_transcriber:
             
             if len(host_role_list) > 0:
                 for role_info in host_role_list:
-                    logger.debug("host role: %s" % role)
+                    #logger.debug("host role: %s" % role)
                     logger.debug(json.dumps(role_info, indent=1))
                     #print role_info['hostname']
                     host_fqdn = self.get_fqdn(self.remoteclient, role_info['hostname'])
@@ -278,7 +278,7 @@ class ssh_remote_command():
         
         try:
 
-            logger.debug("ssh: host %s comand %s" % (host, command))
+            #logger.debug("ssh: host %s comand %s" % (host, command))
             proc = subprocess.Popen(['ssh', host, command],
                                     stdin=subprocess.PIPE,stdout=subprocess.PIPE)
             
