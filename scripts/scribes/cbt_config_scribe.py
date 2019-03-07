@@ -287,7 +287,7 @@ class ssh_remote_command():
             
 #             if stderr:
 #                 raise ValueError(str(stderr))
-            logger.debug(proc.stdout)
+            logger.debug(proc.stdout.readlines())
             output = proc.stdout.read()
             logger.debug(output)
             if output:
