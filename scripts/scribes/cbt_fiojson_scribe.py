@@ -45,7 +45,7 @@ class fiojson_file_transcriber:
             tmp_doc['fio']['fio_json']['total_iops'] = int(tmp_doc['fio']['fio_json']['job']['write']['iops']) + int(tmp_doc['fio']['fio_json']['job']['read']['iops'])
             
             importdoc['_source']['ceph_benchmark_test']['test_data'] = tmp_doc
-            importdoc["_id"] = hashlib.md5(json.dumps(importdoc)).hexdigest()
+            importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
             yield importdoc
             
 class fiojson_results_transcriber:
