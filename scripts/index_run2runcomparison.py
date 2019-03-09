@@ -160,7 +160,7 @@ class test_holder():
                 
                 importdoc["_source"]["comparison_ID"] = self.comparison_id
                 importdoc["_source"]['series_id'] = self.series_id
-                importdoc["_id"] = hashlib.md5(json.dumps(importdoc["_source"])).hexdigest()
+                importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
                 importdoc["_source"]["date"] = str_skew_time
                 
                 
@@ -195,7 +195,7 @@ class argument_handler():
         try:
             opts, _ = getopt.getopt(sys.argv[1:], 't:l:h:p:o:dTv', ['title=', 'test-list=', 'host=', 'port=', 'debug', "output_file", "test_mode", "verbose"])
         except getopt.GetoptError:
-            print self.usage 
+            print (self.usage) 
             exit(1)
     
         for opt, arg in opts:
