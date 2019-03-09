@@ -38,9 +38,9 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                 
                 if "librbdfio" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     #process fio logs
-                    analyze_cbt_fiologs_generator = analyze_cbt_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-                    for fiolog_obj in analyze_cbt_fiologs_generator:
-                        yield fiolog_obj
+#                     analyze_cbt_fiologs_generator = analyze_cbt_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+#                     for fiolog_obj in analyze_cbt_fiologs_generator:
+#                         yield fiolog_obj
                 
                     test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
                     logger.info("Processing fio json files...")
@@ -52,9 +52,9 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                                 logger.warn("Found corrupted JSON file, %s." % json_file)
                                 
                     #process pbench logs
-                    analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
-                    for pbench_obj in analyze_cbt_Pbench_data_generator:
-                        yield pbench_obj
+#                     analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(dirpath, cbt_config_obj, copy.deepcopy(metadata))
+#                     for pbench_obj in analyze_cbt_Pbench_data_generator:
+#                         yield pbench_obj
                             
                 
     for import_obj in fiojson_results_transcriber_generator.get_fiojson_importers():
