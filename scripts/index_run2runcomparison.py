@@ -222,7 +222,7 @@ class argument_handler():
             logger.info("Comparison_id: %s - Comparing %s " % (self.comparison_id, self.test_list))
             logger.info("Using Elasticsearch host and port: %s:%s " % (self.host, self.esport))
         else:
-            print self.host, self.comparison_id, self.esport
+            print (self.host, self.comparison_id, self.esport)
             logger.error(self.usage)
             exit ()
     
