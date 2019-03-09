@@ -102,7 +102,7 @@ rm -rf /var/lib/pbench-agent/tools-default
 #fi
 
  (cd /etc/yum.repos.d && wget $copr_repo_url) && \
- yum install pbench-fio pbench-agent-internal pbench-sysstat -y \
+ yum install pbench-fio pbench-agent pbench-sysstat -y \
   || exit $NOTOK
 
 # now do same thing on all remote hosts
