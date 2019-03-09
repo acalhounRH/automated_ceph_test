@@ -91,17 +91,17 @@ cat $inventory_file
 yum remove -y pbench-fio pbench-agent pbench-sysstat
 rm -rf /var/lib/pbench-agent/tools-default
 
-if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then
-	wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt
-	update-ca-trust
-else 
+#if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then
+#	wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt
+#	update-ca-trust
+#else 
 	 yum install -y $epel_repo_rpm_url
 	(yum install -y yum-utils wget && \
 	 yum-config-manager --enable epel) \
  	|| exit $NOTOK
-fi
+#fi
 
- (cd /etc/yum.repos.d && wget -q -r -np -nd  --accept '*.repo' $copr_repo_url) && \
+ (cd /etc/yum.repos.d && wget $copr_repo_url) && \
  yum install pbench-fio pbench-agent-internal pbench-sysstat -y \
   || exit $NOTOK
 
@@ -109,17 +109,17 @@ fi
 
 export ANSIBLE_INVENTORY=$inventory_file
 
-if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then
-	ansible -m shell -a "wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt ; update-ca-trust" all
-else
+#if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then
+#	ansible -m shell -a "wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt ; update-ca-trust" all
+#else
 	ansible -m yum -a "name=$epel_repo_rpm_url" all
 	ansible -m yum -a "name=wget,yum-utils" all 
 	ansible -m shell -a "yum-config-manager --enable epel" all
-fi
+#fi
 
 (ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat state=absent" all && \
  ansible -m shell -a "rm -rf /var/lib/pbench-agent/tools-default" all && \
- ansible -m shell -a "cd /etc/yum.repos.d; wget -q -r -np -nd  --accept '*.repo' $copr_repo_url" all && \
+ ansible -m shell -a "cd /etc/yum.repos.d; wget $copr_repo_url" all && \
  ansible -m yum -a "name=pbench-fio,pbench-agent-internal,pbench-sysstat" all) \
   || exit $NOTOK
  
