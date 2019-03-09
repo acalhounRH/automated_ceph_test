@@ -111,14 +111,14 @@ class test_holder():
         
         indices = self.es.indices.get_alias("*")
         
-        index_list=""
-        for i in indices:
-            if "run2run" not in i and "metricbeat" not in i and ".monitoring-" not in i and ".kibana" not in i:
-                logger.debug("adding %s to index list" % i)
-                if index_list:
-                    index_list = "%s,%s" % (index_list, i)
-                else:
-                    index_list = "%s" % (i)
+        index_list="cbt_librbdfio-summary-indextest1-fixed"
+#         for i in indices:
+#             if "run2run" not in i and "metricbeat" not in i and ".monitoring-" not in i and ".kibana" not in i:
+#                 logger.debug("adding %s to index list" % i)
+#                 if index_list:
+#                     index_list = "%s,%s" % (index_list, i)
+#                 else:
+#                     index_list = "%s" % (i)
         
         results = self.es.search(
             index=index_list,
