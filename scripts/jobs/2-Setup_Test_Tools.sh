@@ -120,7 +120,7 @@ export ANSIBLE_INVENTORY=$inventory_file
 (ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat state=absent" all && \
  ansible -m shell -a "rm -rf /var/lib/pbench-agent/tools-default" all && \
  ansible -m shell -a "cd /etc/yum.repos.d; wget $copr_repo_url" all && \
- ansible -m yum -a "name=pbench-fio,pbench-agent-internal,pbench-sysstat" all) \
+ ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat" all) \
   || exit $NOTOK
  
 
