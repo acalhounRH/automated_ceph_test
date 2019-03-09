@@ -26,7 +26,7 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                 
                 if op_size_bytes: 
                      op_size_kb = int(op_size_bytes) / 1024
-                     metadata['ceph_benchmark_test']['test_config']['op_size'] = op_size_kb
+                     metadata['ceph_benchmark_test']['test_config']['op_size'] = int(round(op_size_kb))
                 
                 try:
                     if "S" in time_w_unit:  
