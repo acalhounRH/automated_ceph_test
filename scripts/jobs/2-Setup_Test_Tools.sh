@@ -16,15 +16,15 @@
 NOTOK=1
 
 release=`cat /etc/redhat-release`
-if [[ .*"Red Hat Enterprise Linux release 8".* =~ $release]] ; then 
-	copr_repo_url="http://pbench.perf.lab.eng.bos.redhat.com/repo/production/yum.repos.d/rhel8/"
-	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
-elif [[ .*"Red Hat Enterprise Linux release 7".* =~ $release  ]] ; then
+#if [[ .*"Red Hat Enterprise Linux release 8".* =~ $release]] ; then 
+#	copr_repo_url="http://pbench.perf.lab.eng.bos.redhat.com/repo/production/yum.repos.d/rhel8/"
+#	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+#elif [[ .*"Red Hat Enterprise Linux release 7".* =~ $release  ]] ; then
 	copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/"
 	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
-else 
-	exit $NOTOF
-fi 
+#else 
+	#exit $NOTOF
+#fi 
 
 register_tool() {
     pbench-register-tool --name=$1 --remote=$2 default -- --interval=$3 || exit $NOTOK
