@@ -1,5 +1,5 @@
 import os
-import linode.api as linapi
+import linode_api4 as linapi
 import binascii, logging, socket, time
 
 linode_log = logging.getLogger("linode")
@@ -30,7 +30,8 @@ def main ():
     key = os.environ['LINODE_API_KEY']
     client = linapi.Api(key = key, batching = False)
 
-    datacenters = client.avail_datacenters()
+    #datacenters = client.avail_datacenters()
+    datacenters = client.regions()
     plans = client.avail_linodeplans()
     distributions = client.avail_distributions()
     kernels = client.avail_kernels()
