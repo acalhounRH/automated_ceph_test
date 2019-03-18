@@ -1,5 +1,5 @@
 import os
-import linode_api4 as linapi
+import linode.api as linapi
 import binascii, logging, socket, time
 
 linode_log = logging.getLogger("linode")
