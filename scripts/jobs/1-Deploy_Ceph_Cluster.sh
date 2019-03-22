@@ -88,7 +88,7 @@ if [ -n "$linode_cluster" ] ; then
 
     cd $HOME/ceph-linode
     echo "$Linode_Cluster_Configuration" > cluster.json
-    virtualenv-2 linode-env && source linode-env/bin/activate && pip install linode-python
+    virtualenv-2 linode-env && source linode-env/bin/activate && pip install linode_api4 && pip install enum
     export LINODE_API_KEY=$linode_api_key
 fi
 
