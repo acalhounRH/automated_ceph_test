@@ -34,6 +34,8 @@ if [[ $host == *"linode.com"* ]]; then
     	echo "No linode API given, aborting!"
         exit 1
     fi
+    
+    export AGENT_NAME=$agent_name
     `python2 ./scripts/utils/remove_linode_agent.py`
 else 
 	#issue ssh remote command to destory swam-client

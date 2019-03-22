@@ -16,7 +16,7 @@ def status_check(node, status):
 
 def main ():
     
-    agent_label = sys.argv[1]
+    agent_label = os.environ['AGENT_NAME'] 
     SSH_PUBLIC_KEY_FILE = os.getenv("HOME") + "/.ssh/id_rsa.pub"
     key = os.environ['LINODE_API_KEY']
     

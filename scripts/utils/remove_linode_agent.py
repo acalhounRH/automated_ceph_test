@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(levelname)s %(mes
 GROUP = "Jenkins"
 
 def main():
-    agent_label = sys.argv[1]
+    agent_label = os.environ['AGENT_NAME'] 
     key = os.getenv("LINODE_API_KEY")
     if key is None:
         raise RuntimeError("please specify Linode API key")
