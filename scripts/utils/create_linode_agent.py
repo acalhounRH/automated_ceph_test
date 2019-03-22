@@ -31,8 +31,8 @@ def main ():
                                                      group='Jenkins_Agents',
                                                      tags=['Jenkins_Agents'])
         node.ip_allocate(False)
+        status_check(node, "running")
         node.reboot()
-        time.sleep(20)
         status_check(node, "running")
         host = socket.gethostbyaddr(node.ipv4[0])[0]
         print host
