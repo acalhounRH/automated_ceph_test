@@ -22,10 +22,7 @@ if [[ `grep "^${lowercase_agent_name}=" ~/agent_list` ]]; then
 	echo 'Agent name already in use, aborting!'
     exit $NOTOK
 fi
-if [[ `grep "=${agent_host}" ~/agent_list` ]] ; then 
-    echo 'Agent host already in use, aborting'
-    exit $NOTOK
-fi
+
 #check if agent host have was specified, if it was the assumption is that its an internal host.
 if [ ! -z "$agent_host" ]; then
 	#assumption is that ssh keys have been copied and placed on agent and all cluster servers
