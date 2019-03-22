@@ -40,7 +40,7 @@ else
 	setup_cmd="setup.sh -a -l" #set the setup_cmd to linode agent setup
 	cd $script_dir 
     pwd
-	virtualenv linode-env && source linode-env/bin/activate && pip install linode_api4
+	virtualenv linode-env && source linode-env/bin/activate && pip install linode_api4 && pip install enum
     ###:TODO need to add a check that linode_api_key is not null
 	export LINODE_API_KEY=$Linode_API_key
 	jenkins_agent=`python2 ./scripts/utils/create_linode_agent.py $jenkins_agent`
