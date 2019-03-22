@@ -61,6 +61,7 @@ pip install elasticsearch
 pip install urllib3==1.23
 pip install statistics
 pip install xmltodict
+pip install linode_api4
 
 if [ -d perf-dept ]; then
   cd perf-dept
