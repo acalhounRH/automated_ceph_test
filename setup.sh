@@ -32,7 +32,8 @@ done
 cd $HOME
 
 if [ ! -d ceph-linode ] ; then
-	git clone https://github.com/batrick/ceph-linode
+	#git clone https://github.com/batrick/ceph-linode
+	git clone -b update_to_linode_APIv4 https://github.com/acalhounRH/ceph-linode.git
 fi
 
 #git clone -b <branch> <remote_repo> # installing CBT version with pbench performance monitoring
