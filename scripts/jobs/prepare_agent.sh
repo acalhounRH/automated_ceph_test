@@ -46,7 +46,7 @@ else
 	virtualenv linode-env && source linode-env/bin/activate && pip install linode-python
     ###:TODO need to add a check that linode_api_key is not null
 	export LINODE_API_KEY=$Linode_API_key
-	jenkins_agent=`python2 ./scripts/utils/create_linode_agent.py`
+	jenkins_agent=`python2 ./scripts/utils/create_linode_agent.py $jenkins_agent`
 	
 	if [ -Z $jenkins_agent ]; then
 		echo "Failed to retrieve agent hostname"
@@ -92,7 +92,7 @@ for i in {0..101}; do #allows for about 100 agents, dont expect this to happen.
     
 	if [[ ! `grep $port_range ~/agent_port_range` ]]; then
     	echo "$lowercase_agent_name=$port_range" >> ~/agent_port_range
-    	break
+    	breakip_public
     else
 		#increment all three ports by three
 		jenkins_master_port=$((jenkins_master_port+3))
