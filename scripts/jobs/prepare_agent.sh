@@ -46,7 +46,7 @@ else
 	export AGENT_NAME=$jenkins_agent
 	jenkins_agent=`python2 ./scripts/utils/create_linode_agent.py`
 	
-	if [ -Z $jenkins_agent ]; then
+	if [ -Z "$jenkins_agent" ]; then
 		echo "Failed to retrieve agent hostname"
 		exit $NOTOK
 	fi
@@ -77,8 +77,6 @@ jenkins_client_port=2
 elasticsearch_port=4
 
 for i in {0..101}; do #allows for about 100 agents, dont expect this to happen.
-	
-    
 	if [ "$i" -eq "101" ]; then
     	echo "No more ports available"
         exit 1
