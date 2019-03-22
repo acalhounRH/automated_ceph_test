@@ -29,11 +29,10 @@ def main ():
                                                      authorized_keys=SSH_PUBLIC_KEY_FILE,
                                                      label=agent_label,
                                                      group='Jenkins_Agents',
-                                                     tags=['Jenkins_Agents'],
-                                                     booted=False)
+                                                     tags=['Jenkins_Agents'])
         node.ip_allocate(False)
-        status_check(node, "offline")
         node.reboot()
+        time.sleep(20)
         status_check(node, "running")
         host = socket.gethostbyaddr(node.ipv4[0])[0]
         print host
