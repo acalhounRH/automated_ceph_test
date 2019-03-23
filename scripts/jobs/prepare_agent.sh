@@ -45,7 +45,7 @@ else
 	export LINODE_API_KEY=$Linode_API_key
 	export AGENT_NAME=$lowercase_agent_name
 	jenkins_agent=`python2 ./scripts/utils/create_linode_agent.py`
-	print "Linode agent host $jenkins_agent"
+	echo "Linode agent host $jenkins_agent"
 	if [ -Z "$jenkins_agent" ]; then
 		echo "Failed to retrieve agent hostname"
 		exit $NOTOK
