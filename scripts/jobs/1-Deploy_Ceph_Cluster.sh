@@ -65,7 +65,7 @@ fi
 #yum install ceph-fuse -y
 #yum install ceph-common -y
 #yum install ceph-ansible -y
-pip uninstall urllib3
+pip uninstall urllib3 -y
 yum install ceph-common ceph-fuse ceph-ansible -y || exit $NOTOK
 
 # disable key checking in Ceph RPMs to avoid need for 
