@@ -12,7 +12,8 @@
 
 script_dir=$HOME/automated_ceph_test
 
-if [ "$linode_cluster" == "true" ]; then
+hostname | grep -q linode.com
+if [ $? = 0 ]; then
 	inventory_file=$HOME/ceph-linode/ansible_inventory
 else
 	inventory_file=$script_dir/ansible_inventory
