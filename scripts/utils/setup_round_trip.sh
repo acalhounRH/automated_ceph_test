@@ -3,14 +3,14 @@
 inventory_file=$1
 
 ARRAY=()
-for host in `ansible --list-hosts $i -i $inventory_file | grep -v hosts`; do
-	ping $j -c 1 > /dev/null 2>&1
+for cur_host in `ansible --list-hosts $i -i $inventory_file | grep -v hosts`; do
+	ping $cur_host -c 1 > /dev/null 2>&1
     exit_status=`echo $?`
     if [ "$exit_status" -gt "0" ]; then
-    		host=`cat $inventory_file | grep $host | awk {'print $2'} | sed 's/.*=//'`		
+    		host=`cat $inventory_file | grep $cur_host | awk {'print $2'} | sed 's/.*=//'`		
 	echo $host
     elif [ "$exit_status" -eq "0" ]; then
-    		host=$j
+    		host=$cur_host
 	echo $host
 	fi
 	ARRAY+=($host)
