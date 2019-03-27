@@ -13,7 +13,7 @@ for host in `ansible --list-hosts $i -i $inventory_file | grep -v hosts`; do
     		host=$j
 	echo $host
 	fi
-	$ARRAY+=$host
+	$ARRAY+=($host)
 done
 
 host=`hostname`
