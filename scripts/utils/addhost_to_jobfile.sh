@@ -29,7 +29,7 @@ for i in "${ceph_ary[@]}"; do
 				echo $host
                 fi
 
-		$host=`ssh $host "hostname -f"`
+		host=`ssh $host "hostname -f"`
 		
 		if [[ "$i" =~ .*osd.* ]]; then
 			osdhost_list="$osdhost_list\"$host\","
