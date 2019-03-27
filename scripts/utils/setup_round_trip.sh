@@ -2,7 +2,15 @@
 
 inventory_file=$1
 
-ARRAY=()
+host=`hostname`
+
+new_host="
+        Host $host
+        User root
+        UserKnownHostsFile /dev/null
+        StrictHostKeyChecking no
+        "
+        
 for cur_host in `ansible --list-hosts all -i $inventory_file | grep -v hosts`; do
 	ping $cur_host -c 1 > /dev/null 2>&1
     exit_status=`echo $?`
@@ -13,27 +21,10 @@ for cur_host in `ansible --list-hosts all -i $inventory_file | grep -v hosts`; d
     		host=$cur_host
 	echo $host
 	fi
-	ARRAY+=($host)
-done
-
-host=`hostname`
-
-new_host="
-        Host $host
-        User root
-        UserKnownHostsFile /dev/null
-        StrictHostKeyChecking no
-        "
-echo $ARRAY
-for i in `cat tmp`; do
-        ssh $i "ssh-keygen -t rsa -q -N \"\" ; echo \"$new_host\" >> $HOME/.ssh/config " ;
-        pubkey=`ssh $i "cat ~/.ssh/id_rsa.pub"`
-        echo $pubkey>> ~/.ssh/authorized_keys
+	
+	ssh $host "ssh-keygen -t rsa -q -N \"\" ; echo \"$new_host\" >> $HOME/.ssh/config " ;
+    pubkey=`ssh $host "cat ~/.ssh/id_rsa.pub"`
+    echo $pubkey>> ~/.ssh/authorized_keys
 done
 
 echo "setup round trip between host and control node"
-#for i in `cat tmp`; do
-#        ssh $i "echo \"$new_host\" >> $HOME/.ssh/config"
-#        pubkey=`ssh $i "cat ~/.ssh/id_rsa.pub"`
-#        echo $pubkey>> ~/.ssh/authorized_keys
-#done
