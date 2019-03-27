@@ -3,7 +3,7 @@
 inventory_file=$1
 
 ARRAY=()
-for cur_host in `ansible --list-hosts $i -i $inventory_file | grep -v hosts`; do
+for cur_host in `ansible --list-hosts all -i $inventory_file | grep -v hosts`; do
 	ping $cur_host -c 1 > /dev/null 2>&1
     exit_status=`echo $?`
     if [ "$exit_status" -gt "0" ]; then
