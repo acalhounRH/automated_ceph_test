@@ -24,7 +24,7 @@ new_host="
         UserKnownHostsFile /dev/null
         StrictHostKeyChecking no
         "
-
+echo $ARRAY
 for i in `cat tmp`; do
         ssh $i "ssh-keygen -t rsa -q -N \"\" ; echo \"$new_host\" >> $HOME/.ssh/config " ;
         pubkey=`ssh $i "cat ~/.ssh/id_rsa.pub"`
