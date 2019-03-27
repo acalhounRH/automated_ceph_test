@@ -80,9 +80,11 @@ fi
 
 echo "$service_inventory" >> $inventory_file
 
-#Setup and install pbench on all linode host
 cat $inventory_file
 
+$script_dir/scripts/utils/setup_round_trip.sh $inventory_file
+
+#Setup and install pbench on all linode host
 #You will need to install a cert in order to use the Dev COPR
 #instance where the rhel8 pbench RPMS are stored - see
 #	https://mojo.redhat.com/docs/DOC-1151538-how-to-use-internal-copr-repository-coprdevelredhatcom-with-rhel-7

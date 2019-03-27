@@ -31,7 +31,7 @@ for i in `cat tmp`; do
         echo $pubkey>> ~/.ssh/authorized_keys
 done
 
-
+print "setup round trip between host and control node"
 #for i in `cat tmp`; do
 #        ssh $i "echo \"$new_host\" >> $HOME/.ssh/config"
 #        pubkey=`ssh $i "cat ~/.ssh/id_rsa.pub"`
