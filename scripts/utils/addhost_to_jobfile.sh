@@ -19,6 +19,7 @@ for i in "${ceph_ary[@]}"; do
                 exit_status=`echo $?`
                 if [ "$exit_status" -gt "0" ]; then
                 		host=`cat $inventory_file | grep $j | awk {'print $2'} | sed 's/.*=//'`
+                		
 				echo $host
                 elif [ "$exit_status" -eq "0" ]; then
                 		host=$j
@@ -28,6 +29,8 @@ for i in "${ceph_ary[@]}"; do
 				echo $host
                 fi
 
+		$host=`ssh $host "hostname -f"`
+		
 		if [[ "$i" =~ .*osd.* ]]; then
 			osdhost_list="$osdhost_list\"$host\","
 		elif [[ "$i" =~ .*mons.* ]]; then
