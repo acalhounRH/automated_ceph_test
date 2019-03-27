@@ -22,7 +22,7 @@ for cur_host in `ansible --list-hosts all -i $inventory_file | grep -v hosts`; d
 	echo $host
 	fi
 	
-	ssh $host "ssh-keygen -t rsa -q -N \"\" ; echo \"$new_host\" >> $HOME/.ssh/config " ;
+	ssh $host "ssh-keygen -t rsa -f ~/.ssh/id_rsa -q -N \"\" ; echo \"$new_host\" >> $HOME/.ssh/config " ;
     pubkey=`ssh $host "cat ~/.ssh/id_rsa.pub"`
     echo $pubkey>> ~/.ssh/authorized_keys
 done

@@ -31,6 +31,14 @@ for i in "${ceph_ary[@]}"; do
 
 		host=`ssh $host "hostname -f"`
 		
+		new_host="
+		        Host $host
+		        User root
+		        UserKnownHostsFile /dev/null
+		        StrictHostKeyChecking no
+        		"
+        echo "$new_host" >> $HOME/.ssh/config
+		
 		if [[ "$i" =~ .*osd.* ]]; then
 			osdhost_list="$osdhost_list\"$host\","
 		elif [[ "$i" =~ .*mons.* ]]; then
