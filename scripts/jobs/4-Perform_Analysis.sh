@@ -11,7 +11,7 @@
 # this makes troubleshooting a pipeline much easier for the user
 
 script_dir=$HOME/automated_ceph_test
-pip install -I urllib3
+#pip install -I urllib3
 cd $archive_dir
 
 #if cbt
