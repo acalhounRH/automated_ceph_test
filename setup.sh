@@ -58,7 +58,7 @@ yum install python-pip -y
 pip install pip -U
 pip install pyyaml
 pip install elasticsearch 
-#pip install urllib3==1.23
+pip install urllib3==1.23
 pip install statistics
 pip install xmltodict
 pip install linode_api4
