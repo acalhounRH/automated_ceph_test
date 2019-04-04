@@ -12,7 +12,7 @@
 
 script_dir=$HOME/automated_ceph_test
 #pip install -I urllib3
-pip install -I request 
+pip install -I requests
 cd $archive_dir
 
 #if cbt
