@@ -119,8 +119,8 @@ class pbench_transcriber:
                                     
                                 tmp_doc[tool][file_name]['metric_stat'] = metric_stat
                                 
-                                if "cpuall" in file_name and self.host_info is not None:
-                                    metric_value = metric_value / int(self.host_info['cpu_info']['CPU(s)'])
+                                #if "cpuall" in file_name and self.host_info is not None:
+                                #metric_value = metric_value / int(self.host_info['cpu_info']['CPU(s)'])
                                     
                                 tmp_doc[tool][file_name]['metric_value'] = metric_value
                                 a = importdoc

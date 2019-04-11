@@ -35,7 +35,7 @@ export ANSIBLE_INVENTORY=$inventory_file
 #rm -rf /usr/share/ceph-ansible
 #rm -f /etc/ceph/ceph.conf /etc/ceph/ceph.client.admin.keyring
 yum install -y yum-utils
-yum-config-manager --disable epel
+#yum-config-manager --disable epel
 
 rm -rf /ceph-ansible-keys
 mkdir -m0777 /ceph-ansible-keys
@@ -68,7 +68,7 @@ fi
 
 yum install ceph-common ceph-fuse -y  
 
-yum install ceph-ansible -y || exit $NOTOK
+#yum install ceph-ansible -y || exit $NOTOK
 
 # disable key checking in Ceph RPMs to avoid need for 
 # "redhatbuild" GPG RPM key in beta releases
@@ -176,15 +176,18 @@ fi
 
 export first_mon=`ansible --list-host mons |grep -v hosts | grep -v ":" | head -1 | sed 's/ //g'`
 #only needed with linode install
-export first_mon_ip=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["monitor_address"] }}' localhost | grep -v localhost | sed 's/ //g'`
+if [ -n "$linode_cluster" ] ; then
+	export first_mon=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["monitor_address"] }}' localhost | grep -v localhost | sed 's/ //g'`
+fi
+``
 ansible -m script -a "$script_dir/scripts/utils/check_cluster_status.py" $first_mon \
  || exit $NOTOK
 
 # make everyone in the cluster able to run ceph -s
 # make agent able to access Ceph cluster as client
 
-(scp $first_mon_ip:/etc/ceph/ceph.conf /etc/ceph/ && \
- scp $first_mon_ip:/etc/ceph/ceph.client.admin.keyring /etc/ceph/ && \
+(scp $first_mon:/etc/ceph/ceph.conf /etc/ceph/ && \
+ scp $first_mon:/etc/ceph/ceph.client.admin.keyring /etc/ceph/ && \
  ansible -m copy -a 'src=/etc/ceph/ceph.client.admin.keyring dest=/etc/ceph/' clients) \
  || exit $NOTOK
 
