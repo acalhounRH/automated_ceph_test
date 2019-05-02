@@ -15,7 +15,8 @@ def main():
         host = sys.argv[3]
         esport = sys.argv[4]
     else:
-        print "need more args,  host, port" 
+        print ("need more args,  host, port") 
+        sys.exit()
 
     #setup elasticsearch connection
     globals()['es'] = Elasticsearch(
@@ -58,7 +59,7 @@ def compare_result(test1, test2, headerdoc):
     result_doc["_source"]['test2'] = test2
     result_doc["_op_type"] = "create"
 
-    print ("Comparing %s Versus %s ") % (test1, test2)
+    print ("Comparing %s Versus %s " % (test1, test2))
 
     test1_doc = {}
     test2_doc = {}
@@ -126,14 +127,14 @@ def compare_result(test1, test2, headerdoc):
             c_results['_source']['operation'] = operation
             c_results['_source']['%sKB' % object_size] = rdelta
 
-            c_results["_id"] = hashlib.md5(json.dumps(c_results)).hexdigest()
+            c_results["_id"] = hashlib.md5(str(c_results).encode()).hexdigest()
             a = copy.deepcopy(c_results)
             actions.append(a)
             
     c_results = copy.deepcopy(result_doc)
     average_delta = round((sum(average_delta_list)/len(average_delta_list)), 3)
     c_results['_source']['average_delta'] = average_delta
-    c_results["_id"] = hashlib.md5(json.dumps(c_results)).hexdigest()
+    c_results["_id"] = hashlib.md5(str(c_results).encode()).hexdigest()
     a = copy.deepcopy(c_results)
     actions.append(a)
 
