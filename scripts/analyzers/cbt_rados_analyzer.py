@@ -26,7 +26,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                 if "radosbench" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     
                     write_path = "%s/write" % dirpath
-                    metadata['ceph_bfrom . import cbt_pbench_analyzer?OHVB . import cbt_pbench_analyzerfrom . import cbt_pbench_analyzerfrom . import cbt_pbench_analyzerfrom . import cbt_pbench_analyzerenchmark_test']['test_config']['mode'] = "write"
+                    metadata['ceph_benchmark_test']['test_config']['mode'] = "write"
                     #analyze rados output files
                     
                     analyze_cbt_rados_files_generator = analyze_cbt_rados_files(write_path, cbt_config_obj, copy.deepcopy(metadata))
