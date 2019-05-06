@@ -22,7 +22,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                 metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
                 
                 if metadata['ceph_benchmark_test']['test_config']['op_size']: metadata['ceph_benchmark_test']['test_config']['op_size'] = int(metadata['ceph_benchmark_test']['test_config']['op_size']) / 1024
-                dwqaFD 
+                
                 if "radosbench" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     
                     write_path = "%s/write" % dirpath
