@@ -39,7 +39,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                         yield pbench_obj
                     
                     if not metadata['ceph_benchmark_test']['test_config']['write_only']:
-                        if metadata['ceph_benchmark_test']['test_config']['readmode'] is "seq" || not metadata['ceph_benchmark_test']['test_config']['readmode']:
+                        if metadata['ceph_benchmark_test']['test_config']['readmode'] is "seq" or not metadata['ceph_benchmark_test']['test_config']['readmode']:
                             read_path = "%s/seq" % dirpath
                             metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
                         elif metadata['ceph_benchmark_test']['test_config']['readmode'] is "rand":
