@@ -171,7 +171,9 @@ class rados_json_results_transcriber:
         for json_file in self.json_data_list: 
             #json_metadata = {}
             json_metadata = json_file['metadata']
-            start_time = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', datetime.fromtimestamp(os.path.getmtime(json_file['jfile'])))
+            file_time = os.path.getmtime(json_file['jfile'])
+            logger.debug(file_time)
+            start_time = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', file_time)
             rados_json_transcriber_obj = rados_json_transcriber(json_file, start_time, json_metadata)
             rjt_record = rados_json_transcriber_obj.emit_action()
             yield rjt_record
