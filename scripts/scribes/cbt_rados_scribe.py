@@ -112,7 +112,7 @@ class rados_json_transcriber():
         importdoc["_type"] = "radosjsonfiledata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
-        importdoc["_source"]['date'] = self.start_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+        importdoc["_source"]['date'] = self.start_time
         with open(self.json_file, 'r') as myfile:
             data=myfile.read()
         importdoc["_source"]['ceph_benchmark_test']['test_data']['rados_json'] = json.loads(data)
@@ -162,7 +162,7 @@ class rados_json_results_transcriber:
             mode = json_data['metadata']['ceph_benchmark_test']['test_config']['mode']
             
             if not self.sumdoc[iteration][mode][op_size]:
-                self.sumdoc[iteration][mode][op_size]['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
+                self.sumdoc[iteration][mode][op_size]['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.%fZ', time.localtime(json_doc['timestamp']))
                 
             self.sumdoc[iteration][mode][op_size]['average_iops'] += json_data['metadata']['ceph_benchmark_test']['test_data']['rados_json']['Average IOPS']
         
@@ -171,10 +171,11 @@ class rados_json_results_transcriber:
         for json_file in self.json_data_list: 
             #json_metadata = {}
             json_metadata = json_file['metadata']
-            file_time = os.path.getmtime(json_file['jfile'])
+            file = json_file['jfile']
+            file_time = os.path.getmtime(file)
             logger.debug(file_time)
-            start_time = time.gmtime(file_time)
-            rados_json_transcriber_obj = rados_json_transcriber(json_file, start_time, json_metadata)
+            start_time = time.strftime('%Y-%m-%dT%H:%M:%S.%fZ', time.gmtime(file_time))
+            rados_json_transcriber_obj = rados_json_transcriber(file, start_time, json_metadata)
             rjt_record = rados_json_transcriber_obj.emit_actions()
             yield rjt_record
         
