@@ -62,7 +62,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
 #                         for pbench_obj in analyze_cbt_Pbench_data_generator:
 #                             yield pbench_obj
                             
-    for import_obj in rados_json_results_transcriber_generator.get_fiojson_importers():
+    for import_obj in rados_json_results_transcriber_generator.emit_rados_json_files():
         yield import_obj
         
     yield fiojson_results_transcriber_generator
