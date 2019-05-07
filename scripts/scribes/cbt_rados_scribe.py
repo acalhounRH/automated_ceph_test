@@ -187,8 +187,8 @@ class rados_json_results_transcriber:
         
     def emit_actions(self):
         importdoc = {}
-        importdoc["_index"] = "cbt_librbdfio-summary-indextest1-fixed"
-        importdoc["_type"] = "librbdfiosummarydata"
+        importdoc["_index"] = "cbt_radosbench-summary-index"
+        importdoc["_type"] = "radosbenchsummarydata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
         
