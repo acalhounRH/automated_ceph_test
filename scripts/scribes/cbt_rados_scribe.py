@@ -178,7 +178,7 @@ class rados_json_results_transcriber:
             #json_metadata = {}
             json_metadata = json_file['metadata']
             file = json_file['jfile']
-            start_time = json_date['start_time']
+            start_time = json_data['start_time']
             
             rados_json_transcriber_obj = rados_json_transcriber(file, start_time, json_metadata)
             yield rados_json_transcriber_obj
