@@ -169,6 +169,7 @@ class rados_json_results_transcriber:
             
             if not self.sumdoc[iteration][mode][op_size]:
                 self.sumdoc[iteration][mode][op_size]['date'] = json_data['start_time']
+                self.sumdoc[iteration][mode][op_size]['average_iops'] = 0
                 
             self.sumdoc[iteration][mode][op_size]['average_iops'] += json_data['metadata']['ceph_benchmark_test']['test_data']['rados_json']['Average IOPS']
         
