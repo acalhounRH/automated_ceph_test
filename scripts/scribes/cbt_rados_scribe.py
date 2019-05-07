@@ -3,6 +3,7 @@ import socket, datetime, csv, logging, copy
 from datetime import timedelta
 from collections import defaultdict
 import itertools
+import statistics
 
 logger = logging.getLogger("index_cbt")
 
@@ -194,6 +195,39 @@ class rados_json_results_transcriber:
         tmp_doc = {}
         
         self.calculate_iops_sum()
+        
+        for oper in self.operation_list:
+            for obj_size in self.block_size_list:
+                aver_ary = []
+                total_ary = []
+                tmp_doc = {}
+                tmp_doc['object_size'] = obj_size # set document's object size
+                tmp_doc['operation'] = oper # set documents operation
+                firstrecord = True
+                calcuate_percent_std_dev = False
+                for itera in self.iteration_list: # 
+                    aver_ary.append(self.sumdoc[itera][oper][obj_size]['average_iops'])
+    
+                    if firstrecord:
+                        importdoc["_source"]['date'] = self.sumdoc[itera][oper][obj_size]['date']
+                        firstrecord = True
+        
+                average = statistics.mean(aver_ary)
+                if average > 0.0:
+                    tmp_doc['average_iops'] = average
+                    if len(aver_ary) > 1:
+                        calcuate_percent_std_dev = True 
+                else:
+                    tmp_doc['average_iops'] = 0
+        
+                tmp_doc['total-iops'] = (tmp_doc['write-iops'] + tmp_doc['read-iops'])
+                
+                if calcuate_percent_std_dev:
+                    tmp_doc['std-dev-%s' % obj_size] = round(((statistics.stdev(aver_ary) / average) * 100), 3)
+            
+                importdoc["_source"]['ceph_benchmark_test']['test_data'] = tmp_doc
+                importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
+                yield importdoc   
         
         
         
