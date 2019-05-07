@@ -40,14 +40,18 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                         yield pbench_obj
                     
                     if not metadata['ceph_benchmark_test']['test_config']['write_only']:
-                        if metadata['ceph_benchmark_test']['test_config']['readmode'] is "seq" or not metadata['ceph_benchmark_test']['test_config']['readmode']:
+                        if "seq" in metadata['ceph_benchmark_test']['test_config']['readmode']:
                             read_path = "%s/seq" % dirpath
                             logger.debug(read_path)
                             metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
-                        elif metadata['ceph_benchmark_test']['test_config']['readmode'] is "rand":
+                        elif "rand" in metadata['ceph_benchmark_test']['test_config']['readmode']:
                             read_path = "%s/rand" % dirpath
                             logger.debug(read_path)
                             metadata['ceph_benchmark_test']['test_config']['mode'] = "randread"
+                        elif not metadata['ceph_benchmark_test']['test_config']['readmode']:
+                            read_path = "%s/seq" % dirpath
+                            logger.debug(read_path)
+                            metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
                         
                         analyze_cbt_rados_files_generator = analyze_cbt_rados_files(read_path, cbt_config_obj, copy.deepcopy(metadata))
                         for cbt_rados_obj in analyze_cbt_rados_files_generator:
