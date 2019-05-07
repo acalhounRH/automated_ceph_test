@@ -121,7 +121,6 @@ class rados_json_transcriber():
             }
         importdoc["_source"]['ceph_benchmark_test']['test_data'] = tmpdoc
         importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
-        logger.debug(importdoc)
         yield importdoc 
         
                          
