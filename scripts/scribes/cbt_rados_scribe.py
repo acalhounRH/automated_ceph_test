@@ -138,7 +138,7 @@ class rados_json_results_transcriber:
         json_data = {}
         json_data['jfile'] = json_file
         file_time = os.path.getmtime(json_file)
-        json_date['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%S.%fZ', time.gmtime(file_time))
+        json_data['start_time'] = time.strftime('%Y-%m-%dT%H:%M:%S.%fZ', time.gmtime(file_time))
         json_data['metadata'] = metadata 
         self.json_data_list.append(json_data)
         
