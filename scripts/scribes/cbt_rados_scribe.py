@@ -171,7 +171,7 @@ class rados_json_results_transcriber:
                 self.sumdoc[iteration][mode][op_size]['date'] = json_data['start_time']
                 self.sumdoc[iteration][mode][op_size]['average_iops'] = 0
                 
-            self.sumdoc[iteration][mode][op_size]['average_iops'] += json_data['metadata']['ceph_benchmark_test']['test_data']['rados_json']['Average IOPS']
+            self.sumdoc[iteration][mode][op_size]['average_iops'] += int(json_data['metadata']['ceph_benchmark_test']['test_data']['rados_json']['Average IOPS'])
         
     def emit_rados_json_files(self):
         
