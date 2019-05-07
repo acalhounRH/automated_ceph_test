@@ -20,6 +20,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
             if 'benchmark_config.yaml' in fname:
                 benchmark_data = yaml.load(open(fname))
                 metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
+                logger.debug(json.dumps(metadata, indent=1))
                 
                 if metadata['ceph_benchmark_test']['test_config']['op_size']: metadata['ceph_benchmark_test']['test_config']['op_size'] = int(metadata['ceph_benchmark_test']['test_config']['op_size']) / 1024
                 
