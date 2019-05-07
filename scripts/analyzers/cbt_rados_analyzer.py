@@ -14,6 +14,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
     
     metadata = {}
     metadata = test_metadata
+    rados_json_results_transcriber_generator = cbt_rados_scribe.rados_json_results_transcriber(metadata)
     for dirpath, dirs, files in os.walk(tdir):
         for filename in files:
             fname = os.path.join(dirpath, filename)
@@ -30,7 +31,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                     metadata['ceph_benchmark_test']['test_config']['mode'] = "write"
                     #analyze rados output files
                     
-                    analyze_cbt_rados_files_generator = analyze_cbt_rados_files(write_path, cbt_config_obj, copy.deepcopy(metadata))
+                    analyze_cbt_rados_files_generator = analyze_cbt_rados_files(write_path, rados_json_results_transcriber_generator, copy.deepcopy(metadata))
                     for cbt_rados_obj in analyze_cbt_rados_files_generator:
                         yield cbt_rados_obj
                     
@@ -53,7 +54,7 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                             logger.debug(read_path)
                             metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
                         
-                        analyze_cbt_rados_files_generator = analyze_cbt_rados_files(read_path, cbt_config_obj, copy.deepcopy(metadata))
+                        analyze_cbt_rados_files_generator = analyze_cbt_rados_files(read_path, rados_json_results_transcriber_generator, copy.deepcopy(metadata))
                         for cbt_rados_obj in analyze_cbt_rados_files_generator:
                             yield cbt_rados_obj
                         
@@ -61,7 +62,12 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                         for pbench_obj in analyze_cbt_Pbench_data_generator:
                             yield pbench_obj
                             
-def analyze_cbt_rados_files(tdir, cbt_config_obj, metadata):
+    for import_obj in rados_json_results_transcriber_generator.get_fiojson_importers():
+        yield import_obj
+        
+    yield fiojson_results_transcriber_generator
+                            
+def analyze_cbt_rados_files(tdir, json_results_scribe, metadata):
     logger.info("Processing rados json files...")
     for dirpath, dirs, files in os.walk(tdir):
         for filename in files:
@@ -69,6 +75,9 @@ def analyze_cbt_rados_files(tdir, cbt_config_obj, metadata):
             if "output" in fname and "json" not in fname:
                 #get raw output file and seperated json file and pass them to a transcriber object
                 rados_transcriber_obj = cbt_rados_scribe.rados_transcriber(fname, copy.deepcopy(metadata))
-                yield rados_transcriber_obj              
+                yield rados_transcriber_obj
+            if "json_output" in fname:
+                json_results_scribe.add_json_file(fname, copy.deepcopy(metadata))
+                          
                 
      
