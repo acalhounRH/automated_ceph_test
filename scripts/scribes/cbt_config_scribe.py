@@ -277,9 +277,8 @@ class ssh_remote_command():
     def issue_command(self, host, command):
         
         try:
-            command = command + " -o LogLevel=ERROR"
             logger.debug("ssh: host %s comand %s" % (host, command))
-            proc = subprocess.Popen(['ssh', host, command],
+            proc = subprocess.Popen(['ssh -o LogLevel=ERROR', host, command],
                                     stdin=subprocess.PIPE,stdout=subprocess.PIPE)
             
             self.sshcounter = self.sshcounter + 1
