@@ -180,8 +180,8 @@ class rados_json_results_transcriber:
             logger.debug(file_time)
             start_time = time.strftime('%Y-%m-%dT%H:%M:%S.%fZ', time.gmtime(file_time))
             rados_json_transcriber_obj = rados_json_transcriber(file, start_time, json_metadata)
-            rjt_record = rados_json_transcriber_obj.emit_actions()
-            yield rjt_record
+            #rjt_record = rados_json_transcriber_obj.emit_actions()
+            yield rados_json_transcriber_obj
         
     def emit_actions(self):
         importdoc = {}
