@@ -115,8 +115,10 @@ class rados_json_transcriber():
         importdoc["_source"]['date'] = self.start_time
         with open(self.json_file, 'r') as myfile:
             data=myfile.read()
-            
-        tmpdoc['rados_json'] = json.loads(data)
+        
+        tmpdoc = {
+            "rados_json": json.loads(data)
+            }
         importdoc["_source"]['ceph_benchmark_test']['test_data'] = tmpdoc
         importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
         return importdoc 
