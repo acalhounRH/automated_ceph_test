@@ -1,6 +1,7 @@
 import yaml, os, time, json, hashlib
 import socket, datetime, csv, logging, copy
 from datetime import timedelta
+from collections import defaultdict
 import itertools
 
 logger = logging.getLogger("index_cbt")
