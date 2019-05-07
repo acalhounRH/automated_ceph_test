@@ -32,8 +32,8 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                     #analyze rados output files
                     
                     analyze_cbt_rados_files_generator = analyze_cbt_rados_files(write_path, rados_json_results_transcriber_generator, copy.deepcopy(metadata))
-                    for cbt_rados_obj in analyze_cbt_rados_files_generator:
-                        yield cbt_rados_obj
+#                     for cbt_rados_obj in analyze_cbt_rados_files_generator:
+#                         yield cbt_rados_obj
                     
                     #analyze rados wrtie pbench logs
 #                     analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(write_path, cbt_config_obj, copy.deepcopy(metadata))
@@ -55,8 +55,8 @@ def analyze_cbt_rados_results(tdir, cbt_config_obj, test_metadata):
                             metadata['ceph_benchmark_test']['test_config']['mode'] = "read"
                         
                         analyze_cbt_rados_files_generator = analyze_cbt_rados_files(read_path, rados_json_results_transcriber_generator, copy.deepcopy(metadata))
-                        for cbt_rados_obj in analyze_cbt_rados_files_generator:
-                            yield cbt_rados_obj
+#                         for cbt_rados_obj in analyze_cbt_rados_files_generator:
+#                             yield cbt_rados_obj
                         
 #                         analyze_cbt_Pbench_data_generator = cbt_pbench_analyzer.analyze_cbt_Pbench_data(read_path, cbt_config_obj, copy.deepcopy(metadata))
 #                         for pbench_obj in analyze_cbt_Pbench_data_generator:
