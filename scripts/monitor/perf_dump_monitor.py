@@ -35,7 +35,7 @@ def main():
             
     #for each host run the collect measurement method
     td_duration = datetime.timedelta(seconds=arguments.duration)
-    print td_duration.seconds
+    print (td_duration.seconds)
 
     manager = multiprocessing.Manager()
     return_list = manager.list()
@@ -44,7 +44,7 @@ def main():
     while monitor_status:
         collection_time = datetime.datetime.now()
 #        elapsed_time = collection_time - start_time
-        print elapsed_time
+        print (elapsed_time)
         
         #For each host spwan a subprocess and retrive perf dump
         process_list = []
@@ -65,19 +65,19 @@ def main():
         remainder = datetime.timedelta(seconds=arguments.sample_period) - collection_delta_time
         elapsed_time = datetime.datetime.now() - start_time
 
-        print "going to sleep for %s seconds" % remainder.seconds
+        print ("going to sleep for %s seconds" % remainder.seconds)
         if remainder.seconds < 0:
-            print "taking too ling"
+            print ("taking too ling")
             time.sleep(remainder.seconds)
         else:
             time.sleep(remainder.seconds) #time_interval
 
         #if the elapsed time is greater than the specified duration quit. 
         if elapsed_time.seconds > td_duration.seconds:
-            print "all done monitoring"
+            print ("all done monitoring")
             monitor_status = False
         else:
-            print "keep on monitoring"
+            print ("keep on monitoring")
 
     f = open("ceph-osd-perf-dump.txt", 'w')
     f.write(json.dumps(list(return_list), indent=1))
@@ -85,7 +85,7 @@ def main():
 
     
 def collect_measurement(remoteclient, host, osd_list, return_list):
-    print "started collection" 
+    print ("started collection") 
     perf_dump_data = {
             "_index": "ceph_perf_dump_data_index",
             "_type": "ceph_perf_dump_data",
@@ -93,7 +93,7 @@ def collect_measurement(remoteclient, host, osd_list, return_list):
             "_source": {}
             }
     
-    print "working on host %s " % host
+    print ("working on host %s " % host)
         #collect the performance measurements 
     for osd in osd_list:
         
@@ -175,12 +175,12 @@ class argument_handler():
                     
                     -d or --duration - test duration
                     -s or --sample_period - sample period 
-                    -o of --output_dir - output directory (default is current working directory)
+                    -o or --output_dir - output directory (default is current working directory)
                 """
         try:
             opts, _ = getopt.getopt(sys.argv[1:], 'd:s:o:', ['output_file', 'duration=', 'sample_period_'])
         except getopt.GetoptError:
-            print usage 
+            print (usage) 
             exit(1)
     
         for opt, arg in opts:
@@ -195,7 +195,7 @@ class argument_handler():
             print("monitoring duration %s, Sample Period, %s" % (self.duration, self.sample_period))
         else:
             print(usage)
-            print self.duration, self.sample_period
+            print (self.duration, self.sample_period)
     #        print "Invailed arguments:\n \tevaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>"
             exit (1)
     
