@@ -111,14 +111,14 @@ class test_holder():
         
         indices = self.es.indices.get_alias("*")
         
-        index_list="cbt_librbdfio-summary-indextest1-fixed"
-#         for i in indices:
-#             if "run2run" not in i and "metricbeat" not in i and ".monitoring-" not in i and ".kibana" not in i:
-#                 logger.debug("adding %s to index list" % i)
-#                 if index_list:
-#                     index_list = "%s,%s" % (index_list, i)
-#                 else:
-#                     index_list = "%s" % (i)
+        index_list=""
+        for i in indices:
+            if "run2run" not in i and "metricbeat" not in i and ".monitoring-" not in i and ".kibana" not in i:
+                logger.debug("adding %s to index list" % i)
+                if index_list:
+                    index_list = "%s,%s" % (index_list, i)
+                else:
+                    index_list = "%s" % (i)
         
         results = self.es.search(
             index=index_list,
@@ -134,13 +134,10 @@ class test_holder():
         logger.info("Extracting data for %s" % self.test_id)
         logger.info("%d documents found" % results['hits']['total'])
         logger.info("Scrolling search results...")
+        page_data=results
         while (scroll_size > 0):
             
-            page_data = self.es.scroll(scroll_id = sid, scroll = '2m')
             sid = page_data['_scroll_id']
-            scroll_size = len(page_data['hits']['hits'])
-            doc_count += scroll_size
-            remaining_documents -= scroll_size
             logger.debug("Remaining Documents: " + str(remaining_documents))
             
             for doc in page_data['hits']['hits']:
@@ -169,6 +166,11 @@ class test_holder():
                 importdoc["_type"] = doc["_type"]
                 importdoc["_op_type"] = "create"
                 yield importdoc
+                
+            page_data = self.es.scroll(scroll_id = sid, scroll = '2m')
+            scroll_size = len(page_data['hits']['hits'])
+            doc_count += scroll_size
+            remaining_documents -= scroll_size
 
 class argument_handler():
     def __init__(self):
