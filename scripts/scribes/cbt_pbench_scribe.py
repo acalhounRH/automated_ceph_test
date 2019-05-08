@@ -86,7 +86,19 @@ class pbench_transcriber:
 
                                     tmp_doc[tool][file_name]['metric_value'] = metric_value
                                     a = importdoc
+                                if "rados" in pname:
+                                    pid = col_ary[col].split('-', 1)[0]
+                                    instance = -1
                                     
+                                    tmp_doc[tool][file_name]['process_name'] = "rados"
+                                    tmp_doc[tool][file_name]['service_id'] = instance
+                                    tmp_doc[tool][file_name]['process_pid'] = pid
+                                    
+                                    if "cpu_usage" in file_name and self.host_info is not None:
+                                        metric_value = metric_value / int(self.host_info['cpu_info']['CPU(s)'])
+
+                                    tmp_doc[tool][file_name]['metric_value'] = metric_value
+                                    a = importdoc
                                 else:
                                     for node_type in node_type_list:
                                         if  node_type in pname:    
