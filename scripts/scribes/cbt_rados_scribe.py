@@ -81,10 +81,6 @@ class rados_transcriber():
                         time_mark = "%sT%s" % (mdate, mtime)
                         mtimestruct = datetime.datetime.strptime(time_mark, '%Y-%m-%dT%H:%M:%S.%f')
                         start_time = mtimestruct - timedelta(seconds=20)
-                        # After finding out the time transcribe the json output data
-#                         rados_json_transcriber_obj = rados_json_transcriber(self.json_log, start_time, copy.deepcopy(self.metadata))
-#                         rjt_record = rados_json_transcriber_obj.emit_action()
-#                         yield rjt_record
                         
                         sometime = mtimestruct.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
                         
