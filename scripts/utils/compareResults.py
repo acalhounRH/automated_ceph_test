@@ -9,6 +9,8 @@ import itertools as it
 
 def main():
     #get args 
+    
+    print ("test")
     if len(sys.argv) > 2:
         t1 = sys.argv[1]
         t2 = sys.argv[2]
