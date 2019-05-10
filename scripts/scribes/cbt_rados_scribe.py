@@ -215,6 +215,8 @@ class rados_json_results_transcriber:
                         calcuate_percent_std_dev = True 
                 else:
                     tmp_doc['average_iops'] = 0
+                    
+                tmp_doc['total-iops'] = tmp_doc['average_iops']
                 
                 if calcuate_percent_std_dev:
                     tmp_doc['std-dev-%s' % obj_size] = round(((statistics.stdev(aver_ary) / average) * 100), 3)

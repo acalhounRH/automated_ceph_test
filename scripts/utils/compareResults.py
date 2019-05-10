@@ -70,11 +70,12 @@ def compare_result(test1, test2, headerdoc):
 
 
     #get test 1 results
-    test1_results = es.search(index="cbt_librbdfio-summary-indextest1-fixed", doc_type="librbdfiosummarydata", size=10000,  body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": test1}}})
+    index_list="cbt_librbdfio-summary-indextest1-fixed,cbt_radosbench-summary-index"
+    test1_results = es.search(index=index_list, size=10000,  body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": test1}}})
     print("Test1  %d documents found" % test1_results['hits']['total'])
 
     #get test 2 results
-    test2_results = es.search(index="cbt_librbdfio-summary-indextest1-fixed", doc_type="librbdfiosummarydata", size=10000, body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": test2}}})
+    test2_results = es.search(index=index_list, size=10000, body={"query": {"match": {"ceph_benchmark_test.common.test_info.test_id.keyword": test2}}})
     print("Test2 %d documents found" % test2_results['hits']['total'])
 
 
