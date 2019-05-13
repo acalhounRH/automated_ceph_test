@@ -83,7 +83,7 @@ def compare_result(test1, test2, headerdoc):
     ft = True
     for doc in test1_results['hits']['hits']:
         
-        if doc['_source']["ceph_benchmark_test"]["test_data"]['total-iops']:
+        if "total-iops" in doc['_source']["ceph_benchmark_test"]["test_data"]:
             operation = doc['_source']["ceph_benchmark_test"]["test_data"]['operation']
             object_size = doc['_source']["ceph_benchmark_test"]["test_data"]['object_size']
             total_iops = float(doc['_source']["ceph_benchmark_test"]["test_data"]['total-iops'])
@@ -104,7 +104,7 @@ def compare_result(test1, test2, headerdoc):
     #process test 2 results
     for doc in test2_results['hits']['hits']:
         
-        if doc['_source']["ceph_benchmark_test"]["test_data"]['total-iops']:
+        if "total-iops" in doc['_source']["ceph_benchmark_test"]["test_data"]:
             operation = doc['_source']["ceph_benchmark_test"]["test_data"]['operation']
             object_size = doc['_source']["ceph_benchmark_test"]["test_data"]['object_size']
             total_iops = float(doc['_source']["ceph_benchmark_test"]["test_data"]['total-iops'])
