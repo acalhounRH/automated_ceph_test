@@ -83,38 +83,40 @@ def compare_result(test1, test2, headerdoc):
     ft = True
     for doc in test1_results['hits']['hits']:
         
-        operation = doc['_source']["ceph_benchmark_test"]["test_data"]['operation']
-        object_size = doc['_source']["ceph_benchmark_test"]["test_data"]['object_size']
-        total_iops = float(doc['_source']["ceph_benchmark_test"]["test_data"]['total-iops'])
-        if ft:
-            result_doc["_source"]['date'] = doc["_source"]['date']
-            ft = True
-        #print json.dumps(test1_doc, indent=1)
-        if operation not in operations_array:
-            operations_array.append(str(operation))
-        if object_size not in object_size_array:
-            object_size_array.append(object_size)
-
-        if operation not in test1_doc:
-            test1_doc[operation] = {}
+        if doc['_source']["ceph_benchmark_test"]["test_data"]['total-iops']:
+            operation = doc['_source']["ceph_benchmark_test"]["test_data"]['operation']
+            object_size = doc['_source']["ceph_benchmark_test"]["test_data"]['object_size']
+            total_iops = float(doc['_source']["ceph_benchmark_test"]["test_data"]['total-iops'])
+            if ft:
+                result_doc["_source"]['date'] = doc["_source"]['date']
+                ft = True
+            #print json.dumps(test1_doc, indent=1)
+            if operation not in operations_array:
+                operations_array.append(str(operation))
+            if object_size not in object_size_array:
+                object_size_array.append(object_size)
     
-        test1_doc[operation][object_size] = total_iops
+            if operation not in test1_doc:
+                test1_doc[operation] = {}
+        
+            test1_doc[operation][object_size] = total_iops
 
     #process test 2 results
     for doc in test2_results['hits']['hits']:
         
-        operation = doc['_source']["ceph_benchmark_test"]["test_data"]['operation']
-        object_size = doc['_source']["ceph_benchmark_test"]["test_data"]['object_size']
-        total_iops = float(doc['_source']["ceph_benchmark_test"]["test_data"]['total-iops'])
-        
-        if operation not in operations_array:
-            operations_array.append(str(operation))
-        if object_size not in object_size_array:
-            object_size_array.append(object_size)
-        
-        if operation not in test2_doc:
-            test2_doc[operation] = {}
-        test2_doc[operation][object_size] = total_iops
+        if doc['_source']["ceph_benchmark_test"]["test_data"]['total-iops']:
+            operation = doc['_source']["ceph_benchmark_test"]["test_data"]['operation']
+            object_size = doc['_source']["ceph_benchmark_test"]["test_data"]['object_size']
+            total_iops = float(doc['_source']["ceph_benchmark_test"]["test_data"]['total-iops'])
+            
+            if operation not in operations_array:
+                operations_array.append(str(operation))
+            if object_size not in object_size_array:
+                object_size_array.append(object_size)
+            
+            if operation not in test2_doc:
+                test2_doc[operation] = {}
+            test2_doc[operation][object_size] = total_iops
     
     object_size_array.sort()
 
