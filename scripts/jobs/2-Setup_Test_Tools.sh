@@ -17,11 +17,11 @@ NOTOK=1
 
 release=`cat /etc/redhat-release`
 #if [[ .*"Red Hat Enterprise Linux release 8".* =~ $release]] ; then 
-#	copr_repo_url="http://pbench.perf.lab.eng.bos.redhat.com/repo/production/yum.repos.d/rhel8/"
-#	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
-#elif [[ .*"Red Hat Enterprise Linux release 7".* =~ $release  ]] ; then
-	copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo"
+	copr_repo_url="http://pbench.perf.lab.eng.bos.redhat.com/repo/production/yum.repos.d/rhel8/"
 	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+#elif [[ .*"Red Hat Enterprise Linux release 7".* =~ $release  ]] ; then
+#	copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo"
+#	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
 #else 
 	#exit $NOTOF
 #fi 
@@ -94,13 +94,13 @@ yum remove -y pbench-fio pbench-agent pbench-sysstat
 rm -rf /var/lib/pbench-agent/tools-default
 
 #if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then
-#	wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt
-#	update-ca-trust
+	wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt
+	update-ca-trust
 #else 
-	 yum install -y $epel_repo_rpm_url
-	(yum install -y yum-utils wget && \
-	 yum-config-manager --enable epel) \
- 	|| exit $NOTOK
+#	 yum install -y $epel_repo_rpm_url
+#	(yum install -y yum-utils wget && \
+#	 yum-config-manager --enable epel) \
+# 	|| exit $NOTOK
 #fi
 
  (cd /etc/yum.repos.d && wget $copr_repo_url) && \
@@ -112,11 +112,11 @@ rm -rf /var/lib/pbench-agent/tools-default
 export ANSIBLE_INVENTORY=$inventory_file
 
 #if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then
-#	ansible -m shell -a "wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt ; update-ca-trust" all
+	ansible -m shell -a "wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt ; update-ca-trust" all
 #else
-	ansible -m yum -a "name=$epel_repo_rpm_url" all
-	ansible -m yum -a "name=wget,yum-utils" all 
-	ansible -m shell -a "yum-config-manager --enable epel" all
+#	ansible -m yum -a "name=$epel_repo_rpm_url" all
+#	ansible -m yum -a "name=wget,yum-utils" all 
+#	ansible -m shell -a "yum-config-manager --enable epel" all
 #fi
 
 (ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat state=absent" all && \
