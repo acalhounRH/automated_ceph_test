@@ -68,7 +68,7 @@ fi
 
 yum install ceph-common ceph-fuse -y  
 
-#yum install ceph-ansible -y || exit $NOTOK
+yum install ceph-ansible -y || exit $NOTOK
 
 # disable key checking in Ceph RPMs to avoid need for 
 # "redhatbuild" GPG RPM key in beta releases
