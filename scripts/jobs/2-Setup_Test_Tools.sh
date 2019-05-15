@@ -16,15 +16,15 @@
 NOTOK=1
 
 release=`cat /etc/redhat-release`
-#if [[ .*"Red Hat Enterprise Linux release 8".* =~ $release]] ; then 
+if [[ $release =~ .*"Red Hat Enterprise Linux release 8".* ]] ; then 
 	copr_repo_url="http://pbench.perf.lab.eng.bos.redhat.com/repo/production/yum.repos.d/rhel8/"
 	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
-#elif [[ .*"Red Hat Enterprise Linux release 7".* =~ $release  ]] ; then
-#	copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo"
-#	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
-#else 
-	#exit $NOTOF
-#fi 
+elif [[ $release =~ .*"Red Hat Enterprise Linux release 7".* ]] ; then
+	copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo"
+	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
+else 
+	exit $NOTOF
+fi 
 
 register_tool() {
     pbench-register-tool --name=$1 --remote=$2 default -- --interval=$3 || exit $NOTOK
@@ -93,15 +93,15 @@ $script_dir/scripts/utils/setup_round_trip.sh $inventory_file
 yum remove -y pbench-fio pbench-agent pbench-sysstat
 rm -rf /var/lib/pbench-agent/tools-default
 
-#if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then
+if [[ $release =~ *"Red Hat Enterprise Linux release 8."* ]] ; then
 	wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt
 	update-ca-trust
-#else 
-#	 yum install -y $epel_repo_rpm_url
-#	(yum install -y yum-utils wget && \
-#	 yum-config-manager --enable epel) \
-# 	|| exit $NOTOK
-#fi
+else 
+	 yum install -y $epel_repo_rpm_url
+	(yum install -y yum-utils wget && \
+	 yum-config-manager --enable epel) \
+ 	|| exit $NOTOK
+fi
 
  (cd /etc/yum.repos.d && wget $copr_repo_url) && \
  yum install pbench-fio pbench-agent pbench-sysstat -y \
@@ -111,13 +111,16 @@ rm -rf /var/lib/pbench-agent/tools-default
 
 export ANSIBLE_INVENTORY=$inventory_file
 
-#if [[ $release == *"Red Hat Enterprise Linux release 8."* ]] ; then
+#setup smallfile on all clients
+ansible -m shell -a "cd; git clone https://github.com/bengland2/smallfile.git; ln -svf ~/smallfile/smallfile_cli.py /usr/local/bin" clients
+
+if [[ $release =~ *"Red Hat Enterprise Linux release 8."* ]] ; then
 	ansible -m shell -a "wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt ; update-ca-trust" all
-#else
-#	ansible -m yum -a "name=$epel_repo_rpm_url" all
-#	ansible -m yum -a "name=wget,yum-utils" all 
-#	ansible -m shell -a "yum-config-manager --enable epel" all
-#fi
+else
+	ansible -m yum -a "name=$epel_repo_rpm_url" all
+	ansible -m yum -a "name=wget,yum-utils" all 
+	ansible -m shell -a "yum-config-manager --enable epel" all
+fi
 
 (ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat state=absent" all && \
  ansible -m shell -a "rm -rf /var/lib/pbench-agent/tools-default" all && \

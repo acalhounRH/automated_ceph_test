@@ -43,6 +43,7 @@ fi
 
 if [ ! -d smallfile ]; then
 	git clone https://github.com/bengland2/smallfile.git
+	ln -svf ~/smallfile/smallfile_cli.py /usr/local/bin
 fi 
 
 epel_status=`rpm -qa | grep epel`
