@@ -20,7 +20,7 @@ else
 fi
 export ANSIBLE_INVENTORY=$inventory_file
 
-if [[ $settings =~ *"smallfile"* ]]; then
+if [[ $settings =~ .*"smallfile".* ]]; then
 	echo "Settings up for smallfile test"
 	mon_port=6789
 	mountpoint=/mnt/cephfs
@@ -34,7 +34,7 @@ if [[ $settings =~ *"smallfile"* ]]; then
 		export first_mon=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["monitor_address"] }}' localhost | grep -v localhost | sed 's/ //g'`
 	fi
 	
-	# distribute client key to Cephfs clients in expected format
+	echo "distribute client key to Cephfs clients in expected format"
 	
 	(rm -f /etc/ceph/cephfs.key && \
 	 awk '/==/{ print $NF }' /etc/ceph/ceph.client.admin.keyring > /etc/ceph/cephfs.key && \
@@ -49,7 +49,7 @@ if [[ $settings =~ *"smallfile"* ]]; then
 	 "mkdir -pv $mountpoint && mount -v -t ceph -o name=admin,secretfile=/etc/ceph/cephfs.key $mon_ip:$mon_port:/ $mountpoint && mkdir -pv $mountpoint/smf" clients \
 	   || exit $NOTOK
 	
-	# must mount cephfs from test driver as well
+	echo "mount cephfs from test driver as well"
 	umount $mountpoint
 	(mkdir -pv $mountpoint && \
 	 mount -v -t ceph -o name=admin,secretfile=/etc/ceph/cephfs.key $mon_ip:$mon_port:/ $mountpoint && \
