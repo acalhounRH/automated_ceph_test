@@ -112,7 +112,7 @@ fi
 export ANSIBLE_INVENTORY=$inventory_file
 
 #setup smallfile on all clients
-ansible -m shell -a "cd; git clone https://github.com/bengland2/smallfile.git; ln -svf ~/smallfile/smallfile_cli.py /usr/local/bin" clients
+ansible -m shell -a "cd; git clone https://github.com/bengland2/smallfile.git; ln -svf ~/smallfile/smallfile_remote.py /usr/local/bin" clients
 
 if [[ $release =~ *"Red Hat Enterprise Linux release 8."* ]] ; then
 	ansible -m shell -a "wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt ; update-ca-trust" all
