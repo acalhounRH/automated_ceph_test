@@ -103,6 +103,9 @@ ln -sf /opt/pbench-web-server/html/static /var/www/html
 ln -sf /var/lib/pbench-agent /var/www/html
 
 systemctl start httpd
+firewall-cmd --permanent --zone=public --add-service=http
+firewall-cmd --permanent --zone=public --add-service=https
+firewall-cmd --reload
 
 echo "browse to http://localhost/pbench-agent for pbench webservice" 
 

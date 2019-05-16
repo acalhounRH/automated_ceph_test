@@ -15,6 +15,7 @@ script_dir=$HOME/automated_ceph_test
 hostname | grep -q linode.com
 if [ $? = 0 ]; then
 	inventory_file=$HOME/ceph-linode/ansible_inventory
+	linode_deploy=true
 else
 	inventory_file=$script_dir/ansible_inventory
 fi
@@ -28,14 +29,12 @@ if [[ $settings =~ .*"smallfile".* ]]; then
 	
 	# get monitor IP address, we'll need that to mount Cephfs
 	# find out about first monitor
-	export first_mon=`ansible --list-host mons |grep -v hosts | grep -v ":" | head -1 | sed 's/ //g'`
-	#only needed with linode installations
-	if [ -n "$linode_cluster" ] ; then
-		export first_mon=`ansible -m shell -a 'echo {{ hostvars[groups["mons"][0]]["monitor_address"] }}' localhost | grep -v localhost | sed 's/ //g'`
-	fi
-	
+	first_mon=`ceph -s -f json | jq .monmap.mons[0].addr`; 
+	mon_ip=`echo "${first_mon//\"}" | cut -f1 -d ":"`
+	echo "************ $first_mon *************"
 	echo "distribute client key to Cephfs clients in expected format"
 	
+	 #awk '/==/{ print $NF }' /etc/ceph/ceph.client.admin.keyring > /etc/ceph/cephfs.key && \
 	(rm -f /etc/ceph/cephfs.key && \
 	 awk '/==/{ print $NF }' /etc/ceph/ceph.client.admin.keyring > /etc/ceph/cephfs.key && \
 	 ansible -m copy -a 'src=/etc/ceph/cephfs.key dest=/etc/ceph/' clients) \
@@ -45,8 +44,12 @@ if [[ $settings =~ .*"smallfile".* ]]; then
 	ansible -m shell -a "umount -v $mountpoint" clients
 	
 	# if we can't mount Cephfs, bail out right away
-	ansible -m shell -a \
-	 "mkdir -pv $mountpoint && mount -v -t ceph -o name=admin,secretfile=/etc/ceph/cephfs.key $mon_ip:$mon_port:/ $mountpoint && mkdir -pv $mountpoint/smf" clients \
+	echo "create mount point"
+	ansible -m shell -a "mkdir -pv $mountpoint" clients 
+	echo "mount cephfs"
+	ansible -m shell -a "mount -v -t ceph -o name=admin,secretfile=/etc/ceph/cephfs.key $mon_ip:$mon_port:/ $mountpoint" clients
+	echo "create smf on top of mount point"
+	ansible -m shell -a "mkdir -pv $mountpoint/smf" clients \
 	   || exit $NOTOK
 	
 	echo "mount cephfs from test driver as well"
@@ -76,4 +79,3 @@ $HOME/cbt/cbt.py $jobfiles_dir/automated_test.yml -a $archive_dir
 #echo "role_to_hostnames [ " > $archive_dir/results/ansible_facts.json
 #ansible all -m setup -i $inventory_file | sed -s 's/ | SUCCESS => /"&/' | sed -s 's/ | SUCCESS => /": /' | sed -s 's/},/}/' | sed -s 's/}/},/' >> $archive_dir/results/ansible_facts.json
 #echo "]" >> $archive_dir/results/ansible_facts.json
-
