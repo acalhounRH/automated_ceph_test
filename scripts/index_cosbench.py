@@ -11,7 +11,7 @@ from elasticsearch import Elasticsearch, helpers
 import getopt
 
 from proto_py_es_bulk import *
-from scribes import *
+from scribes import cosbench_scribe
 from utils.common_logging import setup_loggers
 
 logger = logging.getLogger("index_cosbench")
