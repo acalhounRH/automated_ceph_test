@@ -23,6 +23,7 @@ ssh root@$cosbench_controller "
 		pip install elasticsearch 
 		pip install urllib3==1.23
 		pip install statistics
+		pip install	xmltodict
 	fi 	
 
 	"
