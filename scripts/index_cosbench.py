@@ -84,7 +84,7 @@ def argument_handler():
     host = ""
     port = ""
     workload_list = []
-    test_mode = False
+    test_mode=False
     output_file=None
 
     usage = """ 
@@ -97,7 +97,7 @@ def argument_handler():
                 -w or --workloads - a list of workloads that should be imported 
             """
     try:
-        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:w:o:d', ['test_id=', 'host=', 'port=', 'workloads', 'debug', 'output_file' , 'test_mode'])
+        opts, _ = getopt.getopt(sys.argv[1:], 't:h:p:w:o:dT', ['test_id=', 'host=', 'port=', 'workloads', 'debug', 'output_file' , 'test_mode'])
     except getopt.GetoptError:
         sys.exit(2)
 
@@ -108,7 +108,7 @@ def argument_handler():
             host = arg
         if opt in ('-p', '--port'):
             esport = arg
-        if opt in ('--test_mode'):
+        if opt in ('-T', '--test_mode'):
             test_mode = True
         if opt in ('-o', '--output_file'):
             output_file = arg
@@ -126,7 +126,7 @@ def argument_handler():
         
     setup_loggers("index_cosbench", log_level, output_file)
 
-    if host and test_id and esport and  workload_list:
+    if host and test_id and esport and workload_list:
         logger.info("Test ID: %s, Host: %s, Port: %s " % (test_id, host, esport))
     else:
         logger.info(usage)
