@@ -148,6 +148,7 @@ class cosbench_workload_transcriber():
                                   
                                     with open("%s/workload-config.xml" % workload_doc['_source']['Workload']) as fd:
                                         workloadxmldoc = xmltodict.parse(fd.read())
+                                        logger.info(json.dumps(workloadxmldoc, indent=4))
         
                                     #xml has stage list, find all
                                     if isinstance(workloadxmldoc["workload"]["workflow"]["workstage"], list):
