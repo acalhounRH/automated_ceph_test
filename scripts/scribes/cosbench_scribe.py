@@ -154,7 +154,7 @@ class cosbench_workload_transcriber():
                                             if j["@name"] in workload_doc['_source']["Stage"]:
                                                 workload_doc['_source']['Workers'] = j["work"]["@workers"]
                                     except: #no stage list, only one stage.
-                                        print (workloadxmldoc["workload"]["workflow"]["workstage"]["@name"])
+                                        #print (workloadxmldoc["workload"]["workflow"]["workstage"]["@name"])
                                         if workloadxmldoc["workload"]["workflow"]["workstage"]["@name"] in workload_doc['_source']["Stage"]:
                                             workload_doc['_source']['Workers'] = workloadxmldoc["workload"]["workflow"]["workstage"]["work"]["@workers"]
                                     
