@@ -2,7 +2,7 @@
 
 
 #setup tools on Control host
-ssh $cosbench_controller "
+ssh root@$cosbench_controller "
 	#install git 
 	if [ $? -eq 0] ; then
 		echo 'git installed'
@@ -27,7 +27,7 @@ ssh $cosbench_controller "
 
 	"
 #run index_cosbench
-ssh $cosbench_controller "
+ssh root@$cosbench_controller "
 	#check that archive dir is there
 	if [ -d $cosbench_archive ] ; then
 		cd $cosbench_archive
