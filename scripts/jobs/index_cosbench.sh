@@ -4,7 +4,7 @@
 #setup tools on Control host
 ssh root@$cosbench_controller "
 	#install git 
-	if [ $? -eq 0] ; then
+	if [ $? -eq 0 ] ; then
 		echo 'git installed'
 	else
 		yum install git -y
@@ -13,7 +13,7 @@ ssh root@$cosbench_controller "
 	#change dir to home and check if automated ceph test is installed
 	#if it is pull latest else git clone
 	cd ~
-	if [ -d automated_ceph_test ] ; then
+	if [ -d ~/automated_ceph_test ] ; then
 		cd ~/automated_ceph_test
 		git pull 
 	else
