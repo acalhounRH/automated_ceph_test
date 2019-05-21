@@ -274,7 +274,7 @@ class cosbench_stage_transcriber():
                                                 stagedata_doc['_id'] = hashlib.md5(json.dumps(stagedata_doc)).hexdigest()
                                                 b = copy.deepcopy(stagedata_doc)
                                         
-                                        yield b
+                                            yield b
                                     else:
                                         logger.error("Corrupted data found, omitting data point")
                             
