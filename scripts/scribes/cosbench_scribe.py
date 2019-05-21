@@ -1,5 +1,5 @@
 
-import os, sys, json, time, types, csv, copy
+import os, sys, json, time, types, csv, copy, hashlib
 import xmltodict
 import logging
 import datetime
@@ -67,6 +67,7 @@ class cosbench_runhistory_transcriber():
                             #a = copy.deepcopy(run_history
                         
                     if  run_history['_source']['Workload ID'] in self.workload_list:
+                        run_history['_id'] = hashlib.md5(json.dumps(run_history)).hexdigest()
                         yield run_history 
                 
 class cosbench_workload_transcriber():
@@ -157,6 +158,7 @@ class cosbench_workload_transcriber():
                                         if workloadxmldoc["workload"]["workflow"]["workstage"]["@name"] in workload_doc['_source']["Stage"]:
                                             workload_doc['_source']['Workers'] = workloadxmldoc["workload"]["workflow"]["workstage"]["work"]["@workers"]
                                     
+                                    workload_doc["_id"] = hashlib.md5(json.dumps(workload_doc)).hexdigest()
                                     self.workload_doc_list.append(workload_doc)
                                     yield workload_doc
         
@@ -271,6 +273,7 @@ class cosbench_stage_transcriber():
                                                 stagedata_doc['_source']['stagedata_value'] = float(sd_value)
                                                 b = copy.deepcopy(stagedata_doc)
                                         
+                                        b['_id'] = hashlib.md5(json.dumps(b)).hexdigest()
                                         yield b
                                     else:
                                         logger.error("Corrupted data found, omitting data point")
