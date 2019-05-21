@@ -149,11 +149,12 @@ class cosbench_workload_transcriber():
                                     with open("%s/workload-config.xml" % workload_doc['_source']['Workload']) as fd:
                                         workloadxmldoc = xmltodict.parse(fd.read())
         
-                                    try: #xml has stage list, find all
+                                    #xml has stage list, find all
+                                    if isinstance(workloadxmldoc["workload"]["workflow"]["workstage"], list):
                                         for j in workloadxmldoc["workload"]["workflow"]["workstage"]:
                                             if j["@name"] in workload_doc['_source']["Stage"]:
                                                 workload_doc['_source']['Workers'] = j["work"]["@workers"]
-                                    except: #no stage list, only one stage.
+                                    else: #no stage list, only one stage.
                                         print (workloadxmldoc["workload"]["workflow"]["workstage"]["@name"])
                                         if workloadxmldoc["workload"]["workflow"]["workstage"]["@name"] in workload_doc['_source']["Stage"]:
                                             workload_doc['_source']['Workers'] = workloadxmldoc["workload"]["workflow"]["workstage"]["work"]["@workers"]
