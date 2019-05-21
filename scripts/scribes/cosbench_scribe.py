@@ -260,7 +260,7 @@ class cosbench_stage_transcriber():
                                                     metric_type, op_type = header_name.split(" @ ")
                                                     stagedata_doc['_source']['op-type'] = op_type
                                                     stagedata_doc['_source']['metric-type'] = metric_type 
-                                                    stagedata_doc['_source']['stagedata_metric'] = int(header_list[column])
+                                                    stagedata_doc['_source']['stagedata_metric'] = header_list[column]
                                                 except:
                                                     print (header_name)
         
