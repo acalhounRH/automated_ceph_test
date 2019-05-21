@@ -155,7 +155,7 @@ class cosbench_workload_transcriber():
                                         for j in workloadxmldoc["workload"]["workflow"]["workstage"]:
                                             if j["@name"] in workload_doc['_source']["Stage"]:
                                                 logger.info(json.dumps(j, indent=4))
-                                                workload_doc['_source']['Workers'] = j["work"]["@workers"]
+                                                workload_doc['_source']['Workers'] = j[0]["@workers"]
                                     else: #no stage list, only one stage.
                                         print (workloadxmldoc["workload"]["workflow"]["workstage"]["@name"])
                                         if workloadxmldoc["workload"]["workflow"]["workstage"]["@name"] in workload_doc['_source']["Stage"]:
