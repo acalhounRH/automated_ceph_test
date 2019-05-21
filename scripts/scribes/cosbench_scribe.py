@@ -26,7 +26,7 @@ class cosbench_runhistory_transcriber():
             for row in readCSV:
                 run_history = {'_index': 'cosbench_runhistory_index',
                                '_type': "cosbench_runhistory",
-                               'op_type': 'create',
+                               '_op_type': 'create',
                                '_source': {
                                    'test_id': self.test_id
                                    }
@@ -99,7 +99,7 @@ class cosbench_workload_transcriber():
                             for row in readCSV:
                                 workload_doc = {'_index': 'cosbench_workload_index',
                                              '_type': "cosbench_workload",
-                                             'op_type': 'create',
+                                             '_op_type': 'create',
                                              '_source': {
                                                  'Workload ID': int(wdirID),
                                                  'Workload': wdir,
@@ -188,9 +188,9 @@ class cosbench_stage_transcriber():
                 if process_stage:            
                     stagefile = "%s/%s.csv" % (os.path.abspath(work), stage)
                     #stagedata_doc = copy.deepcopy(maindoc)
-                    stagedata_doc = {"index": "",
-                                     "type": "",
-                                     "op-type": "create",
+                    stagedata_doc = {"_index": "cosbench_stage_index",
+                                     "_type": "cosbench_stage",
+                                     "_op_type": "create",
                                      "_source": {
                                          "test_id": self.test_id,
                                          "stage": "",
