@@ -271,9 +271,9 @@ class cosbench_stage_transcriber():
                                                 else:
                                                     sd_value = row[column] 
                                                 stagedata_doc['_source']['stagedata_value'] = float(sd_value)
+                                                stagedata_doc['_id'] = hashlib.md5(json.dumps(stagedata_doc)).hexdigest()
                                                 b = copy.deepcopy(stagedata_doc)
                                         
-                                        b['_id'] = hashlib.md5(json.dumps(b)).hexdigest()
                                         yield b
                                     else:
                                         logger.error("Corrupted data found, omitting data point")

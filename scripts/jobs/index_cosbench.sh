@@ -32,7 +32,7 @@ ssh root@$cosbench_controller "
 	#check that archive dir is there
 	if [ -d $cosbench_archive ] ; then
 		cd $cosbench_archive
-		~/automated_ceph_test/scripts/index_cosbench.py -t $Test_ID -h $elasticsearch_host -p $elasticsearch_port -w \"$workload_list\"
+		~/automated_ceph_test/scripts/index_cosbench.py -t $Test_ID -h $elasticsearch_host -p $elasticsearch_port -w \"$workload_list\" -T
 	else
 		echo 'cosbench archive does not exist'
 	fi
