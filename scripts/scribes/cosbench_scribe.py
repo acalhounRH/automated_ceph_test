@@ -256,13 +256,11 @@ class cosbench_stage_transcriber():
                                                 stagedata_doc['_source']['date'] = current_datetime 
                                             else:
                                                 header_name = header_list[column]
-                                                try:
+                                                if "@" in header_name:
                                                     metric_type, op_type = header_name.split(" @ ")
                                                     stagedata_doc['_source']['op-type'] = op_type
                                                     stagedata_doc['_source']['metric-type'] = metric_type 
                                                     stagedata_doc['_source']['stagedata_metric'] = header_list[column]
-                                                except:
-                                                    print (header_name)
         
                                                 if "%"in row[column]:
                                                     sd_value = row[column].strip('%')
