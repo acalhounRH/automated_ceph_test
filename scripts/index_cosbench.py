@@ -25,6 +25,7 @@ def main():
     es, test_id, workload_list, test_mode = argument_handler()
     
     if test_mode:
+        logger.info("***********TEST MODE***********")
         for i in process_data_generator(test_id, workload_list):
             logger.debug(json.dumps(i, indent=4))
     else:
