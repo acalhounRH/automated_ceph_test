@@ -88,7 +88,7 @@ def argument_handler():
 
     usage = """ 
             Usage:
-                evaluatecosbench_pushes.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>
+                index_cosbench.py -t <test id> -h <host> -p <port> -w <1,2,3,4-8,45,50-67>
                 
                 -t or --test_id - test identifier
                 -h or --host - Elasticsearch host ip or hostname
