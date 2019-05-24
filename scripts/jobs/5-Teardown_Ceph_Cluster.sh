@@ -84,4 +84,4 @@ fi
 
 # don't get rid of ceph-ansible until you've run purge-cluster
 
-yum remove -y ceph-common ceph-fuse librados2 ceph-ansible ansible
+yum remove -y ceph-common ceph-fuse librados2 ceph-ansible
