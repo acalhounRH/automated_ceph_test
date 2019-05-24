@@ -117,7 +117,7 @@ j_host="
 		"
 
 #setup ssh loopback to agent host
-ssh $jenkins_agent "
+ssh root@$jenkins_agent "
     
     echo \"$j_host\" >> ~/.ssh/config
     ssh-keygen -f ~/.ssh/id_rsa -t rsa -N \"\"
