@@ -56,6 +56,7 @@ fi
 sed -i 's/enabled=0/enabled=1/g' /etc/yum.repos.d/epel.repo
 yum install python-virtualenv -y
 yum install python-pip -y
+yum install jq -y
 pip install pip -U
 pip install pyyaml
 pip install elasticsearch 
