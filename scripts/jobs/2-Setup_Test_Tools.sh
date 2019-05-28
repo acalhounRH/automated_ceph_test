@@ -113,7 +113,11 @@ fi
 export ANSIBLE_INVENTORY=$inventory_file
 
 #setup smallfile on all clients
-ansible -m shell -a "cd; git clone https://github.com/bengland2/smallfile.git; ln -svf ~/smallfile/smallfile_remote.py /usr/local/bin" clients
+ansible -m shell -a "yum install git -y" clients && \
+ansible -m shell -a "cd; git clone https://github.com/bengland2/smallfile.git" clients && \
+ansible -m shell -a "ln -svf ~/smallfile/smallfile_remote.py /usr/local/bin" clients \
+ || exit $NOTOK
+
 ln -svf ~/smallfile/smallfile_remote.py /usr/local/bin
 
 if [[ $release =~ *"Red Hat Enterprise Linux release 8."* ]] ; then
