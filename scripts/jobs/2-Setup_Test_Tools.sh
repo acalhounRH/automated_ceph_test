@@ -114,7 +114,7 @@ export ANSIBLE_INVENTORY=$inventory_file
 
 #setup smallfile on all clients
 ansible -m shell -a "yum install git -y" clients && \
-ansible -m shell -a "cd; if [ -d smallfile ]; then cd smallfile; git pull; else git clone https://github.com/bengland2/smallfile.git fi" clients && \
+ansible -m shell -a "cd; if [ -d smallfile ]; then cd smallfile; git pull; else git clone https://github.com/bengland2/smallfile.git; fi" clients && \
 ansible -m shell -a "ln -svf ~/smallfile/smallfile_remote.py /usr/local/bin" clients \
  || exit $NOTOK
 
