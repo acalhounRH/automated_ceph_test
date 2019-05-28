@@ -92,6 +92,7 @@ $script_dir/scripts/utils/setup_round_trip.sh $inventory_file
 
 yum remove -y pbench-fio pbench-agent pbench-sysstat
 rm -rf /var/lib/pbench-agent/tools-default
+ansible -m shell -a "rm -rf /var/lib/pbench-agent/tools-default" all
 
 if [[ $release =~ *"Red Hat Enterprise Linux release 8."* ]] ; then
 	wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt
@@ -124,7 +125,6 @@ else
 fi
 
 (ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat state=absent" all && \
- ansible -m shell -a "rm -rf /var/lib/pbench-agent/tools-default" all && \
  ansible -m shell -a "cd /etc/yum.repos.d; wget $copr_repo_url" all && \
  ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat" all) \
   || exit $NOTOK
