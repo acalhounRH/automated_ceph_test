@@ -129,12 +129,12 @@ else
 fi
 
 (ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat state=absent" all && \
-ansible -m shell -a "mkdir /var/lib/pbench" all && \
+ansible -m shell -a "mkdir /var/lib/pbench-agent" all && \
  ansible -m shell -a "cd /etc/yum.repos.d; wget $copr_repo_url" all && \
  ansible -m yum -a "name=pbench-fio,pbench-agent,pbench-sysstat" all) \
   || exit $NOTOK
  
-mkdir /var/lib/pbench
+mkdir /var/lib/pbench-agent
 
 echo "******************* registering tools:"
 
