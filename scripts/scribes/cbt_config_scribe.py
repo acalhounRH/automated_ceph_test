@@ -18,19 +18,20 @@ class cbt_config_transcriber:
         self.cpu_info_map = {}
         self.interface_map = {}
         
-        if hostmap:
-            self.load_host_map(hostmap)
-        else:    
-            #if hostmap file is not provided generate it  
-            self.acitve_ceph_client = ceph_client()   
-             
-            if self.acitve_ceph_client.Connection_status:   
-                self.remoteclient = ssh_remote_command()
-        
-                
-                self.make_host_map()
-            else:
-                logger.warn("Ceph host to role mapping was not performed.")
+        if 'cbt' in cbt_yaml_config: 
+            if hostmap:
+                self.load_host_map(hostmap)
+            else:    
+                #if hostmap file is not provided generate it  
+                self.acitve_ceph_client = ceph_client()   
+                 
+                if self.acitve_ceph_client.Connection_status:   
+                    self.remoteclient = ssh_remote_command()
+            
+                    
+                    self.make_host_map()
+                else:
+                    logger.warn("Ceph host to role mapping was not performed.")
                 
     def load_host_map(self, hostmap_file):
         logger.info("Loading %s" % hostmap_file)
