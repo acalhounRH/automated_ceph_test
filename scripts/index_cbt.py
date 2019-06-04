@@ -73,23 +73,30 @@ def process_data(test_id):
         for filename in files:
             fname = os.path.join(dirpath,filename)
             #capture cbt configuration 
-            if 'cbt_config.yaml' in fname:
+            if 'cbt_config.yaml' in fname or 'ripsaw_config.yaml' in fname:
                 logger.info("Gathering cbt configuration settings...")
                 cbt_config_gen = cbt_config_scribe.cbt_config_transcriber(test_id, fname)             
                 yield cbt_config_gen
             
                 #if rbd test, process json data 
-                if "librbdfio" in cbt_config_gen.config['benchmarks']:
+                #if "librbdfio" in cbt_config_gen.config['benchmarks']:
+                if "fio" in cbt_config_gen.config['benchmarks']:
                     analyze_cbt_fio_results_generator = cbt_fio_analyzer.analyze_cbt_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
                     for fiojson_obj in analyze_cbt_fio_results_generator:
                         yield fiojson_obj
                
                 #if radons bench test, process data 
                 if "radosbench" in cbt_config_gen.config['benchmarks']:
-                    logger.warn("rados bench is under development")
                     analyze_cbt_rados_results_generator = cbt_rados_analyzer.analyze_cbt_rados_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
                     for rados_obj in analyze_cbt_rados_results_generator:
                         yield rados_obj
+                        
+                if "smallfile" in cbt_config_gen.config['benchmarks']:
+                    logger.warn("smallfile us Underdevelopment")
+                    analyze_cbt_smallfile_results_generator = cbt_smallfile_analyser.analyze_cbt_smallfile_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
+                    for smallfile_obj in analyze_cbt_smallfile_results_generator:
+                        yield smallfile_obj
+                    
 
 class argument_handler():
     def __init__(self):
