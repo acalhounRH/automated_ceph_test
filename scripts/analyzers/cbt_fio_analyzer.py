@@ -21,10 +21,10 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                 metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
                 logger.debug(json.dumps(metadata, indent=4))
             
-                if metadata['ceph_benchmark_test']['test_config']['op_size']:
+                if "op_size" in metadata['ceph_benchmark_test']['test_config']:
                     op_size_bytes = metadata['ceph_benchmark_test']['test_config']['op_size']
                     time_w_unit = metadata['ceph_benchmark_test']['test_config']['time']
-                elif metadata['ceph_benchmark_test']['test_config']['bs']:
+                elif "bs" in metadata['ceph_benchmark_test']['test_config']:
                     op_size_bytes = metadata['ceph_benchmark_test']['test_config']['bs']
                     if 'k'in op_size_bytes:
                         op_size_bytes = op_size_bytes.strip("k")
