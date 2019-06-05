@@ -48,8 +48,8 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                 except:
                     time_wo_unit = time_w_unit
                     metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
-                
-                if "librbdfio" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
+                benchmark_name = metadata['ceph_benchmark_test']['test_config']['benchmark']
+                if "librbdfio" in benchmark_name or "ripsaw-fio" in benchmark_name:
                     #process fio logs
                     analyze_cbt_fiologs_generator = analyze_cbt_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
                     for fiolog_obj in analyze_cbt_fiologs_generator:
