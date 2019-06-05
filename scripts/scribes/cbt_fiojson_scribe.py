@@ -138,7 +138,7 @@ class fiojson_results_transcriber:
         importdoc["_type"] = "librbdfiosummarydata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
-        
+        logger.debug(json.dumps(self.metadata, indent=4))
         tmp_doc = {}
         
         self.calculate_iops_sum()
