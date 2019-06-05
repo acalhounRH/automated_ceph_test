@@ -3,7 +3,6 @@ import logging, statistics, yaml
 import datetime, socket
 from scribes import *
 from . import cbt_pbench_analyzer
-from builtins import False
 
 logger = logging.getLogger("index_cbt")
 
