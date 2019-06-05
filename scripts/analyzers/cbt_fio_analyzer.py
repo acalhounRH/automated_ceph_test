@@ -97,20 +97,26 @@ def analyze_cbt_fiologs(tdir, cbt_config_obj, test_metadata):
             metadata = {}
             #fiologdoc = copy.deepcopy(headerdoc)
             metadata = test_metadata
+            benchmark_name = metadata['ceph_benchmark_test']['test_config']['benchmark']
             ### Changed pdsh to ansible and the format of the file names changed. 
             #jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
-            jsonfile = "%s/json_%s" % (tdir, os.path.basename(file).split('_', 1)[0])
-            jsonfile = os.path.abspath(jsonfile)
-            hostname = os.path.basename(file).split('.', 2)[2]
-            hostname = hostname.split("_")[0]
-            
-            metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = hostname
-            try:
-                metadata['ceph_benchmark_test']['application_config']['ceph_config']['ceph_node-type'] = cbt_config_obj.get_host_type(hostname)
-            except:
-                logger.debug("Unable to set get host type list")
+            if 'librbdfio' in benchmark_name:
+                jsonfile = "%s/json_%s" % (tdir, os.path.basename(file).split('_', 1)[0])
+                jsonfile = os.path.abspath(jsonfile)
+                hostname = os.path.basename(file).split('.', 2)[2]
+                hostname = hostname.split("_")[0]
+                
+                metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = hostname
+                try:
+                    metadata['ceph_benchmark_test']['application_config']['ceph_config']['ceph_node-type'] = cbt_config_obj.get_host_type(hostname)
+                except:
+                    logger.debug("Unable to set get host type list")
 
-            fiolog_transcriber_generator = cbt_fiolog_scribe.fiolog_transcriber(file, jsonfile, metadata)
+                fiolog_transcriber_generator = cbt_fiolog_scribe.fiolog_transcriber(file, jsonfile, metadata)
+            if 'ripsaw-fio' in benchmark_name:
+                jsonfile = "%s/fio-results.json" % (tdir)
+                fiolog_transcriber_generator = cbt_fiolog_scribe.fiolog_transcriber(file, jsonfile, metadata)
+            
             yield fiolog_transcriber_generator
             
             
