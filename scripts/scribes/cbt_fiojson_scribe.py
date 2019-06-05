@@ -48,7 +48,7 @@ class fiojson_file_transcriber:
             ms = datetime.datetime.fromtimestamp(json_doc['timestamp'])
             tmp_doc['fio']['fio_json']['timestamp_ms'] = ms.microsecond / 1000
         
-        if job in json_doc:
+        if 'job' in json_doc:
             for job in json_doc['jobs']:
                 tmp_doc['fio']['fio_json']['job'] = job
                 #XXX: TODO need to add total_iops for all jons in current record
