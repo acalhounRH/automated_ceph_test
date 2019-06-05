@@ -22,6 +22,13 @@ class fiolog_transcriber:
         #logger.debug("Indexing %s" % self.csv_file)
         try:
             jsondoc = json.load(open(self.json_file))
+            
+            if 'timestamp_ms' in json_doc:
+                test_time_ms = int(jsondoc['timestamp_ms'])
+            else: 
+                ms = datetime.datetime.fromtimestamp(json_doc['timestamp'])
+                test_time_ms = ms.microsecond / 1000
+            
             test_time_ms = int(jsondoc['timestamp_ms'])
             test_duration_sec = jsondoc['global options']['runtime']
             try:
