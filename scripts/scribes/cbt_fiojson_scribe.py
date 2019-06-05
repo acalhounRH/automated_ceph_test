@@ -37,7 +37,7 @@ class fiojson_file_transcriber:
         elif 'B' in block_size:
             tmp_doc['fio']['fio_json']['global_options']['bs'] = ( int(tmp_doc['fio']['fio_json']['global_options']['bs'].strip('B')) / 1024)
         
-        tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
+        #tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
         tmp_doc['fio']['fio_json']['timestamp'] = json_doc['timestamp']
         tmp_doc['fio']['fio_json']['fio_version'] = json_doc['fio version']
         tmp_doc['fio']['fio_json']['time'] = json_doc['time']
