@@ -20,14 +20,20 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                 benchmark_data = yaml.load(open(fname))
                 metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
             
-                
-                op_size_bytes = metadata['ceph_benchmark_test']['test_config']['op_size']
-                time_w_unit = metadata['ceph_benchmark_test']['test_config']['time']
+                if "op_size" in metadata and "time" in metadata:
+                    op_size_bytes = metadata['ceph_benchmark_test']['test_config']['op_size']
+                    time_w_unit = metadata['ceph_benchmark_test']['test_config']['time']
+                elif "runtime" in metadata and "bs" in metadata:
+                    op_size_bytes = metadata['ceph_benchmark_test']['test_config']['bs']
+                    if 'k'in op_size_bytes:
+                        op_size_bytes = op_size_bytes.strip("k")
+                        op_size_bytes = op_size_bytes * 1000
+                    time_w_unit = metadata['ceph_benchmark_test']['test_config']['runtime']
                 
                 if op_size_bytes: 
                      op_size_kb = int(op_size_bytes) / 1024
                      metadata['ceph_benchmark_test']['test_config']['op_size'] = int(round(op_size_kb))
-                
+                     op_size_bytes = metadata['ceph_benchmark_test']['test_config']['bs'] = int(round(op_size_kb))
                 try:
                     if "S" in time_w_unit:  
                         time_wo_unit = time_w_unit.strip("S")
