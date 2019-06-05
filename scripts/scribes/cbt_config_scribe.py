@@ -4,13 +4,15 @@ import socket, datetime, logging, ipaddress
 import subprocess
 from elasticsearch.client.remote import RemoteClient
 
+logger = logging.getLogger("index_cbt")
+
 try: 
     from paramiko import SSHClient
     import rados
 except:
     logger.warn("paramiko and rados not available")
 
-logger = logging.getLogger("index_cbt")
+
 
 class cbt_config_transcriber:
     
