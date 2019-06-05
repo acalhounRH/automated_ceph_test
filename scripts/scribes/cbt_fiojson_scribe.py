@@ -51,15 +51,17 @@ class fiojson_file_transcriber:
         if 'job' in json_doc:
             for job in json_doc['jobs']:
                 tmp_doc['fio']['fio_json']['job'] = job
-                #XXX: TODO need to add total_iops for all jons in current record
+                #XXX: TODO need to add total_iops for all jons in current record:q
+                
                 tmp_doc['fio']['fio_json']['total_iops'] = int(tmp_doc['fio']['fio_json']['job']['write']['iops']) + int(tmp_doc['fio']['fio_json']['job']['read']['iops'])
                 
                 importdoc['_source']['ceph_benchmark_test']['test_data'] = tmp_doc
                 importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
                 yield importdoc
                 
-        if 'client_stat' in json_doc:
+        if 'client_stats' in json_doc:
             print ("I found client stat stuff do something here")
+            
             
 class fiojson_results_transcriber:
     
