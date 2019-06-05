@@ -4,7 +4,7 @@ import datetime, socket, itertools
 from scribes import *
 from . import cbt_pbench_analyzer
 from datetime import timedelta
-from ansible.modules.system import hostname
+
 
 logger = logging.getLogger("index_cbt")
 
