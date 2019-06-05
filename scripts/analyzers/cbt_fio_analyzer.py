@@ -3,6 +3,7 @@ import logging, statistics, yaml
 import datetime, socket
 from scribes import *
 from . import cbt_pbench_analyzer
+from builtins import False
 
 logger = logging.getLogger("index_cbt")
 
@@ -20,6 +21,12 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                 benchmark_data = yaml.load(open(fname))
                 metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
                 logger.debug(json.dumps(metadata, indent=4))
+                
+                if 'timebased' in metadata['ceph_benchmark_test']['test_config']:
+                    if 1 in metadata['ceph_benchmark_test']['test_config']['timebased']:
+                        metadata['ceph_benchmark_test']['test_config']['timebased'] = True
+                    elif 0 in metadata['ceph_benchmark_test']['test_config']['timebased']:
+                        metadata['ceph_benchmark_test']['test_config']['timebased'] = False
             
                 if "op_size" in metadata['ceph_benchmark_test']['test_config']:
                     op_size_bytes = metadata['ceph_benchmark_test']['test_config']['op_size']
@@ -33,9 +40,7 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                     time_w_unit = metadata['ceph_benchmark_test']['test_config']['runtime']
                     metadata['ceph_benchmark_test']['test_config']['time'] = time_w_unit
                 else:
-                    logger.error("can not find io size or runtime")
-                        
-                    
+                    logger.error("can not find io size or runtime")  
                 
                 if op_size_bytes: 
                      op_size_kb = int(op_size_bytes) / 1024
