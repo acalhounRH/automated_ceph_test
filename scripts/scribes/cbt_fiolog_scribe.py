@@ -23,7 +23,7 @@ class fiolog_transcriber:
         try:
             jsondoc = json.load(open(self.json_file))
             
-            if 'timestamp_ms' in json_doc:
+            if 'timestamp_ms' in jsondoc:
                 test_time_ms = int(jsondoc['timestamp_ms'])
             else: 
                 ms = datetime.datetime.fromtimestamp(json_doc['timestamp'])
