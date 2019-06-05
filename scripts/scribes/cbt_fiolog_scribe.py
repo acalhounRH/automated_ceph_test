@@ -29,7 +29,7 @@ class fiolog_transcriber:
                 ms = datetime.datetime.fromtimestamp(jsondoc['timestamp'])
                 test_time_ms = ms.microsecond / 1000
             
-            test_time_ms = int(jsondoc['timestamp_ms'])
+            #test_time_ms = int(jsondoc['timestamp_ms'])
             test_duration_sec = jsondoc['global options']['runtime']
             try:
                 if "S" in test_duration_sec: 
