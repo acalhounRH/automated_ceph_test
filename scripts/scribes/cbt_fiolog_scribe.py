@@ -26,7 +26,7 @@ class fiolog_transcriber:
             if 'timestamp_ms' in jsondoc:
                 test_time_ms = int(jsondoc['timestamp_ms'])
             else: 
-                ms = datetime.datetime.fromtimestamp(json_doc['timestamp'])
+                ms = datetime.datetime.fromtimestamp(jsondoc['timestamp'])
                 test_time_ms = ms.microsecond / 1000
             
             test_time_ms = int(jsondoc['timestamp_ms'])
