@@ -90,10 +90,15 @@ class fiojson_results_transcriber:
         
     def calculate_iops_sum(self):
         
+        #loop through all json files and id all key parameters
+        #store unquie values in list
         for cjson_data in self.json_data_list:
             iteration = cjson_data['metadata']['ceph_benchmark_test']['test_config']['iteration']
             op_size = cjson_data['metadata']['ceph_benchmark_test']['test_config']['op_size']
-            mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['mode']
+            if 'mode' in cjson_data['metadata']['ceph_benchmark_test']['test_config']:
+                mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['mode']
+            elif 'rw' in cjson_data['metadata']['ceph_benchmark_test']['test_config']:
+                mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['rw']
             
             if iteration not in self.iteration_list: self.iteration_list.append(iteration) 
             if mode not in self.operation_list: self.operation_list.append(mode)
@@ -112,17 +117,27 @@ class fiojson_results_transcriber:
             
             iteration = json_data['metadata']['ceph_benchmark_test']['test_config']['iteration']
             op_size = json_data['metadata']['ceph_benchmark_test']['test_config']['op_size']
-            mode = json_data['metadata']['ceph_benchmark_test']['test_config']['mode']
+            if 'mode' in cjson_data['metadata']['ceph_benchmark_test']['test_config']:
+                mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['mode']
+            elif 'rw' in cjson_data['metadata']['ceph_benchmark_test']['test_config']:
+                mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['rw']
             
             if not self.sumdoc[iteration][mode][op_size]:
                 self.sumdoc[iteration][mode][op_size]['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
                 self.sumdoc[iteration][mode][op_size]['write'] = 0
                 self.sumdoc[iteration][mode][op_size]['read'] = 0
             
-            for job in json_doc['jobs']:      
-                self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
-                self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
-        
+            if 'job' in json_doc:
+                for job in json_doc['jobs']:      
+                    self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
+                    self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
+                    
+            if 'client_stats' in json_doc:
+                for client_stats in json_doc['client_stats']:
+                    if "All clients" not in client_stats['jobname']:
+                        self.sumdoc[iteration][mode][op_size]['write'] += int(client_stats["write"]["iops"])
+                        self.sumdoc[iteration][mode][op_size]['read'] += int(client_stats["read"]["iops"])
+            
     def get_fiojson_importers(self):
         
         for json_file in self.json_data_list: 
