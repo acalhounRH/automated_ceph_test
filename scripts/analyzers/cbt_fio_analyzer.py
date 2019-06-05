@@ -19,6 +19,7 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
             if 'benchmark_config.yaml' in fname:
                 benchmark_data = yaml.load(open(fname))
                 metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
+                logger.debug(json.dumps(metadata, indent=4))
             
                 if "op_size" in metadata and "time" in metadata:
                     op_size_bytes = metadata['ceph_benchmark_test']['test_config']['op_size']
@@ -28,6 +29,7 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                     if 'k'in op_size_bytes:
                         op_size_bytes = op_size_bytes.strip("k")
                         op_size_bytes = op_size_bytes * 1000
+                        
                     time_w_unit = metadata['ceph_benchmark_test']['test_config']['runtime']
                 
                 if op_size_bytes: 
