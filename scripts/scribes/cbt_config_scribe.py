@@ -5,6 +5,11 @@ from paramiko import SSHClient
 import subprocess
 from elasticsearch.client.remote import RemoteClient
 
+try: 
+    import paramiko, rados
+except:
+    logger.warn("paramiko and rados not available")
+
 logger = logging.getLogger("index_cbt")
 
 class cbt_config_transcriber:
