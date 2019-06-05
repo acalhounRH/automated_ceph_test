@@ -42,7 +42,7 @@ class fiojson_file_transcriber:
         tmp_doc['fio']['fio_json']['fio_version'] = json_doc['fio version']
         tmp_doc['fio']['fio_json']['time'] = json_doc['time']
         
-        if json_doc['timestamp_ms']:
+        if 'timestamp_ms' in json_doc:
             tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
         else: 
             ms = dattime.datetime.fromtimestamp(json_doc['time'])
