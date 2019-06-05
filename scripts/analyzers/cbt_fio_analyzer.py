@@ -21,8 +21,8 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                 metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
                 logger.debug(json.dumps(metadata, indent=4))
                 
-                if 'timebased' in metadata['ceph_benchmark_test']['test_config']:
-                    metadata['ceph_benchmark_test']['test_config']['timebased'] = bool(metadata['ceph_benchmark_test']['test_config']['timebased'])
+                if 'time_based' in metadata['ceph_benchmark_test']['test_config']:
+                    metadata['ceph_benchmark_test']['test_config']['time_based'] = bool(metadata['ceph_benchmark_test']['test_config']['time_based'])
                     
             
                 if "op_size" in metadata['ceph_benchmark_test']['test_config']:
