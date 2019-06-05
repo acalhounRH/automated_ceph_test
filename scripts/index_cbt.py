@@ -81,6 +81,7 @@ def process_data(test_id):
                 #if rbd test, process json data 
                 #if "librbdfio" in cbt_config_gen.config['benchmarks']:
                 if "fio" in cbt_config_gen.config['benchmarks']:
+                    logger.debug("found fio in benchmarks")
                     analyze_cbt_fio_results_generator = cbt_fio_analyzer.analyze_cbt_fio_results(dirpath, cbt_config_gen, copy.deepcopy(test_metadata))
                     for fiojson_obj in analyze_cbt_fio_results_generator:
                         yield fiojson_obj
