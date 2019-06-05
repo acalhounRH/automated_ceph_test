@@ -1,12 +1,12 @@
 
 import yaml, os, time, json, hashlib, paramiko
-import socket, datetime, logging, rados, ipaddress
-from paramiko import SSHClient
+import socket, datetime, logging, ipaddress
 import subprocess
 from elasticsearch.client.remote import RemoteClient
 
 try: 
-    import paramiko, rados
+    from paramiko import SSHClient
+    import rados
 except:
     logger.warn("paramiko and rados not available")
 
