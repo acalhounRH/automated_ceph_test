@@ -45,7 +45,7 @@ class fiojson_file_transcriber:
         if 'timestamp_ms' in json_doc:
             tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
         else: 
-            ms = datetime.datetime.fromtimestamp(json_doc['time'])
+            ms = datetime.datetime.fromtimestamp(json_doc['timestamp'])
             tmp_doc['fio']['fio_json']['timestamp_ms'] = ms.timestamp() * 1000
 
         
