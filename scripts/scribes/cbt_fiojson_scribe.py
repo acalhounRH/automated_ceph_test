@@ -31,6 +31,9 @@ class fiojson_file_transcriber:
         importdoc['_source']['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
         
         tmp_doc['fio']['fio_json']['global_options'] = json_doc['global options']
+        block_size = tmp_doc['fio']['fio_json']['global_options']['bs']
+        if 'k' in block_size:
+             tmp_doc['fio']['fio_json']['global_options']['bs'] = (int(block_size.strip("k")) * 1000)
         tmp_doc['fio']['fio_json']['global_options']['bs'] = ( int(tmp_doc['fio']['fio_json']['global_options']['bs'].strip('B')) / 1024)
         tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
         tmp_doc['fio']['fio_json']['timestamp'] = json_doc['timestamp']
