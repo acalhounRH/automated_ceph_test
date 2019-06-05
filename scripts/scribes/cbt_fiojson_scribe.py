@@ -58,7 +58,7 @@ class fiojson_file_transcriber:
                 importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
                 yield importdoc
                 
-        if client_stat in json_doc:
+        if 'client_stat' in json_doc:
             print ("I found client stat stuff do something here")
             
 class fiojson_results_transcriber:
