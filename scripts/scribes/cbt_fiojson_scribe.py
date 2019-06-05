@@ -46,8 +46,7 @@ class fiojson_file_transcriber:
             tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
         else: 
             ms = datetime.datetime.fromtimestamp(json_doc['timestamp'])
-            tmp_doc['fio']['fio_json']['timestamp_ms'] = ms.timestamp() * 1000
-
+            tmp_doc['fio']['fio_json']['timestamp_ms'] = ms.microsecond / 1000
         
         
         for job in json_doc['jobs']:
