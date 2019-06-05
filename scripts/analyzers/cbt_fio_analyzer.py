@@ -29,6 +29,8 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                     if 'k'in op_size_bytes:
                         op_size_bytes = op_size_bytes.strip("k")
                         op_size_bytes = op_size_bytes * 1000
+                else:
+                    logger.error("can not find io size or runtime")
                         
                     time_w_unit = metadata['ceph_benchmark_test']['test_config']['runtime']
                 
