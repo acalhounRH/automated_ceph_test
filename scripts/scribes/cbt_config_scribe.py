@@ -1,5 +1,5 @@
 
-import yaml, os, time, json, hashlib, paramiko
+import yaml, os, time, json, hashlib
 import socket, datetime, logging, ipaddress
 import subprocess
 from elasticsearch.client.remote import RemoteClient
@@ -7,6 +7,7 @@ from elasticsearch.client.remote import RemoteClient
 logger = logging.getLogger("index_cbt")
 
 try: 
+    import paramiko
     from paramiko import SSHClient
     import rados
 except:
