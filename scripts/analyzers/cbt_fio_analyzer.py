@@ -32,7 +32,7 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                     op_size_bytes = metadata['ceph_benchmark_test']['test_config']['bs']
                     if 'k'in op_size_bytes:
                         op_size_bytes = op_size_bytes.strip("k")
-                        op_size_bytes = int(op_size_bytes) * 1000
+                        op_size_bytes = int(op_size_bytes) * 1024
                         
                     time_w_unit = metadata['ceph_benchmark_test']['test_config']['runtime']
                     metadata['ceph_benchmark_test']['test_config']['time'] = time_w_unit
