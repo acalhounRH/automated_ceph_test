@@ -33,7 +33,7 @@ class fiojson_file_transcriber:
         tmp_doc['fio']['fio_json']['global_options'] = json_doc['global options']
         block_size = tmp_doc['fio']['fio_json']['global_options']['bs']
         if 'k' in block_size:
-             tmp_doc['fio']['fio_json']['global_options']['bs'] = (int(block_size.strip("k")) * 1000)
+             tmp_doc['fio']['fio_json']['global_options']['bs'] = (int(block_size.strip("k")) * 1024)
         elif 'B' in block_size:
             tmp_doc['fio']['fio_json']['global_options']['bs'] = ( int(tmp_doc['fio']['fio_json']['global_options']['bs'].strip('B')) / 1024)
         
