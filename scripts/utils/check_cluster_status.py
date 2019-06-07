@@ -25,7 +25,7 @@ def main():
         logger.error("%s - %s" % (health_stat, health_message))
         sys.exit(1)
     
-    print json.dumps(ceph_status, indent=4)
+    print (json.dumps(ceph_status, indent=4))
     
 def _finditem(obj, key):
    if key in obj: 
