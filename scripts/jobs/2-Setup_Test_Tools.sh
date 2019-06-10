@@ -18,7 +18,7 @@ NOTOK=1
 release=`cat /etc/redhat-release`
 if [[ $release =~ .*"Red Hat Enterprise Linux release 8".* ]] ; then 
 	echo "***************RHEL 8 ************************"
-	copr_repo_url="http://pbench.perf.lab.eng.bos.redhat.com/repo/production/yum.repos.d/rhel8/"
+	copr_repo_url="http://pbench.perf.lab.eng.bos.redhat.com/repo/production/yum.repos.d/rhel8/pbench.repo"
 	epel_repo_rpm_url="https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm"
 elif [[ $release =~ .*"Red Hat Enterprise Linux Server release 7".* ]] || [[ $release =~ "CentOS Linux release 7" ]] ; then
 	copr_repo_url="https://copr.fedorainfracloud.org/coprs/ndokos/pbench/repo/epel-7/ndokos-pbench-epel-7.repo"
