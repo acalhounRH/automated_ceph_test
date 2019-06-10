@@ -95,7 +95,7 @@ yum remove -y pbench-fio pbench-agent pbench-sysstat
 rm -rf /var/lib/pbench-agent/tools-default
 ansible -m shell -a "rm -rf /var/lib/pbench-agent/tools-default" all
 
-if [[ $release =~ *"Red Hat Enterprise Linux release 8."* ]] ; then
+if [[ $release =~ .*"Red Hat Enterprise Linux release 8".* ]] ; then
 	echo "***************RHEL 8 ************************"
 	wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt
 	update-ca-trust
@@ -122,7 +122,7 @@ ansible -m shell -a "ln -svf ~/smallfile/smallfile_remote.py /usr/local/bin" cli
 
 ln -svf ~/smallfile/smallfile_remote.py /usr/local/bin
 
-if [[ $release =~ *"Red Hat Enterprise Linux release 8."* ]] ; then
+if [[ $release =~ .*"Red Hat Enterprise Linux release 8".* ]] ; then
 	echo "***************RHEL 8 ************************"
 	ansible -m shell -a "wget -q -P /etc/pki/ca-trust/source/anchors/ https://password.corp.redhat.com/RH-IT-Root-CA.crt ; update-ca-trust" all
 else
