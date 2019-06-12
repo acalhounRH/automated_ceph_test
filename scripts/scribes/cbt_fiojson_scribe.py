@@ -1,4 +1,3 @@
-
 import yaml, os, time, json, hashlib
 import socket, datetime, statistics, logging
 from collections import defaultdict
@@ -31,46 +30,22 @@ class fiojson_file_transcriber:
         importdoc['_source']['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
         
         tmp_doc['fio']['fio_json']['global_options'] = json_doc['global options']
-        block_size = tmp_doc['fio']['fio_json']['global_options']['bs']
-        if 'k' in block_size:
-             tmp_doc['fio']['fio_json']['global_options']['bs'] = (int(block_size.strip("k")) * 1024)
-        elif 'B' in block_size:
-            tmp_doc['fio']['fio_json']['global_options']['bs'] = ( int(tmp_doc['fio']['fio_json']['global_options']['bs'].strip('B')) / 1024)
-        
-        #tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
+        tmp_doc['fio']['fio_json']['global_options']['bs'] = ( int(tmp_doc['fio']['fio_json']['global_options']['bs'].strip('B')) / 1024)
+        tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
         tmp_doc['fio']['fio_json']['timestamp'] = json_doc['timestamp']
         tmp_doc['fio']['fio_json']['fio_version'] = json_doc['fio version']
         tmp_doc['fio']['fio_json']['time'] = json_doc['time']
+
         
-        if 'timestamp_ms' in json_doc:
-            tmp_doc['fio']['fio_json']['timestamp_ms'] = json_doc['timestamp_ms']
-        else: 
-            ms = datetime.datetime.fromtimestamp(json_doc['timestamp'])
-            tmp_doc['fio']['fio_json']['timestamp_ms'] = ms.microsecond / 1000
         
-        if 'job' in json_doc:
-            for job in json_doc['jobs']:
-                tmp_doc['fio']['fio_json']['job'] = job
-                #XXX: TODO need to add total_iops for all jons in current record:q
-                
-                tmp_doc['fio']['fio_json']['total_iops'] = int(tmp_doc['fio']['fio_json']['job']['write']['iops']) + int(tmp_doc['fio']['fio_json']['job']['read']['iops'])
-                
-                importdoc['_source']['ceph_benchmark_test']['test_data'] = tmp_doc
-                importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
-                yield importdoc
-                
-        if 'client_stats' in json_doc:
-            print ("I found client stat stuff do something here")
-            for client_stats in json_doc['client_stats']:
-                tmp_doc['fio']['fio_json']['job'] = client_stats
-                #XXX: TODO need to add total_iops for all jons in current record:q
-                
-                tmp_doc['fio']['fio_json']['total_iops'] = int(tmp_doc['fio']['fio_json']['job']['write']['iops']) + int(tmp_doc['fio']['fio_json']['job']['read']['iops'])
-                
-                importdoc['_source']['ceph_benchmark_test']['test_data'] = tmp_doc
-                importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
-                yield importdoc
+        for job in json_doc['jobs']:
+            tmp_doc['fio']['fio_json']['job'] = job
+            #XXX: TODO need to add total_iops for all jons in current record
+            tmp_doc['fio']['fio_json']['total_iops'] = int(tmp_doc['fio']['fio_json']['job']['write']['iops']) + int(tmp_doc['fio']['fio_json']['job']['read']['iops'])
             
+            importdoc['_source']['ceph_benchmark_test']['test_data'] = tmp_doc
+            importdoc["_id"] = hashlib.md5(str(importdoc).encode()).hexdigest()
+            yield importdoc
             
 class fiojson_results_transcriber:
     
@@ -90,15 +65,10 @@ class fiojson_results_transcriber:
         
     def calculate_iops_sum(self):
         
-        #loop through all json files and id all key parameters
-        #store unquie values in list
         for cjson_data in self.json_data_list:
             iteration = cjson_data['metadata']['ceph_benchmark_test']['test_config']['iteration']
             op_size = cjson_data['metadata']['ceph_benchmark_test']['test_config']['op_size']
-            if 'mode' in cjson_data['metadata']['ceph_benchmark_test']['test_config']:
-                mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['mode']
-            elif 'rw' in cjson_data['metadata']['ceph_benchmark_test']['test_config']:
-                mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['rw']
+            mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['mode']
             
             if iteration not in self.iteration_list: self.iteration_list.append(iteration) 
             if mode not in self.operation_list: self.operation_list.append(mode)
@@ -117,27 +87,17 @@ class fiojson_results_transcriber:
             
             iteration = json_data['metadata']['ceph_benchmark_test']['test_config']['iteration']
             op_size = json_data['metadata']['ceph_benchmark_test']['test_config']['op_size']
-            if 'mode' in cjson_data['metadata']['ceph_benchmark_test']['test_config']:
-                mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['mode']
-            elif 'rw' in cjson_data['metadata']['ceph_benchmark_test']['test_config']:
-                mode = cjson_data['metadata']['ceph_benchmark_test']['test_config']['rw']
+            mode = json_data['metadata']['ceph_benchmark_test']['test_config']['mode']
             
             if not self.sumdoc[iteration][mode][op_size]:
                 self.sumdoc[iteration][mode][op_size]['date'] = time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.localtime(json_doc['timestamp']))
                 self.sumdoc[iteration][mode][op_size]['write'] = 0
                 self.sumdoc[iteration][mode][op_size]['read'] = 0
             
-            if 'job' in json_doc:
-                for job in json_doc['jobs']:      
-                    self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
-                    self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
-                    
-            if 'client_stats' in json_doc:
-                for client_stats in json_doc['client_stats']:
-                    if "All clients" not in client_stats['jobname']:
-                        self.sumdoc[iteration][mode][op_size]['write'] += int(client_stats["write"]["iops"])
-                        self.sumdoc[iteration][mode][op_size]['read'] += int(client_stats["read"]["iops"])
-            
+            for job in json_doc['jobs']:      
+                self.sumdoc[iteration][mode][op_size]['write'] += int(job["write"]["iops"])
+                self.sumdoc[iteration][mode][op_size]['read'] += int(job["read"]["iops"])
+        
     def get_fiojson_importers(self):
         
         for json_file in self.json_data_list: 
@@ -153,7 +113,7 @@ class fiojson_results_transcriber:
         importdoc["_type"] = "librbdfiosummarydata"
         importdoc["_op_type"] = "create"
         importdoc["_source"] = self.metadata
-
+        
         tmp_doc = {}
         
         self.calculate_iops_sum()

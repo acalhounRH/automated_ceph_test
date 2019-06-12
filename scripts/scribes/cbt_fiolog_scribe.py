@@ -1,4 +1,3 @@
-
 import yaml, os, time, json, hashlib
 import socket, datetime, csv, logging
 
@@ -22,14 +21,7 @@ class fiolog_transcriber:
         #logger.debug("Indexing %s" % self.csv_file)
         try:
             jsondoc = json.load(open(self.json_file))
-            
-            if 'timestamp_ms' in jsondoc:
-                test_time_ms = int(jsondoc['timestamp_ms'])
-            else: 
-                ms = datetime.datetime.fromtimestamp(jsondoc['timestamp'])
-                test_time_ms = ms.microsecond / 1000
-            
-            #test_time_ms = int(jsondoc['timestamp_ms'])
+            test_time_ms = int(jsondoc['timestamp_ms'])
             test_duration_sec = jsondoc['global options']['runtime']
             try:
                 if "S" in test_duration_sec: 
@@ -78,5 +70,3 @@ class fiolog_transcriber:
                     yield importdoc  # XXX: TODO change to yield a
         except Exception as e:
             logger.warn(e)    
-                
-                

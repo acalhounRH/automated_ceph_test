@@ -19,30 +19,15 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
             if 'benchmark_config.yaml' in fname:
                 benchmark_data = yaml.load(open(fname))
                 metadata['ceph_benchmark_test']['test_config'] = benchmark_data['cluster']
-                logger.debug(json.dumps(metadata, indent=4))
-                
-                if 'time_based' in metadata['ceph_benchmark_test']['test_config']:
-                    metadata['ceph_benchmark_test']['test_config']['time_based'] = bool(metadata['ceph_benchmark_test']['test_config']['time_based'])
-                    
             
-                if "op_size" in metadata['ceph_benchmark_test']['test_config']:
-                    op_size_bytes = metadata['ceph_benchmark_test']['test_config']['op_size']
-                    time_w_unit = metadata['ceph_benchmark_test']['test_config']['time']
-                elif "bs" in metadata['ceph_benchmark_test']['test_config']:
-                    op_size_bytes = metadata['ceph_benchmark_test']['test_config']['bs']
-                    if 'k'in op_size_bytes:
-                        op_size_bytes = op_size_bytes.strip("k")
-                        op_size_bytes = int(op_size_bytes) * 1024
-                        
-                    time_w_unit = metadata['ceph_benchmark_test']['test_config']['runtime']
-                    metadata['ceph_benchmark_test']['test_config']['time'] = time_w_unit
-                else:
-                    logger.error("can not find io size or runtime")  
+                
+                op_size_bytes = metadata['ceph_benchmark_test']['test_config']['op_size']
+                time_w_unit = metadata['ceph_benchmark_test']['test_config']['time']
                 
                 if op_size_bytes: 
                      op_size_kb = int(op_size_bytes) / 1024
                      metadata['ceph_benchmark_test']['test_config']['op_size'] = int(round(op_size_kb))
-                     op_size_bytes = metadata['ceph_benchmark_test']['test_config']['bs'] = int(round(op_size_kb))
+                
                 try:
                     if "S" in time_w_unit:  
                         time_wo_unit = time_w_unit.strip("S")
@@ -50,8 +35,8 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                 except:
                     time_wo_unit = time_w_unit
                     metadata['ceph_benchmark_test']['test_config']['time'] = time_wo_unit
-                benchmark_name = metadata['ceph_benchmark_test']['test_config']['benchmark']
-                if "librbdfio" in benchmark_name or "ripsaw-fio" in benchmark_name:
+                
+                if "librbdfio" in metadata['ceph_benchmark_test']['test_config']['benchmark']:
                     #process fio logs
                     analyze_cbt_fiologs_generator = analyze_cbt_fiologs(dirpath, cbt_config_obj, copy.deepcopy(metadata))
                     for fiolog_obj in analyze_cbt_fiologs_generator:
@@ -60,7 +45,7 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                     test_files = sorted(listdir_fullpath(dirpath), key=os.path.getctime) # get all samples from current test dir in time order
                     logger.info("Processing fio json files...")
                     for json_file in test_files:
-                        if "json_" in json_file or ".json" in json_file:
+                        if "json_" in json_file:
                             if os.path.getsize(json_file) > 0: 
                                 fiojson_results_transcriber_generator.add_json_file(json_file, copy.deepcopy(metadata))
                             else:
@@ -92,31 +77,23 @@ def analyze_cbt_fiologs(tdir, cbt_config_obj, test_metadata):
 
         #for each fio log file capture test time in json file then yield transcriber object
     for file in test_files:
-    	if ("_iops" in file) or ("_lat" in file):
+        if ("_iops" in file) or ("_lat" in file):
         #if ("_bw" in file) or ("_clat" in file) or ("_iops" in file) or ("_lat" in file) or ("_slat" in file):
             metadata = {}
             #fiologdoc = copy.deepcopy(headerdoc)
             metadata = test_metadata
-            benchmark_name = metadata['ceph_benchmark_test']['test_config']['benchmark']
             ### Changed pdsh to ansible and the format of the file names changed. 
             #jsonfile = "%s/json_%s.%s" % (tdir, os.path.basename(file).split('_', 1)[0], os.path.basename(file).split('log.', 1)[1])
-            if 'librbdfio' in benchmark_name:
-                jsonfile = "%s/json_%s" % (tdir, os.path.basename(file).split('_', 1)[0])
-                jsonfile = os.path.abspath(jsonfile)
-                hostname = os.path.basename(file).split('.', 2)[2]
-                hostname = hostname.split("_")[0]
-                
-                metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = hostname
-                try:
-                    metadata['ceph_benchmark_test']['application_config']['ceph_config']['ceph_node-type'] = cbt_config_obj.get_host_type(hostname)
-                except:
-                    logger.debug("Unable to set get host type list")
+            jsonfile = "%s/json_%s" % (tdir, os.path.basename(file).split('_', 1)[0])
+            jsonfile = os.path.abspath(jsonfile)
+            hostname = os.path.basename(file).split('.', 2)[2]
+            hostname = hostname.split("_")[0]
+            
+            metadata['ceph_benchmark_test']['common']['hardware']['hostname'] = hostname
+            try:
+                metadata['ceph_benchmark_test']['application_config']['ceph_config']['ceph_node-type'] = cbt_config_obj.get_host_type(hostname)
+            except:
+                logger.debug("Unable to set get host type list")
 
-                fiolog_transcriber_generator = cbt_fiolog_scribe.fiolog_transcriber(file, jsonfile, metadata)
-            if 'ripsaw-fio' in benchmark_name:
-                jsonfile = "%s/fio-result.json" % (tdir)
-                fiolog_transcriber_generator = cbt_fiolog_scribe.fiolog_transcriber(file, jsonfile, metadata)
-            
+            fiolog_transcriber_generator = cbt_fiolog_scribe.fiolog_transcriber(file, jsonfile, metadata)
             yield fiolog_transcriber_generator
-            
-            
