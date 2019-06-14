@@ -46,7 +46,7 @@ def analyze_cbt_fio_results(tdir, cbt_config_obj, test_metadata):
                     logger.info("Processing fio json files...")
                     for json_file in test_files:
                         if "json_" in json_file:
-                            if os.path.getsize(json_file) > 0: 
+                            if os.path.getsize(json_file) > 0 or "Cannot send after transport endpoint shutdown" not in open(json_file).read(): 
                                 fiojson_results_transcriber_generator.add_json_file(json_file, copy.deepcopy(metadata))
                             else:
                                 logger.warn("Found corrupted JSON file, %s." % json_file)
